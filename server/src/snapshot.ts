@@ -65,7 +65,7 @@ function unconfiguredHealth(): JsonValue {
   };
 }
 
-async function acquireHealth(runner: FileRunner, script: string | null): Promise<JsonValue> {
+export async function acquireHealth(runner: FileRunner, script: string | null): Promise<JsonValue> {
   if (script === null) return unconfiguredHealth();
   try {
     const result = await runner.run(script, ["health"], HEALTH_LIMITS);
