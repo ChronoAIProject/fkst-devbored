@@ -1,6 +1,6 @@
 # FKST Console — Two-Hour Demo Construction Plan
 
-Status: execution-authoritative until the 07:00 SGT hard stop on 2026-07-22.
+Status: historical execution record through the 07:00 SGT hard stop on 2026-07-22. The current execution authority is `LIVE-E2E-RECOVERY.md`.
 
 ## Objective
 
