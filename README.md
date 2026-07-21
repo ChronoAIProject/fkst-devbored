@@ -120,108 +120,50 @@ the preceding week.
 
 ---
 
-# Full product & governance
+## Where this is going
 
-`fkst-devbored` is a local Flutter desktop operator app in which **Workflows**
-and **Council** are the primary mechanisms for running and understanding a
-GitHub-native development loop. A thin FKST package owned by this app will
-adapt those contracts to public `devloop` APIs and `fkst-substrate`; existing
-`devbored`/github-devloop packages are reference behavior, not the shipped loop.
+The Flutter desktop plan is **scrapped**. This HTML console + local BFF *is*
+the product surface, and the ship plan of record is the converged
+`PM-PLAN-V2-REFACTOR` (Codex+Fable, owner-arbitrated). Its non-negotiables:
+
+1. **FKST substrate runs the product** — all loop execution (departments,
+   queues, delivery, retries, liveness) runs on
+   [`fkst-substrate`](https://github.com/ChronoAIProject/fkst-substrate).
+2. **GitHub issues are the durable business layer** — work facts and evidence
+   live as trusted markers/comments/labels; no local business authority.
+3. **Working council loops, debating via GitHub** — a configurable council
+   deliberates real work, and the debate itself (ordered per-seat verdicts and
+   arguments) is carried durably on GitHub.
+
+Near-term increments, in order: live read-only GitHub business reads behind
+the local BFF (trust-gated, truncation-honest), then launch-snapshot
+Workflow/Council configuration — authored in the console's sandbox, applied
+only at loop launch with explicit acceptance receipts. Remote writes stay
+behind explicit human authorization at every step.
+
+### Invariants (these survive every refactor)
 
 > GitHub/git own business state. `fkst-substrate` owns its delivery ledger.
-> The app owns process lifecycle only through the verified outer job/launcher it
-> initiated; that launcher owns supervisor/descendant cleanup, and Flutter never
-> directly controls inferred child PIDs. The app also owns local preferences,
-> drafts, audit, and disposable projections.
+> The console holds no authority — everything it stores is a disposable
+> projection. Trusted admitted markers are facts; state labels are hints;
+> unreachable reads render *unknown*, never zero.
 
-The Flutter boundary is presentation → application use cases → domain ports,
-with infrastructure adapters wired only at one composition root. Active
-Workflow/Council config is immutable per launch; durable work evidence comes
-from trusted qualified GitHub comment envelopes, not local cache or deliveries.
-
-## Status
-
-**Full-app v2 is executing under a candidate accelerated, human-gated plan.
-Foundation/readiness work is active at T0; fixture UI begins only after HG-01.**
-
-The one authoritative entry point is
-[`docs/spec/README.md`](docs/spec/README.md). The executable accelerated build
-plan is
-[`plans/accelerated-human-gated-delivery.md`](plans/accelerated-human-gated-delivery.md).
-The retained technical blueprint is
-[`plans/full-app-construction.md`](plans/full-app-construction.md). The
-mandatory stop/go ledger is
-[`docs/spec/08-READINESS.md`](docs/spec/08-READINESS.md).
-The 211-node requirement/evidence registry is
-[`plans/parallel-engineering-task-map.md`](plans/parallel-engineering-task-map.md);
-35 cohesive packages use GPT-5.6 Sol → fresh Opus → mechanical candidate
-integration, with Fable and human review at milestone boundaries.
-
-The older numbered documents, `docs/plan/`, Flutter v2 proposal, and historical
-handoffs are retained as rationale. The deadline-critical OpenAI Build Week
-submission cut is the external sibling file `../HANDOFF.md`, with historical
-advisor context in the external sibling file `../fable_handoff.md`; neither
-overrides `docs/spec/`. These umbrella-workspace references intentionally are
-not repository-local links.
-
-## Exactly two primary dependencies
-
-1. **`../substrate` (`fkst-substrate`)** — Rust engine/runtime, durable delivery
-   ledger, observation, conformance, and supervisor behavior.
-2. **public `devloop`** — the reusable loop library/capability currently found
-   under `../packages/libraries/devloop`, consumed through a pinned, tested
-   integration boundary by this app's own thin FKST package.
-
-The entire packages platform is not dependency 2. `devbored`,
-`github-devloop*`, `consensus`, and `github-proxy` are reference-only and must
-be absent from the shipped graph. GitHub/git are external business authorities;
-`gh`, `git`, `codex`, Flutter/Dart, SQLite, and operating-system facilities are
-services/toolchain, not extra FKST product dependencies.
-
-## Repository layout
+### Repository layout
 
 ```text
-demo/            recorded-evidence console (static HTML) + contract self-check
-local-bff/       loopback read-only substrate snapshot reader for demo/runtime.html
-contracts/       Dart contract types and parity tests; Workflow/Council kernel
-loop-package/    thin app-owned FKST integration; absent until Step-0 proof work
-docs/spec/       authoritative full-app product and engineering specification
+demo/            the console (static HTML) + fixtures + contract self-check
+local-bff/       loopback read-only substrate snapshot reader (runtime.html)
+contracts/       Workflow/Council contract kernel (Dart/Lua/JSON + parity tests)
+docs/spec/       engineering specification & governance evidence (contract
+                 definitions remain authoritative; app-shape sections predate
+                 the HTML-first direction and are retained as history)
 docs/assets/     README banner + screenshots
-plans/           accelerated execution plan plus retained technical registries
-docs/            legacy numbered research/specification documents
-docs/plan/       historical v2 investigation and phase plan
-mock-artifacts/  retained design explorations
-app/             Flutter desktop app; fixture-only at T1, runtime-connected at T2
+plans/           retained planning registries (historical)
+mock-artifacts/  approved design mocks the console is aligned to
 ```
-
-## Start here
-
-Read in this order:
-
-1. [`docs/spec/00-PRODUCT.md`](docs/spec/00-PRODUCT.md)
-2. [`docs/spec/01-DEPENDENCIES.md`](docs/spec/01-DEPENDENCIES.md)
-3. [`docs/spec/03-REQUIREMENTS.md`](docs/spec/03-REQUIREMENTS.md)
-4. [`docs/spec/08-READINESS.md`](docs/spec/08-READINESS.md)
-5. [`docs/spec/04-DATA-CONTRACTS.md`](docs/spec/04-DATA-CONTRACTS.md)
-6. [`docs/spec/09-WORKABILITY.md`](docs/spec/09-WORKABILITY.md)
-7. [`plans/accelerated-human-gated-delivery.md`](plans/accelerated-human-gated-delivery.md)
-8. [`plans/full-app-construction.md`](plans/full-app-construction.md)
-
-The current blockers are intentional and explicit: named delivery-governance
-routes are unproven; no app-integrated FKST loop package exists; its identity is
-not admitted by devloop visibility; and the app-owned Workflow/Council schemas
-are not yet frozen, consumed, or evidenced. Step 0 must also prove the complete
-Codex personal-account argv/effective-surface policy, immutable evidence and
-proxy-free restart seams, project-root topology, exact filesystem boundary,
-outer-job lifetime/typed cleanup receipt, direct/runtime config receipts, and
-the complete effect matrix. Automatic merge may remain absent under the
-explicit hold-only disposition. HG-01 may authorize only fixture/fake-backed
-Flutter and pure layers; HG-02 still requires completed R-039 readiness before
-local/DRY runtime work. HG-03 through HG-05 separately control live effects,
-release-candidate work, and submission.
-
-⟦AI:FKST⟧
 
 ## License
 
 [Apache-2.0](LICENSE) © 2026 ChronoAI Project
+
+⟦AI:FKST⟧
