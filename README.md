@@ -2,9 +2,11 @@
 
 ## Current runnable state
 
-The runnable deliverable is a local React/Vite/TypeScript web console with a loopback Node/TypeScript BFF and a deterministic, read-only fixture replay. From a clean checkout, the fixture demo needs Node.js 22.6–26 and pnpm 10.17.1, but no GitHub account, credentials, BFF, `fkst-substrate`, devloop checkout, or engine deployment:
+The runnable deliverable is a local React/Vite/TypeScript web console with a loopback Node/TypeScript BFF and a deterministic, read-only fixture replay. The repository's default `main` branch is an unrelated pre-existing static project, so clone the candidate branch explicitly. The fixture demo needs Node.js 22.6–26 and pnpm 10.17.1, but no GitHub account, credentials, BFF, `fkst-substrate`, devloop checkout, or engine deployment:
 
 ```bash
+git clone --single-branch --branch codex/build-week-mvp https://github.com/ChronoAIProject/fkst-devbored.git
+cd fkst-devbored
 corepack enable
 pnpm install --frozen-lockfile
 pnpm demo
@@ -14,7 +16,7 @@ Open <http://127.0.0.1:4173>. This is the current reproducible local path; there
 
 | Area | Exact status | Evidence boundary |
 |---|---|---|
-| Fixture application | **Implemented · fixture-only · locally verified** | `pnpm demo` renders committed sanitized data with a persistent **Recorded demo data** banner; `pnpm smoke:fixture` passes at the current checkpoint. |
+| Fixture application | **Implemented · fixture-only · locally and CI verified** | `pnpm demo` renders 2 issues, 1 PR, 3 Council seats with a 2/3 decision and dissent, 1 queue, 1 in-flight delivery, 0 dead letters, and recorded health output. The persistent **Recorded demo data** banner and `example.invalid` links prevent live-status confusion. |
 | **Workflow** | **Implemented · fixture-populated · live read tested · contract-tested** | The populated issue/PR projection is a fixture. An authenticated, read-only GitHub acquisition was live-tested and truthfully returned zero current open issues and PRs. Populated live projection is covered by synthetic contracts, not a claimed live run. |
 | **Council** | **Implemented · fixture-only · contract-tested** | The UI renders seats, outcomes, round, agreement, and recorded dissent from fixture evidence. Live Council acquisition is not implemented and reports unavailable. |
 | **Runtime** | **Implemented · fixture-populated · contract-tested** | The adapter and UI are tested with fake/local contract data. A real binary was found, but no deployed durable root existed; no real substrate ledger observation is claimed. |
@@ -74,7 +76,7 @@ The longer operator checklist and BFF probes are in [docs/JUDGE-RUNBOOK.md](docs
 | GitHub issues, PRs, markers | Sanitized recorded projection | Optional bounded `gh api graphql` read when exactly one repository and trusted bot are configured |
 | Council | Sanitized app-owned evidence projection | **Unavailable:** live acquisition is not implemented |
 | Substrate | Recorded `fkst.delivery.observe.v1` shape | Optional `fkst-framework observe --durable-root … --json`; unconfigured or failed reads remain unavailable/unknown |
-| Devloop health | Recorded opaque output | Optional first line of public devloop `scripts/run.sh health`, displayed verbatim |
+| Devloop health | Recorded opaque output | Optional public devloop `scripts/run.sh health`; its first stdout line is the recognized verdict and the complete stdout is preserved verbatim |
 | Writes | Impossible; always read-only | Read-only by default; one issue-admission write is possible only after every guard passes |
 | Historical claim | Illustrative recorded sequence only | None; polling can miss acknowledged deliveries and repeated IDs are possible |
 
@@ -163,7 +165,7 @@ This repository's console code is Apache-2.0; see [LICENSE](LICENSE). That licen
 - no durable-root substrate observation was possible; and
 - the positive issue-creation path used only a fake local `gh`, not GitHub.
 
-The recorded local platform was macOS 26.5.2 arm64, Node.js 26.3.0, pnpm 10.17.1, and Chrome 150.0.7871.129. The package contract is Node.js 22.6–26. The published branch's [Ubuntu/Node 22 verification run](https://github.com/ChronoAIProject/fkst-devbored/actions/runs/29874160311) passed typecheck, all 82 tests, both builds, fixture smoke, and scrub. Firefox, Safari, Windows, and a clean container were not verified.
+The recorded local platform was macOS 26.5.2 arm64, Node.js 26.3.0, pnpm 10.17.1, and Chrome 150.0.7871.129. The package contract is Node.js 22.6–26. The published branch's [Ubuntu/Node 22 workflow](https://github.com/ChronoAIProject/fkst-devbored/actions/workflows/verify.yml?query=branch%3Acodex%2Fbuild-week-mvp) passes typecheck, all 82 tests, both builds, fixture smoke, and scrub; use its latest run as the current hosted result. Firefox, Safari, Windows, and a clean container were not verified.
 
 ## Known limitations
 
@@ -176,6 +178,7 @@ The recorded local platform was macOS 26.5.2 arm64, Node.js 26.3.0, pnpm 10.17.1
 - There is no topology panel, database, durable console cache, authoritative timeline, or engine control surface.
 - Runtime health is opaque text; delivery observation can be unavailable while GitHub business state exists.
 - No real guarded issue creation, Firefox/Safari/Windows pass, clean-container setup, or public-host secret scanning has been evidenced.
+- The passing GitHub workflow carries a non-blocking runner annotation: the current v4 setup actions target the deprecated Node 20 action runtime and GitHub forces those action implementations onto Node 24. The repository's own verification commands still run under the configured Node 22 toolchain.
 - This two-hour demo candidate makes no production security, availability, or eligibility claim.
 
 ## External submission gates
