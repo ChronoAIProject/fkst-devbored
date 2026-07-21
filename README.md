@@ -221,3 +221,7 @@ local/DRY runtime work. HG-03 through HG-05 separately control live effects,
 release-candidate work, and submission.
 
 ⟦AI:FKST⟧
+
+## License
+
+[Apache-2.0](LICENSE) © 2026 ChronoAI Project
