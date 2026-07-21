@@ -1,10 +1,11 @@
 # Live-read preflight
 
 `pnpm preflight:live` reports whether a real live read can start, without
-performing any write. It probes only dependencies that are explicitly
-configured through the same environment variables `.env.example` documents for
-`pnpm start`, and it reuses the reviewed server adapters verbatim rather than
-re-deriving command lines:
+performing any write. It uses the same environment variables `.env.example`
+documents for `pnpm start`, and it reuses the reviewed server adapters verbatim
+rather than re-deriving command lines. The default/configured `gh` binary is
+always checked for read-only authentication; repository, observe, and health
+reads occur only when their source configuration is supplied:
 
 - **github** — resolves the actor with `gh api user --jq .login` through
   `GhAdapter.resolveActor`, then (only when `FKST_SANDBOX_REPO` and
@@ -36,10 +37,13 @@ read-only posture.
 ## Output
 
 The default mode prints a human summary followed by a single
-`LIVE_PREFLIGHT_JSON=<json>` line; `--json` prints only the pretty-printed
-`fkst.console.live-preflight.v1` report. No secrets, tokens, or shell
-invocations are involved: every probe is a direct `execFile` with `shell:
-false`, and configuration comes exclusively from the environment.
+`LIVE_PREFLIGHT_JSON=<json>` line. For stdout containing only the
+pretty-printed `fkst.console.live-preflight.v1` report, use either
+`pnpm --silent preflight:live -- --json` or
+`./scripts/run.sh preflight --json`; plain pnpm lifecycle output otherwise
+precedes the command's stdout. No secrets, tokens, or shell invocations are
+involved: every probe is a direct `execFile` with `shell: false`, and
+configuration comes exclusively from the environment.
 
 `test/live-preflight.test.mjs` exercises the command against the audited
 tripwire fakes in `test/bin/`, asserting the exact read argv, the absence of

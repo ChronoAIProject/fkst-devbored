@@ -2,7 +2,9 @@
 // (gh actor + bounded GraphQL read, `fkst-framework observe` with the fixed argv,
 // bounded `health`) and reports PASS / FAIL / UNKNOWN / UNAVAILABLE per integration
 // without performing any write. Configuration comes only from the documented
-// FKST_* environment variables; nothing is probed unless explicitly configured.
+// FKST_* environment variables. The default/configured gh binary is checked for
+// read-only authentication; repository, observe, and health reads require their
+// explicit source configuration.
 import { access } from "node:fs/promises";
 import { constants } from "node:fs";
 import process from "node:process";

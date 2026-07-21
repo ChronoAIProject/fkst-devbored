@@ -62,7 +62,27 @@ curl --fail --show-error http://127.0.0.1:8472/api/v1/session
 
 Expected behavior without upstream configuration is an operational BFF plus explicit unavailable/unknown upstream facts—not zero queues, zero DLQ, a healthy upstream, or an empty business board.
 
-For an integrated live-development UI, stop the standalone BFF and run `pnpm dev`; open <http://127.0.0.1:5173>. That command starts the BFF on 8472 and a guarded Vite same-origin `/api` proxy. Without upstream configuration, the UI must render disconnected/unavailable source facts honestly. `pnpm start` remains API-only and does not serve the built frontend.
+Before starting a configured live topology, run the non-mutating readiness report:
+
+```bash
+pnpm preflight:live
+```
+
+It always performs a read-only `gh` actor check and probes repository, observe, and health sources only when their corresponding environment configuration is present. `PASS`, `FAIL`, `UNKNOWN`, and `UNAVAILABLE` are distinct; details and JSON output are documented in [LIVE-PREFLIGHT.md](LIVE-PREFLIGHT.md).
+
+For an integrated live-development UI, stop the standalone BFF and run `pnpm dev`; open <http://127.0.0.1:5173>. That command defaults to BFF port 8472 and UI port 5173 with a guarded Vite same-origin `/api` proxy. If either port is occupied, select unused loopback ports with `FKST_CONSOLE_PORT` and `FKST_CONSOLE_UI_PORT`; the proxy follows the chosen BFF automatically. Without upstream configuration, the UI must render disconnected/unavailable source facts honestly. `pnpm start` remains API-only and does not serve the built frontend.
+
+An authenticated read-only populated probe can use:
+
+```bash
+FKST_CONSOLE_PORT=18472 \
+FKST_CONSOLE_UI_PORT=15173 \
+FKST_SANDBOX_REPO=ChronoAIProject/fkst-packages \
+FKST_BOT_LOGIN=ElonSG \
+pnpm dev
+```
+
+Do not set `FKST_ENABLE_WRITES=1`. At the recorded July 22 checkpoint, the BFF and Vite proxy returned five open issues and one open PR, while Council, Runtime, and health remained explicitly unavailable. This is populated acquisition/proxy evidence; the recovery plan still requires a browser-DOM proof before calling the live UI demonstrated.
 
 ## Submission evidence still outside this repository
 

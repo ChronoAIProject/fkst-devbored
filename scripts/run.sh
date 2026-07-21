@@ -11,7 +11,7 @@ if ! command -v pnpm >/dev/null 2>&1; then
 fi
 
 usage() {
-  echo "usage: ./scripts/run.sh <install|demo|dev|build|typecheck|test|start|smoke|scrub> [args...]" >&2
+  echo "usage: ./scripts/run.sh <install|demo|dev|build|typecheck|test|start|preflight|smoke|scrub> [args...]" >&2
 }
 
 if [[ $# -lt 1 ]]; then
@@ -29,6 +29,9 @@ case "${COMMAND}" in
     ;;
   demo|dev|build|typecheck|test|start)
     exec pnpm run "${COMMAND}" "$@"
+    ;;
+  preflight)
+    exec pnpm --silent run preflight:live -- "$@"
     ;;
   smoke)
     exec pnpm run smoke:fixture "$@"
