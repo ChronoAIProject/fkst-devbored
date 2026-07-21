@@ -1,0 +1,22 @@
+{
+  // Reference mapping for the live server CLI. The two-hour cut does not load
+  // JSONC automatically; use the matching flags documented in README.md.
+  "$schema": "fkst.console.config.example.v1",
+  "server": {
+    "host": "127.0.0.1", // fixed by implementation; not configurable
+    "port": 8472
+  },
+  "github": {
+    "sandboxRepository": "OWNER/REPOSITORY",
+    "trustedBotLogin": "trusted-loop-agent",
+    "ghBinary": "gh",
+    "enableWrites": false
+  },
+  "substrate": {
+    "observeBinary": "/path/to/fkst-framework",
+    "durableRoot": "/path/to/fkst-durable-root"
+  },
+  "devloop": {
+    "healthScript": "/path/to/fkst-packages/scripts/run.sh"
+  }
+}

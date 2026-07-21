@@ -1,0 +1,95 @@
+#!/usr/bin/env node
+
+import { appendFileSync } from 'node:fs'
+
+const argv = process.argv.slice(2)
+const actor = process.env.GH_TRIPWIRE_ACTOR ?? 'human-tester'
+const auditPath = process.env.GH_TRIPWIRE_AUDIT
+
+function isMutation(args) {
+  if (args[0] === 'issue' && ['create', 'close', 'comment', 'delete', 'edit', 'reopen'].includes(args[1])) return true
+  if (args[0] === 'pr' && ['close', 'comment', 'edit', 'merge', 'ready', 'reopen', 'review'].includes(args[1])) return true
+  if (args[0] === 'release' && ['create', 'delete', 'edit', 'upload'].includes(args[1])) return true
+  if (args[0] === 'repo' && ['archive', 'create', 'delete', 'edit', 'fork', 'rename'].includes(args[1])) return true
+  if (args[0] !== 'api') return false
+  const methodIndex = args.findIndex((arg) => arg === '--method' || arg === '-X')
+  const method = methodIndex >= 0 ? args[methodIndex + 1]?.toUpperCase() : 'GET'
+  return ['DELETE', 'PATCH', 'POST', 'PUT'].includes(method)
+}
+
+function isBoundedRepositoryRead(args) {
+  if (
+    args.length !== 8
+    || args[0] !== 'api'
+    || args[1] !== 'graphql'
+    || args[2] !== '-f'
+    || !args[3]?.startsWith('query=')
+    || args[4] !== '-F'
+    || !/^owner=[A-Za-z0-9_.-]+$/.test(args[5] ?? '')
+    || args[6] !== '-F'
+    || !/^name=[A-Za-z0-9_.-]+$/.test(args[7] ?? '')
+  ) return false
+
+  const query = args[3].slice('query='.length)
+  return query.startsWith('query FkstConsoleProjection(')
+    && query.includes('issues(first: 100, states: OPEN')
+    && query.includes('pullRequests(first: 100, states: OPEN')
+    && query.includes('labels(first: 100) { pageInfo { hasNextPage }')
+    && query.includes('comments(first: 100)')
+    && (query.match(/first: 100/g) ?? []).length === 6
+    && (query.match(/pageInfo \{ hasNextPage \}/g) ?? []).length === 6
+    && query.includes('rateLimit { cost remaining resetAt }')
+    && !/\bmutation\b/i.test(query)
+}
+
+const record = {
+  argv,
+  mutation: isMutation(argv),
+  timestamp: new Date().toISOString(),
+}
+if (auditPath) appendFileSync(auditPath, `${JSON.stringify(record)}\n`, { encoding: 'utf8' })
+
+if (record.mutation) {
+  if (process.env.GH_TRIPWIRE_ALLOW_FAKE_MUTATION === '1' && argv[0] === 'issue' && argv[1] === 'create') {
+    const repoIndex = argv.indexOf('--repo')
+    const repo = repoIndex >= 0 ? argv[repoIndex + 1] : null
+    if (repo && /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo)) {
+      process.stdout.write(`https://github.com/${repo}/issues/123\n`)
+      process.exit(0)
+    }
+  }
+  process.stderr.write(`GH_TRIPWIRE_BLOCKED_MUTATION ${JSON.stringify(argv)}\n`)
+  process.exit(86)
+}
+
+if (argv[0] === '--version' || argv[0] === 'version') {
+  process.stdout.write('gh version 0.0.0-fkst-tripwire\n')
+  process.exit(0)
+}
+
+if (argv[0] === 'auth' && argv[1] === 'status') {
+  process.stdout.write(`Logged in to github.invalid account ${actor}\n`)
+  process.exit(0)
+}
+
+if (argv[0] === 'api' && (argv.includes('user') || argv.includes('/user'))) {
+  if (argv.includes('--jq') || argv.includes('-q')) process.stdout.write(`${actor}\n`)
+  else process.stdout.write(`${JSON.stringify({ login: actor })}\n`)
+  process.exit(0)
+}
+
+if (isBoundedRepositoryRead(argv)) {
+  process.stdout.write(`${JSON.stringify({
+    data: {
+      repository: {
+        issues: { pageInfo: { hasNextPage: false }, nodes: [] },
+        pullRequests: { pageInfo: { hasNextPage: false }, nodes: [] },
+      },
+      rateLimit: { cost: 1, remaining: 5_000, resetAt: '2026-07-22T05:30:00Z' },
+    },
+  })}\n`)
+  process.exit(0)
+}
+
+process.stderr.write(`GH_TRIPWIRE_UNSUPPORTED_READ ${JSON.stringify(argv)}\n`)
+process.exit(87)

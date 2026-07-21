@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "generated_at_ms": 1784686200000,
+  "source": {
+    "durable_root": "/recorded/demo/root",
+    "database": "/recorded/demo/root/delivery.redb",
+    "read_semantics": "offline read-only projection",
+    "history_semantics": "current snapshot only; acknowledged deliveries are absent"
+  },
+  "limits": {
+    "max_deliveries": 500,
+    "max_dead_letters": 500
+  },
+  "truncated": {
+    "deliveries": false,
+    "dead_letters": false
+  },
+  "queues": [
+    {
+      "queue": "devloop.review",
+      "depth": 1,
+      "pending": 0,
+      "in_flight": 1,
+      "retrying": 0,
+      "oldest_pending_age_ms": null,
+      "subscriber_status": "unknown"
+    }
+  ],
+  "deliveries": [
+    {
+      "delivery_id": "delivery-blackbox-001",
+      "queue": "devloop.review",
+      "dept": "review",
+      "source": {
+        "kind": "Cron"
+      },
+      "status": "in-flight",
+      "observed_at_ms": 1784686199000,
+      "not_before_ms": 1784686198000,
+      "attempt": 1,
+      "redrive_count": 0,
+      "lease_generation": 4,
+      "lease_until_ms": 1784686260000,
+      "fence_token": "delivery-blackbox-001#4",
+      "payload": {
+        "schema": "github-devloop.review.v1",
+        "dedup_key": "blackbox-review-001",
+        "digest": "blackbox-digest-001",
+        "bytes": 384
+      }
+    }
+  ],
+  "dead_letters": []
+}

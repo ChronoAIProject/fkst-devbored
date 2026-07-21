@@ -1,0 +1,16 @@
+{
+  "name": "fkst-console-blackbox",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec",
+    "test:fixture": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec fixture-ui.test.mjs live-disconnected.test.mjs",
+    "test:bff": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec bff-contract.test.mjs mutation-guards.test.mjs",
+    "test:topology": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec live-topology.test.mjs",
+    "test:security": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec mutation-guards.test.mjs static-security.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

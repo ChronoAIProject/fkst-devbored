@@ -1,0 +1,27 @@
+{
+  "name": "fkst-console",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local web console and deterministic fixture replay for the FKST development loop.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=22.6.0 <27",
+    "pnpm": "10.17.1"
+  },
+  "scripts": {
+    "install:locked": "pnpm install --frozen-lockfile",
+    "demo": "pnpm --filter ./app run demo --host 127.0.0.1 --port 4173 --strictPort",
+    "dev": "node scripts/dev.mjs",
+    "build": "pnpm --workspace-concurrency=1 --recursive --if-present run build",
+    "build:demo": "pnpm --filter ./app run build:demo",
+    "typecheck": "pnpm --workspace-concurrency=1 --recursive --if-present run typecheck",
+    "test": "pnpm --workspace-concurrency=1 --recursive --if-present run test",
+    "start": "node scripts/start-server.mjs",
+    "smoke": "pnpm run smoke:fixture",
+    "smoke:fixture": "node scripts/smoke-fixture.mjs",
+    "scrub": "node scripts/repo-scrub.mjs",
+    "check": "pnpm run typecheck && pnpm run test && pnpm run build && pnpm run smoke:fixture && pnpm run scrub"
+  }
+}

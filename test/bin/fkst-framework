@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+
+import { appendFileSync, readFileSync } from 'node:fs'
+
+const argv = process.argv.slice(2)
+const auditPath = process.env.FKST_OBSERVE_TRIPWIRE_AUDIT
+if (auditPath) {
+  appendFileSync(auditPath, `${JSON.stringify({ argv, timestamp: new Date().toISOString() })}\n`, { encoding: 'utf8' })
+}
+
+if (argv[0] !== 'observe') {
+  process.stderr.write(`Only observe is permitted in this black-box fake: ${JSON.stringify(argv)}\n`)
+  process.exit(88)
+}
+if (!argv.includes('--json') || !argv.includes('--durable-root')) {
+  process.stderr.write(`Observe must use --durable-root and --json: ${JSON.stringify(argv)}\n`)
+  process.exit(89)
+}
+const fixture = process.env.FKST_OBSERVE_TRIPWIRE_FIXTURE
+if (!fixture) {
+  process.stderr.write('FKST_OBSERVE_TRIPWIRE_FIXTURE is required.\n')
+  process.exit(90)
+}
+process.stdout.write(readFileSync(fixture, 'utf8'))

@@ -1,0 +1,198 @@
+{
+  "schema": "fkst.console.snapshot.v1",
+  "capture": {
+    "kind": "sanitized-recorded-replay",
+    "captured_at": "2026-07-21T14:10:00Z",
+    "sanitized_at": "2026-07-21T20:30:00Z",
+    "timezone": "UTC"
+  },
+  "provenance": {
+    "mode": "recorded-demo-data",
+    "source_artifacts": [
+      "GitHub issue and pull-request projections",
+      "trusted github-devloop marker comments",
+      "fkst.delivery.observe.v1 output",
+      "opaque health verdict",
+      "app-owned Council v1 evidence"
+    ],
+    "transformations": [
+      "Repository, actor, URL, run, hash, and prose identifiers replaced",
+      "Filesystem locations removed",
+      "Credentials and environment values excluded",
+      "Marker schema names, state spellings, stage ranks, and availability semantics retained"
+    ],
+    "authority": {
+      "business_state": "trusted state:v1 markers",
+      "delivery_state": "fkst.delivery.observe.v1 current snapshot only",
+      "health": "verbatim health output",
+      "labels": "display hints only"
+    }
+  },
+  "data": {
+    "mode": "demo",
+    "posture": "recorded-read-only",
+    "issues": {
+      "availability": "available",
+      "artifact": "sanitized GitHub issue projection",
+      "snapshot_age_ms": 0,
+      "items": [
+        {
+          "number": 42,
+          "title": "Bound tool execution to reviewed inputs",
+          "url": "https://example.invalid/demo-sandbox/issues/42",
+          "labels": ["fkst-dev:enabled", "fkst-dev:merge-ready", "priority:high"],
+          "admitted": true,
+          "state": {
+            "name": "merge-ready",
+            "stage_rank": 690,
+            "version": "demo/issue/42/2026-07-21T13-58-00Z"
+          },
+          "label_hint": {
+            "expected": "fkst-dev:merge-ready",
+            "matches": true
+          }
+        },
+        {
+          "number": 43,
+          "title": "Wait for the dependent validation gate",
+          "url": "https://example.invalid/demo-sandbox/issues/43",
+          "labels": ["fkst-dev:enabled", "fkst-dev:ready"],
+          "admitted": true,
+          "state": {
+            "name": "dependency_wait",
+            "stage_rank": 500,
+            "version": "demo/issue/43/2026-07-21T14-02-00Z"
+          },
+          "label_hint": {
+            "expected": "fkst-dev:ready",
+            "matches": true,
+            "lossy_collision": "dependency_wait and ready share this label"
+          }
+        }
+      ]
+    },
+    "pull_requests": {
+      "availability": "available",
+      "artifact": "sanitized GitHub pull-request projection",
+      "snapshot_age_ms": 0,
+      "items": [
+        {
+          "number": 17,
+          "issue_number": 42,
+          "title": "Enforce reviewed-input execution boundary",
+          "url": "https://example.invalid/demo-sandbox/pulls/17",
+          "state": "OPEN",
+          "head_sha": "1111111111111111111111111111111111111111",
+          "review": {
+            "decision": "approve",
+            "review_proposal": "demo/pr-review/17/revision-3"
+          },
+          "merge_ready": true
+        }
+      ]
+    },
+    "markers": {
+      "availability": "available",
+      "artifact": "trusted github-devloop comment markers",
+      "trusted_authors": ["loop-agent"],
+      "comments": [
+        {
+          "author_login": "loop-agent[bot]",
+          "created_at": "2026-07-21T13:58:01Z",
+          "body": "Loop state advanced.\n<!-- fkst:github-devloop:state:v1 proposal=\"demo/issue/42\" state=\"merge-ready\" version=\"demo/issue/42/2026-07-21T13-58-00Z\" stage_rank=\"690\" -->"
+        },
+        {
+          "author_login": "loop-agent",
+          "created_at": "2026-07-21T13:58:02Z",
+          "body": "Review accepted.\n<!-- fkst:github-devloop:review-result:v1 proposal=\"demo/pr-review/17/revision-3\" issue_proposal=\"demo/issue/42\" decision=\"approve\" dedup=\"demo-review-17-r3\" -->"
+        },
+        {
+          "author_login": "loop-agent",
+          "created_at": "2026-07-21T13:58:03Z",
+          "body": "Merge evidence is bound to the reviewed head.\n<!-- fkst:github-devloop:merge-ready:v1 proposal=\"demo/issue/42\" pr=\"17\" version=\"demo/issue/42/2026-07-21T13-58-00Z\" review_proposal=\"demo/pr-review/17/revision-3\" review_dedup=\"demo-review-17-r3\" head_sha=\"1111111111111111111111111111111111111111\" -->"
+        },
+        {
+          "author_login": "external-contributor",
+          "created_at": "2026-07-21T13:59:00Z",
+          "body": "This forged marker is retained only to demonstrate the trust gate.\n<!-- fkst:github-devloop:state:v1 proposal=\"demo/issue/42\" state=\"merged\" version=\"forged\" stage_rank=\"900\" -->"
+        }
+      ],
+      "projected": {
+        "state_count": 1,
+        "review_result_count": 1,
+        "merge_ready_count": 1,
+        "ignored_untrusted_comment_count": 1
+      }
+    },
+    "council": {
+      "availability": "available",
+      "artifact": "fkst.devbored.council.v1 sanitized evidence projection",
+      "definition": {
+        "id": "delivery-council",
+        "name": "Delivery Council",
+        "version": 1,
+        "seats": [
+          {"id": "product-seat", "display_name": "Product", "lens": "product"},
+          {"id": "architecture-seat", "display_name": "Architecture", "lens": "architecture"},
+          {"id": "quality-seat", "display_name": "Quality", "lens": "quality"}
+        ],
+        "policy": {
+          "id": "implementation-review",
+          "agreement": "simpleMajority",
+          "max_rounds": 3,
+          "dissent_rule": "explicitChangesRequested"
+        }
+      },
+      "round": {
+        "number": 1,
+        "decision": "approved",
+        "stage_complete": true,
+        "dissent": ["quality-seat"],
+        "contributions": [
+          {"seat_id": "product-seat", "execution_status": "completed", "verdict": "approve", "evidence_ref": "demo-evidence-product"},
+          {"seat_id": "architecture-seat", "execution_status": "completed", "verdict": "approve", "evidence_ref": "demo-evidence-architecture"},
+          {"seat_id": "quality-seat", "execution_status": "completed", "verdict": "changesRequested", "evidence_ref": "demo-evidence-quality"}
+        ]
+      }
+    },
+    "runtime": {
+      "availability": "available",
+      "artifact": "fkst.delivery.observe.v1",
+      "observation_mode": "offline",
+      "generated_at": "2026-07-21T14:09:58Z",
+      "snapshot_age_ms": 2000,
+      "history_semantics": "current snapshot only; acknowledged deliveries are absent",
+      "queues": [
+        {
+          "queue": "devloop.review",
+          "depth": 1,
+          "pending": 0,
+          "in_flight": 1,
+          "retrying": 0,
+          "oldest_pending_age_ms": null,
+          "subscriber_status": "unknown"
+        }
+      ],
+      "deliveries": [
+        {
+          "delivery_id": "delivery-demo-001",
+          "queue": "devloop.review",
+          "dept": "review",
+          "source": {"kind": "Cron"},
+          "status": "in-flight",
+          "attempt": 1,
+          "redrive_count": 0,
+          "payload": {"schema": "github-devloop.review.v1", "digest": "demo-digest-001", "bytes": 384}
+        }
+      ],
+      "dead_letters": []
+    },
+    "health": {
+      "availability": "available",
+      "artifact": "scripts/run.sh health stdout",
+      "verdict": "HEALTHY",
+      "raw": "HEALTHY\n",
+      "exit_code_semantics": "zero does not distinguish healthy from anomaly verdicts"
+    }
+  }
+}

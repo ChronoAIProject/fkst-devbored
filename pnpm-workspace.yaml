@@ -1,0 +1,7 @@
+packages:
+  - app
+  - server
+  - test
+
+onlyBuiltDependencies:
+  - esbuild

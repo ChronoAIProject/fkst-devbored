@@ -3,10 +3,12 @@ dist/
 .vite/
 .DS_Store
 *.log
+*.tsbuildinfo
 .env
 .env.*
 !.env.example
+console.config.jsonc
 coverage/
 playwright-report/
 test-results/
-
+.pnpm-store/
