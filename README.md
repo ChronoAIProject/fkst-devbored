@@ -91,8 +91,9 @@ week.
   FKST-agora and FKST-kanban, dissent preserved.
 - **Deliberately multi-session.** The workflow fans out many Codex sessions
   with frozen interfaces between them — that *is* the harness thesis, in the
-  spirit of Symphony. The submitted `/feedback` session ID accompanies the
-  hackathon entry.
+  spirit of Symphony. The full session roster, the primary `/feedback`
+  session ID, and the complete requirements checklist live in
+  [`docs/SUBMISSION.md`](docs/SUBMISSION.md).
 
 ## Where this is going
 
