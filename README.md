@@ -163,7 +163,7 @@ This repository's console code is Apache-2.0; see [LICENSE](LICENSE). That licen
 - no durable-root substrate observation was possible; and
 - the positive issue-creation path used only a fake local `gh`, not GitHub.
 
-The recorded local platform was macOS 26.5.2 arm64, Node.js 26.3.0, pnpm 10.17.1, and Chrome 150.0.7871.129. The package contract is Node.js 22.6–26. Ubuntu/Node 22 CI is defined but not claimed as passed until it runs successfully for this published branch. Firefox, Safari, Windows, and a clean container were not verified.
+The recorded local platform was macOS 26.5.2 arm64, Node.js 26.3.0, pnpm 10.17.1, and Chrome 150.0.7871.129. The package contract is Node.js 22.6–26. The published branch's [Ubuntu/Node 22 verification run](https://github.com/ChronoAIProject/fkst-devbored/actions/runs/29874160311) passed typecheck, all 82 tests, both builds, fixture smoke, and scrub. Firefox, Safari, Windows, and a clean container were not verified.
 
 ## Known limitations
 
@@ -175,7 +175,7 @@ The recorded local platform was macOS 26.5.2 arm64, Node.js 26.3.0, pnpm 10.17.1
 - Only `state:v1`, `review-result:v1`, and `merge-ready:v1` markers are parsed. Unknown schemas are ignored.
 - There is no topology panel, database, durable console cache, authoritative timeline, or engine control surface.
 - Runtime health is opaque text; delivery observation can be unavailable while GitHub business state exists.
-- No real guarded issue creation, Linux CI result, Firefox/Safari/Windows pass, clean-container setup, or public-host secret scanning has been evidenced.
+- No real guarded issue creation, Firefox/Safari/Windows pass, clean-container setup, or public-host secret scanning has been evidenced.
 - This two-hour demo candidate makes no production security, availability, or eligibility claim.
 
 ## External submission gates

@@ -28,6 +28,8 @@ The black-box total includes seven stitched live-topology cases covering the bro
 
 Both production and recorded-demo Vite builds transformed 42 modules. The fixture smoke built the demo, served it temporarily on `127.0.0.1:4174`, verified the snapshot schema, HTML mount, and persistent recorded-data disclosure, then stopped it. The final release-tree scrub examined 100 non-ignored files plus current branch history.
 
+The published candidate also passed the complete [Ubuntu/Node 22 GitHub Actions verification](https://github.com/ChronoAIProject/fkst-devbored/actions/runs/29874160311). The first published run exposed an undeclared test-runner assumption: two probes could find transitive `vite-node` on the local macOS installation but not on the Linux runner. Pinning the already-used `vite-node@2.1.8` as a direct development-only dependency corrected reproducibility without changing or weakening either probe; the complete local gate and the subsequent hosted workflow both passed.
+
 Independent read-only reviews reached `UX_FINAL_SOL=PASS` and `SECURITY_FINAL_SOL=PASS`. The security pass was issued only after malformed top-level GitHub entities and malformed/truncated frontend collections were changed to fail closed as partial, unknown, or null and covered by regressions.
 
 ## External-path reality checks
