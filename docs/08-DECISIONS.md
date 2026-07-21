@@ -364,6 +364,43 @@ The append-only v2 execution contract, package map, human-gate schema, and
 accelerated plan are the executable interpretation. Historical v1 contracts,
 R1/R2 dispatches, reviews, task states, and integrations are never rewritten.
 
+**ADR-035 — Bounded v1 rescope: the console v1 product cut runs on the
+promoted `packages/devbored` runtime under a provisional, pinned exception to
+ADR-031. ADR-031 itself is unchanged and remains authoritative for the
+full-app/v2 track.** *(owner receipt 2026-07-21 — PM-PLAN-V2-REFACTOR.md §0a;
+gate: HG-V1R, `docs/spec/V1-RESCOPE-GATE.md`)*
+
+The converged plan of record for this cut is `FKST/PM-PLAN-V2-REFACTOR.md`
+(Codex ACCEPT, 4 rounds). Scope of the exception:
+
+- **Authorized package change (bounded):** the §1a debate-evidence emission —
+  the consensus/review departments additionally emit trusted GitHub comments
+  carrying ordered per-seat verdicts and bounded arguments plus digests, bound
+  to proposal/round/roster/config_version/config_digest — landed on
+  `packages` branch `feat/devbored-loop-scaffold` as its own reviewed commit
+  under the ADR-030 additive bar. No other package edits are authorized.
+- **Pin acceptance criteria (HG-V1R.pin, serial, before S1b or any
+  live-runtime claim):** S1a package tests green including debate-evidence
+  contract conformance fixtures; fresh independent Opus review pass; PM
+  acceptance; then the exact commit hash is recorded here and in
+  `docs/spec/08-READINESS.md`'s v1 note. Until that record exists, the pin
+  does not exist.
+- **Dependency closure:** devbored's declared closure per its `fkst.toml`
+  (five libraries plus the `github-proxy` and `consensus` event packages),
+  referenced by pinned path, never vendored, never otherwise edited.
+- **Guaranteed:** a local, one-repo, file-configured, DRY-first deployment
+  with scripted lifecycle. **Not guaranteed:** reboot-surviving supervision,
+  immutable launch-snapshot receipts, multi-repo operation, or the
+  full-app/v2 containment tiers.
+- **Authority for v1 runtime config** is the deployed `devbored.config.v1`
+  file; the app-owned Workflow/Council contracts remain fixture/sandbox
+  authority only and are **non-authoritative for the v1 runtime** — that is
+  precisely why this is an exception and not a reversal of ADR-031.
+- **Sunset:** superseded when full-app/v2 delivers the thin app-owned loop
+  package (RDY-04); v1 evidence then becomes reference/fixture history.
+- **Ledger separation:** v1 work makes no claim against any RDY row; a
+  successful v1 run cannot turn any full-app/v2 row green.
+
 ---
 
 ## Open questions

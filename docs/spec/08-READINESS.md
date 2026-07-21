@@ -239,6 +239,17 @@ Step 0 closes only when one reviewable bundle contains:
 - Hot-reloading desired Workflow/Council files into an active run.
 - Treating local runtime files/logs/deliveries as durable work evidence.
 
+## V1 rescope note (2026-07-21, HG-V1R)
+
+A bounded console-v1 product cut is executing per `FKST/PM-PLAN-V2-REFACTOR.md`
+under ADR-035 and gate HG-V1R (`docs/spec/V1-RESCOPE-GATE.md`), using the
+promoted `packages/devbored` runtime as a provisional, pinned exception to
+ADR-031. This ledger, its tier, and its verdict continue to govern the
+full-app/v2 track unchanged. v1 work makes no claim against any row here, and
+per "How a row changes" below, a successful v1 run cannot turn any row green.
+The HG-V1R.pin record (exact `packages` commit) will be appended to this note
+when the pin gate closes.
+
 ## How a row changes
 
 Every status change must cite the exact command/test artifact and dependency
