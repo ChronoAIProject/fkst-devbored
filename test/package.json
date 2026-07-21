@@ -8,6 +8,7 @@
     "test:fixture": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec fixture-ui.test.mjs live-disconnected.test.mjs",
     "test:bff": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec bff-contract.test.mjs mutation-guards.test.mjs",
     "test:topology": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec live-topology.test.mjs",
+    "test:dev-startup": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec dev-startup.test.mjs",
     "test:security": "node --experimental-strip-types --test --test-concurrency=1 --test-reporter=spec mutation-guards.test.mjs static-security.test.mjs"
   },
   "engines": {
