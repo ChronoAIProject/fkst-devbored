@@ -1,8 +1,10 @@
-# FKST Console
+# FKST Console — recorded UI prototype
+
+> **Honest scope:** `http://127.0.0.1:4173` is an interactive viewer for committed, sanitized fixture data. It starts no BFF and makes no connection to GitHub, Council, `fkst-substrate`, or the public devloop. It is not evidence of a live integrated application. The repository contains separately tested live-development BFF and adapter paths, but no end-to-end run with populated GitHub data, live Council evidence, and a deployed substrate durable root has been demonstrated.
 
 ## Current runnable state
 
-The runnable deliverable is a local React/Vite/TypeScript web console with a loopback Node/TypeScript BFF and a deterministic, read-only fixture replay. The repository's default `main` branch is an unrelated pre-existing static project, so clone the candidate branch explicitly. The fixture demo needs Node.js 22.6–26 and pnpm 10.17.1, but no GitHub account, credentials, BFF, `fkst-substrate`, devloop checkout, or engine deployment:
+The currently demonstrable artifact is a React/Vite/TypeScript fixture viewer. The repository also contains a loopback Node/TypeScript BFF and optional local adapters, but those are not used by `pnpm demo`. The repository's default `main` branch is an unrelated pre-existing static project, so clone the candidate branch explicitly. The fixture viewer needs Node.js 22.6–26 and pnpm 10.17.1, but no GitHub account, credentials, BFF, `fkst-substrate`, devloop checkout, or engine deployment:
 
 ```bash
 git clone --single-branch --branch codex/build-week-mvp https://github.com/ChronoAIProject/fkst-devbored.git
@@ -12,11 +14,12 @@ pnpm install --frozen-lockfile
 pnpm demo
 ```
 
-Open <http://127.0.0.1:4173>. This is the current reproducible local path; there is no hosted demo. The frozen candidate source is published on the isolated [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp) branch. That branch does not replace the repository's unrelated `main` history.
+Open <http://127.0.0.1:4173>. This is the reproducible recorded-UI path, not a live integration; there is no hosted demo. The candidate source is published on the isolated [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp) branch. That branch does not replace the repository's unrelated `main` history.
 
 | Area | Exact status | Evidence boundary |
 |---|---|---|
-| Fixture application | **Implemented · fixture-only · locally and CI verified** | `pnpm demo` renders 2 issues, 1 PR, 3 Council seats with a 2/3 decision and dissent, 1 queue, 1 in-flight delivery, 0 dead letters, and recorded health output. The persistent **Recorded demo data** banner and `example.invalid` links prevent live-status confusion. |
+| Recorded UI prototype | **Implemented · fixture-only · locally and CI verified** | `pnpm demo` renders 2 issues, 1 PR, 3 Council seats with a 2/3 decision and dissent, 1 queue, 1 in-flight delivery, 0 dead letters, and recorded health output. The persistent **Recorded demo data** banner and `example.invalid` links prevent live-status confusion. It calls no BFF or external service. |
+| Integrated live application | **Not demonstrated end to end** | `pnpm dev` can start the separately tested Vite/BFF topology, but it needs explicit external configuration. Populated live GitHub acquisition was not observed, live Council acquisition is absent, no deployed substrate durable root was available, and no real write was performed. |
 | **Workflow** | **Implemented · fixture-populated · live read tested · contract-tested** | The populated issue/PR projection is a fixture. An authenticated, read-only GitHub acquisition was live-tested and truthfully returned zero current open issues and PRs. Populated live projection is covered by synthetic contracts, not a claimed live run. |
 | **Council** | **Implemented · fixture-only · contract-tested** | The UI renders seats, outcomes, round, agreement, and recorded dissent from fixture evidence. Live Council acquisition is not implemented and reports unavailable. |
 | **Runtime** | **Implemented · fixture-populated · contract-tested** | The adapter and UI are tested with fake/local contract data. A real binary was found, but no deployed durable root existed; no real substrate ledger observation is claimed. |

@@ -2,7 +2,7 @@
 
 Checkpoint: 2026-07-22, before the 07:00 SGT implementation hard stop.
 
-This is evidence for the local two-hour demo candidate published on the isolated [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp) branch. It is not evidence that the project has been deployed, entered on Devpost, or accepted as an eligible submission. The repository's unrelated `main` history was not replaced.
+This is evidence for the local two-hour recorded UI candidate published on the isolated [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp) branch. Port 4173 is a fixture viewer with no BFF or external connections. This record proves separately tested code paths, not a populated live end-to-end integration, deployment, Devpost entry, or eligible submission. The repository's unrelated `main` history was not replaced.
 
 ## Reproducible local gates
 
