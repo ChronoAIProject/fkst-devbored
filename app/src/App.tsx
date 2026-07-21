@@ -60,7 +60,7 @@ export default function App() {
       onNavigate={navigate}
       onNewWork={() => setNewWorkOpen(true)}
     >
-      {view === 'overview' && <Overview snapshot={snapshot} transport={snapshotState.transport} error={snapshotState.error} nowMs={snapshotState.nowMs} onRetry={snapshotState.refresh} />}
+      {view === 'overview' && <Overview snapshot={snapshot} mode={snapshotState.mode} posture={posture} transport={snapshotState.transport} error={snapshotState.error} nowMs={snapshotState.nowMs} onRetry={snapshotState.refresh} />}
       {view === 'council' && <Council snapshot={snapshot} transport={snapshotState.transport} error={snapshotState.error} nowMs={snapshotState.nowMs} onRetry={snapshotState.refresh} />}
       {view === 'runtime' && <Runtime snapshot={snapshot} transport={snapshotState.transport} error={snapshotState.error} nowMs={snapshotState.nowMs} onRetry={snapshotState.refresh} />}
       {newWorkOpen && <NewWorkModal mode={snapshotState.mode} posture={posture} onClose={() => setNewWorkOpen(false)} />}

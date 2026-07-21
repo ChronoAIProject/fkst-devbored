@@ -34,7 +34,7 @@ Root scripts own package orchestration, fixture smoke, and repository scrub. The
 | Merge readiness | Trusted `merge-ready:v1` marker bound to a valid head SHA | Evidence only; the console never merges. |
 | Delivery snapshot | `fkst-framework observe --durable-root … --json` | Current delivery/lease facts; never business progress or full history. |
 | Health | First line of public devloop `scripts/run.sh health` | Verbatim opaque text; exit zero is not interpreted as healthy. |
-| Council | App-owned recorded/projected evidence | Displays roster, decision, round, and dissent with provenance. |
+| Council | App-owned recorded/projected evidence | Displays roster, decision, round, and dissent with provenance. The populated projection is fixture-only in this cut. |
 | Fixture values | `demo/fixtures/snapshot.v1.json` | Persistent recorded-data banner and read-only posture. |
 
 ## Live degradation

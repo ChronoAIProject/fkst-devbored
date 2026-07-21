@@ -20,10 +20,10 @@ interface ChromeProps {
   children: ReactNode
 }
 
-const NAV_ITEMS: readonly { id: ViewName; label: string; icon: typeof BoardIcon }[] = [
-  { id: 'overview', label: 'Overview', icon: BoardIcon },
-  { id: 'council', label: 'Council', icon: CouncilIcon },
-  { id: 'runtime', label: 'Runtime', icon: RuntimeIcon },
+const NAV_ITEMS: readonly { id: ViewName; label: string; role: string; step: string; icon: typeof BoardIcon }[] = [
+  { id: 'overview', label: 'Workflow', role: 'Primary mechanism', step: '01', icon: BoardIcon },
+  { id: 'council', label: 'Council', role: 'Decision evidence', step: '02', icon: CouncilIcon },
+  { id: 'runtime', label: 'Runtime', role: 'Delivery evidence', step: '03', icon: RuntimeIcon },
 ]
 
 export function Chrome({ view, mode, transport, posture, ageMs, stale, onNavigate, onNewWork, children }: ChromeProps) {
@@ -39,14 +39,32 @@ export function Chrome({ view, mode, transport, posture, ageMs, stale, onNavigat
       )}
       <div className="topbar">
         <div className="topbar__inner">
-          <button className="wordmark" type="button" aria-label="FKST overview" onClick={() => onNavigate('overview')}>
-            F<span className="wordmark__k">K<i aria-hidden="true" /></span>ST
-          </button>
-          <nav className="primary-nav" aria-label="Primary navigation">
-            {NAV_ITEMS.map((item) => {
-              const Icon = item.icon
-              return <button type="button" className={view === item.id ? 'primary-nav__item primary-nav__item--active' : 'primary-nav__item'} aria-current={view === item.id ? 'page' : undefined} onClick={() => onNavigate(item.id)} key={item.id}><Icon />{item.label}</button>
-            })}
+          <div className="brand-lockup">
+            <button className="wordmark" type="button" aria-label="Open FKST Workflow" onClick={() => onNavigate('overview')}>
+              F<span className="wordmark__k">K<i aria-hidden="true" /></span>ST
+            </button>
+            <span className="brand-lockup__context"><strong>Development loop</strong><small>Observation console</small></span>
+          </div>
+          <nav className="primary-nav" aria-label="Development loop evidence path">
+            <ol>
+              {NAV_ITEMS.map((item) => {
+                const Icon = item.icon
+                return (
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      className={view === item.id ? 'primary-nav__item primary-nav__item--active' : 'primary-nav__item'}
+                      aria-current={view === item.id ? 'page' : undefined}
+                      aria-label={`${item.label}: ${item.role}`}
+                      onClick={() => onNavigate(item.id)}
+                    >
+                      <Icon />
+                      <span className="primary-nav__copy"><span><b>{item.step}</b>{item.label}</span><small>{item.role}</small></span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ol>
           </nav>
           <div className="topbar__status">
             <span

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { effectiveAgeMs, sortIssuesByRank } from '../lib/snapshot'
 import { formatAge, safeExternalUrl, shortSha } from '../lib/format'
-import type { SnapshotV1, IssueSnapshot, WorkStage, PullRequestLane } from '../types/snapshot'
+import type { SnapshotV1, IssueSnapshot, WorkStage, PullRequestLane, SnapshotMode, WritePosture } from '../types/snapshot'
 import type { TransportState } from '../hooks/useSnapshot'
 import { IssueIcon, PullRequestIcon, ExternalIcon } from '../components/Icons'
 import { IssueModal } from '../components/IssueModal'
@@ -11,6 +11,8 @@ import { StatusSurface } from '../components/StatusSurface'
 
 interface OverviewProps {
   snapshot: SnapshotV1 | null
+  mode: SnapshotMode
+  posture: WritePosture
   transport: TransportState
   error: string | null
   nowMs: number
@@ -56,7 +58,7 @@ function disconnectedSurface(error: string | null, onRetry: () => void) {
   return <StatusSurface kind="disconnected" title="Source disconnected" detail={error ?? 'No validated snapshot is available. Counts and states remain unknown.'} onRetry={onRetry} />
 }
 
-export function Overview({ snapshot, transport, error, nowMs, onRetry }: OverviewProps) {
+export function Overview({ snapshot, mode, posture, transport, error, nowMs, onRetry }: OverviewProps) {
   const [selectedIssue, setSelectedIssue] = useState<IssueSnapshot | null>(null)
   const sortedIssues = useMemo(() => snapshot?.issues ? sortIssuesByRank(snapshot.issues) : null, [snapshot])
   const githubAge = snapshot ? effectiveAgeMs(snapshot.githubSource, snapshot, nowMs) : null
@@ -65,13 +67,19 @@ export function Overview({ snapshot, transport, error, nowMs, onRetry }: Overvie
     <div className="page page--overview">
       <header className="page-intro">
         <div>
-          <span className="eyebrow">Workflow projection</span>
-          <h1>The loop, from decision to delivery</h1>
-          <p>Current GitHub business state and pull requests, reduced from trusted evidence. Poll-derived, never a control plane.</p>
+          <span className="eyebrow">Primary mechanism · Workflow</span>
+          <h1>Observe the development loop</h1>
+          <p>Follow trusted GitHub work state through Council decisions and into Runtime delivery evidence. This console observes the loop; it does not control it.</p>
+          <ol className="loop-explainer" aria-label="How the observed development loop fits together">
+            <li className="loop-explainer__item loop-explainer__item--primary"><span>01</span><div><strong>Workflow</strong><small>Business state</small></div></li>
+            <li className="loop-explainer__item"><span>02</span><div><strong>Council</strong><small>Decision evidence</small></div></li>
+            <li className="loop-explainer__item"><span>03</span><div><strong>Runtime</strong><small>Delivery evidence</small></div></li>
+          </ol>
         </div>
         <div className="page-intro__facts" aria-label="Snapshot context">
-          <span><b>Issues</b> {snapshot?.issues === null || !snapshot ? 'unknown' : snapshot.issues.length}</span>
-          <span><b>PRs</b> {snapshot?.pullRequests === null || !snapshot ? 'unknown' : snapshot.pullRequests.length}</span>
+          <span><b>Data</b> {mode === 'fixture' ? 'Recorded fixture' : 'Live local'}</span>
+          <span><b>Writes</b> {posture.label}</span>
+          <span><b>Work</b> {snapshot?.issues === null || !snapshot ? 'unknown' : `${snapshot.issues.length} issues`} · {snapshot?.pullRequests === null || !snapshot ? 'unknown' : `${snapshot.pullRequests.length} PRs`}</span>
           <span><b>As of</b> {formatAge(githubAge)}</span>
         </div>
       </header>

@@ -10,8 +10,26 @@ interface ModalShellProps {
   width?: 'default' | 'wide'
 }
 
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',')
+
+function visibleFocusableElements(dialog: HTMLDialogElement): HTMLElement[] {
+  return Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+    .filter((element) => element.getClientRects().length > 0)
+}
+
 export function ModalShell({ title, label, children, onClose, width = 'default' }: ModalShellProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
+  // Capture during render, before the dialog commit can honor a descendant's autoFocus.
+  const restoreFocusRef = useRef<HTMLElement | null>(
+    document.activeElement instanceof HTMLElement ? document.activeElement : null,
+  )
 
   useEffect(() => {
     const dialog = dialogRef.current
@@ -19,6 +37,10 @@ export function ModalShell({ title, label, children, onClose, width = 'default' 
     if (!dialog.open) dialog.showModal()
     return () => {
       if (dialog.open) dialog.close()
+      const restoreTarget = restoreFocusRef.current
+      window.queueMicrotask(() => {
+        if (restoreTarget?.isConnected) restoreTarget.focus({ preventScroll: true })
+      })
     }
   }, [])
 
@@ -33,6 +55,20 @@ export function ModalShell({ title, label, children, onClose, width = 'default' 
       }}
       onClick={(event) => {
         if (event.currentTarget === event.target) onClose()
+      }}
+      onKeyDown={(event) => {
+        if (event.key !== 'Tab') return
+        const focusable = visibleFocusableElements(event.currentTarget)
+        const first = focusable.at(0)
+        const last = focusable.at(-1)
+        if (!first || !last) return
+        if (event.shiftKey && (document.activeElement === first || !event.currentTarget.contains(document.activeElement))) {
+          event.preventDefault()
+          last.focus()
+        } else if (!event.shiftKey && (document.activeElement === last || !event.currentTarget.contains(document.activeElement))) {
+          event.preventDefault()
+          first.focus()
+        }
       }}
     >
       <div className="modal__sheet">

@@ -43,7 +43,7 @@ No flag disables an individual guard. Demo and write mode are mutually exclusive
 
 ## Fixture and test containment
 
-Fixture URLs use `example.invalid`, identities are replacements, local paths and credentials are excluded, and fixture posture is read-only. Black-box tests use repository-local fake executables. The repository scrub is read-only and scans tracked/untracked non-ignored text plus committed patch history for likely credentials; current files also receive developer-home-path and known-identity checks.
+Fixture URLs use `example.invalid`, identities are replacements, local paths and credentials are excluded, and fixture posture is read-only. Black-box tests use repository-local fake executables. The repository scrub is read-only and scans tracked/untracked non-ignored text plus patch history reachable from `HEAD` for likely credentials; current files also receive developer-home-path and known-identity checks. Unrelated remote branches are outside this release-tree gate.
 
 ## Before any real sandbox write
 

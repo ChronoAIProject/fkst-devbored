@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 
 import { describe, expect, it } from 'vitest'
 
+import { resolveNewWorkAvailability } from './presentation'
 import { parseSnapshotV1 } from './snapshot'
 
 function parseLive(data: Record<string, unknown>) {
@@ -81,6 +82,23 @@ describe('parseSnapshotV1', () => {
     expect(result.snapshot?.githubSource).toMatchObject({
       availability: 'available',
       partial: true,
+    })
+  })
+
+  it('normalizes an explicit live read-only posture into disabled write capabilities', () => {
+    const result = parseLive({ posture: 'read-only' })
+
+    expect(result.ok).toBe(true)
+    expect(result.snapshot?.posture).toMatchObject({
+      label: 'READ-ONLY',
+      writesEnabled: false,
+      issueCreationEnabled: false,
+    })
+    expect(resolveNewWorkAvailability('live', result.snapshot!.posture)).toEqual({
+      state: 'unavailable',
+      allowed: false,
+      headline: 'Unavailable for this launch',
+      reason: 'The validated deployment posture explicitly disables issue creation.',
     })
   })
 

@@ -670,9 +670,12 @@ function parseRuntime(
 function parsePosture(value: unknown, root: UnknownRecord, mode: SnapshotMode): WritePosture {
   const posture = isRecord(value) ? value : null
   const postureString = typeof value === 'string' ? value : null
-  const writesEnabled = booleanAt(posture, ['writes_enabled', 'writesEnabled', 'enable_writes'])
-  const issueCreationEnabled = booleanAt(posture, ['issue_creation_enabled', 'issueCreationEnabled', 'can_create_issue'])
   const explicitLabel = stringAt(posture, ['label', 'mode', 'posture']) ?? postureString
+  const explicitlyReadOnly = explicitLabel?.trim().toLowerCase() === 'read-only'
+  const declaredWritesEnabled = booleanAt(posture, ['writes_enabled', 'writesEnabled', 'enable_writes'])
+  const declaredIssueCreationEnabled = booleanAt(posture, ['issue_creation_enabled', 'issueCreationEnabled', 'can_create_issue'])
+  const writesEnabled = explicitlyReadOnly ? false : declaredWritesEnabled
+  const issueCreationEnabled = explicitlyReadOnly ? false : declaredIssueCreationEnabled
   const label = mode === 'fixture'
     ? 'READ-ONLY'
     : explicitLabel ?? (writesEnabled === true ? 'LIVE' : writesEnabled === false ? 'DRY-RUN' : 'READ-ONLY')

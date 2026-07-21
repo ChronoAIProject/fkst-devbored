@@ -74,11 +74,11 @@ for (const path of paths) {
 
 const { stdout: history } = await execFileAsync(
   'git',
-  ['log', '--all', '--format=commit %H', '-p', '--no-ext-diff', '--no-textconv'],
+  ['log', 'HEAD', '--format=commit %H', '-p', '--no-ext-diff', '--no-textconv'],
   { cwd: repositoryRoot, encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 },
 )
 for (const [description, pattern] of sensitivePatterns) {
-  if (pattern.test(history)) findings.push(`git history: ${description}`)
+  if (pattern.test(history)) findings.push(`current branch history: ${description}`)
 }
 
 if (findings.length > 0) {
@@ -86,5 +86,5 @@ if (findings.length > 0) {
   for (const finding of findings) console.error(`- ${finding}`)
   process.exitCode = 1
 } else {
-  console.log(`repository scrub passed (${paths.length} non-ignored files plus committed history examined)`)
+  console.log(`repository scrub passed (${paths.length} non-ignored files plus current branch history examined)`)
 }

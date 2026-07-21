@@ -2,7 +2,7 @@
 
 Checkpoint: 2026-07-22, before the 07:00 SGT implementation hard stop.
 
-This is evidence for the local two-hour demo candidate on `codex/build-week-mvp`. It is not evidence that the project has been published, deployed, entered on Devpost, or accepted as an eligible submission.
+This is evidence for the local two-hour demo candidate published on the isolated [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp) branch. It is not evidence that the project has been deployed, entered on Devpost, or accepted as an eligible submission. The repository's unrelated `main` history was not replaced.
 
 ## Reproducible local gates
 
@@ -19,14 +19,14 @@ git diff --check
 
 Test totals at this checkpoint:
 
-- React app: 12/12 across four files;
+- React app: 13/13 across four files;
 - loopback BFF: 36/36;
-- black-box/integration: 30/30 across ten suites; and
-- aggregate: 78/78.
+- black-box/integration: 33/33 across 12 suites; and
+- aggregate: 82/82.
 
-The black-box total includes seven stitched live-topology cases covering the browser-origin session and issue endpoints, one bounded synthetic GitHub GraphQL read, foreign-Origin rejection before proxy rewrite, session-token enforcement, the fake guarded issue receipt, UI receipt parsing, and rejection of a non-loopback BFF target.
+The black-box total includes seven stitched live-topology cases covering the browser-origin session and issue endpoints, one bounded synthetic GitHub GraphQL read, foreign-Origin rejection before proxy rewrite, session-token enforcement, the fake guarded issue receipt, UI receipt parsing, and rejection of a non-loopback BFF target. It also includes explicit propagation of the BFF's default read-only posture into disabled New Work availability, plus two browser-lifecycle cases: a synthetic hung subprocess proves bounded exact process-group reaping, while a real complete document proves preserved network telemetry and exact profile cleanup.
 
-Both production and recorded-demo Vite builds transformed 42 modules. The fixture smoke built the demo, served it temporarily on `127.0.0.1:4174`, verified the snapshot schema, HTML mount, and persistent recorded-data disclosure, then stopped it. The repository scrub examined 96 non-ignored files plus committed history.
+Both production and recorded-demo Vite builds transformed 42 modules. The fixture smoke built the demo, served it temporarily on `127.0.0.1:4174`, verified the snapshot schema, HTML mount, and persistent recorded-data disclosure, then stopped it. The final release-tree scrub examined 100 non-ignored files plus current branch history.
 
 Independent read-only reviews reached `UX_FINAL_SOL=PASS` and `SECURITY_FINAL_SOL=PASS`. The security pass was issued only after malformed top-level GitHub entities and malformed/truncated frontend collections were changed to fail closed as partial, unknown, or null and covered by regressions.
 
@@ -42,7 +42,6 @@ The only positive mutation-path evidence uses a repository-local fake `gh` execu
 
 The following are required release/submission work, not completed local-code gates:
 
-- a public repository URL, or a private repository shared with both judging addresses;
 - a working judge-accessible demo, sandbox, or test build;
 - a public YouTube demo under three minutes with audio explaining both Codex and GPT-5.6 use;
 - the primary Codex `/feedback` Session ID for the thread containing most core implementation;

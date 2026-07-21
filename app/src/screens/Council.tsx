@@ -30,9 +30,9 @@ export function Council({ snapshot, transport, error, nowMs, onRetry }: CouncilP
     <div className="page page--council">
       <header className="page-intro">
         <div>
-          <span className="eyebrow">Council · read only</span>
-          <h1>Who earns a seat in the decision</h1>
-          <p>Independent lenses deliberate in isolated context. This view reads admitted decisions; it cannot edit rosters, prompts, or flows.</p>
+          <span className="eyebrow">Workflow evidence · Council</span>
+          <h1>Why work advances</h1>
+          <p>Council is the decision evidence inside Workflow: independent lenses deliberate in isolated context, then admitted outcomes explain why work moves. This view cannot edit rosters, prompts, or flows.</p>
         </div>
         <div className="page-intro__facts">
           <span><b>Seated</b> {activeSeats === null ? 'unknown' : activeSeats.length}</span>

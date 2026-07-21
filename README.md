@@ -1,12 +1,8 @@
 # FKST Console
 
-FKST Console is a local web console for observing an FKST GitHub-native development loop. It presents Workflow state, pull-request evidence, Council decisions, and the substrate delivery snapshot without becoming a second source of truth. The repository also includes a deterministic, read-only fixture replay that requires no GitHub account, credentials, `fkst-substrate`, or devloop checkout.
+## Current runnable state
 
-This is the time-boxed OpenAI Build Week web demo candidate. It is a React/Vite/TypeScript frontend plus a loopback Node/TypeScript BFF—not Flutter, Dart, Electron, Tauri, a hosted control plane, or a production-complete FKST application.
-
-## Five-minute fixture judge path
-
-Prerequisites: Node.js 22.6–26 and pnpm 10.17.1. No GitHub or FKST credentials are needed.
+The runnable deliverable is a local React/Vite/TypeScript web console with a loopback Node/TypeScript BFF and a deterministic, read-only fixture replay. From a clean checkout, the fixture demo needs Node.js 22.6–26 and pnpm 10.17.1, but no GitHub account, credentials, BFF, `fkst-substrate`, devloop checkout, or engine deployment:
 
 ```bash
 corepack enable
@@ -14,110 +10,99 @@ pnpm install --frozen-lockfile
 pnpm demo
 ```
 
-Open <http://127.0.0.1:4173>. The page must retain a visible **Recorded demo data** disclosure. The fixture is committed at `demo/fixtures/snapshot.v1.json`, is copied into the Vite public output, and uses invalid example URLs so no demo interaction can mutate a real repository.
+Open <http://127.0.0.1:4173>. This is the current reproducible local path; there is no hosted demo. The frozen candidate source is published on the isolated [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp) branch. That branch does not replace the repository's unrelated `main` history.
 
-Suggested five-minute review:
+| Area | Exact status | Evidence boundary |
+|---|---|---|
+| Fixture application | **Implemented · fixture-only · locally verified** | `pnpm demo` renders committed sanitized data with a persistent **Recorded demo data** banner; `pnpm smoke:fixture` passes at the current checkpoint. |
+| **Workflow** | **Implemented · fixture-populated · live read tested · contract-tested** | The populated issue/PR projection is a fixture. An authenticated, read-only GitHub acquisition was live-tested and truthfully returned zero current open issues and PRs. Populated live projection is covered by synthetic contracts, not a claimed live run. |
+| **Council** | **Implemented · fixture-only · contract-tested** | The UI renders seats, outcomes, round, agreement, and recorded dissent from fixture evidence. Live Council acquisition is not implemented and reports unavailable. |
+| **Runtime** | **Implemented · fixture-populated · contract-tested** | The adapter and UI are tested with fake/local contract data. A real binary was found, but no deployed durable root existed; no real substrate ledger observation is claimed. |
+| Local BFF and SSE | **Implemented · contract-tested** | Loopback API, same-origin development proxy, snapshot/session/health routes, SSE, degradation, and denial paths are tested. `pnpm start` is API-only; it does not serve the frontend. |
+| **New work** | **Implemented · fake-write contract-tested · no real mutation** | The sole positive write test uses a repository-local fake `gh`. Fixture and default live startup are read-only, and no real GitHub issue was created during implementation or verification. |
+| Publication and eligibility | **Candidate source published · remaining gates not verified** | The public candidate branch is supplied. No hosted demo, public video, Devpost entry, `/feedback` Session ID, or personal eligibility evidence is present. |
 
-1. Confirm the recorded-data banner and read-only posture before looking at any counts.
-2. Inspect Workflow and the PR lane, including the `state:v1`, `review-result:v1`, and head-bound `merge-ready:v1` evidence.
-3. Open an item and inspect its marker-derived detail and source/age footer.
-4. Inspect Council seats and the recorded decision, including disclosed dissent.
-5. Inspect Runtime. Queue/DLQ values are explicitly delivery-ledger facts; offline subscriber state is `unknown`, and the UI does not claim a historical timeline.
+This is an OpenAI Build Week demo candidate, not a production-complete FKST application, hosted control plane, Flutter/Dart app, Electron app, or Tauri app. Commit `9743cfe633b3415278a33fe1b3d02b7ac133a391` is the accepted implementation baseline; this branch carries the bounded quality pass over that baseline.
 
-For a deterministic build-and-probe instead of the interactive development server:
+## What the product does
 
-```bash
-pnpm smoke:fixture
-```
+FKST Console observes a GitHub-native development loop without becoming another source of truth. It brings three kinds of evidence into one disposable projection:
 
-That command builds fixture mode, starts a loopback-only preview on port 4174, checks the fixture schema and HTML shell, verifies the built UI contains its recorded-data disclosure, then stops the preview. It does not contact GitHub or substrate.
+- Workflow business state and pull-request gates from trusted GitHub comment markers;
+- Council decision evidence showing which independent lenses participated and what they concluded; and
+- Runtime delivery evidence from the substrate ledger plus opaque devloop health output.
 
-The longer step-by-step checklist is in [docs/JUDGE-RUNBOOK.md](docs/JUDGE-RUNBOOK.md), and the settled local release evidence is recorded in [docs/VERIFICATION.md](docs/VERIFICATION.md).
+There is no console database and no engine control plane. Unreachable evidence stays `unknown` or `unavailable`; it is never turned into a reassuring zero.
 
-## Submission links
+## Application structure
 
-These are deliberately explicit placeholders. They are not evidence of a completed submission.
+The top navigation names are **Workflow**, **Council**, and **Runtime**.
 
-| Artifact | Status |
-|---|---|
-| Public source repository | **PLACEHOLDER — repository URL has not been supplied** |
-| Hosted read-only fixture demo | **PLACEHOLDER — hosted URL has not been published** |
-| Public YouTube video (<3 minutes) | **PLACEHOLDER — video URL has not been supplied** |
-| Devpost submission | **PLACEHOLDER — submission URL has not been supplied** |
-| Primary Codex `/feedback` Session ID | **PLACEHOLDER — successful upload evidence must be captured before submission** |
+### Workflow — the primary mechanism
 
-The local fixture path above is the currently documented judge path. Do not replace a placeholder until the linked artifact is public and verified.
+Workflow is the main product surface. Its issue lanes project current work through Design, Build, Review, Ship, Complete, and Attention. Its PR lane projects Open, In review, At gate, Held, and Merged evidence. Trusted `state:v1` markers decide business state; labels are displayed only as lossy hints. The same view carries accepted `review-result:v1` and head-bound `merge-ready:v1` evidence, but exposes no approve, merge, close, retry, or engine controls.
 
-## Commands
+Opening an issue shows its current marker-derived evidence, Council summary when present, merge-gate facts, authority, and source age. The UI does not present polling deltas as an authoritative historical timeline.
 
-All root commands delegate to package-owned scripts. Verification runs serially so failures and logs are reproducible.
+### Council — decision evidence
+
+Council is a read-only evidence view, not a persona or prompt editor. In the recorded fixture it shows three independent seats, their verdicts, an admitted round-one decision, a 2/3 agreement result, and the explicitly recorded dissent. The decision ledger is a current projection and may miss decisions between polls. In local live mode, Council remains unavailable because no live Council acquisition adapter exists in this cut.
+
+### Runtime — delivery evidence
+
+Runtime shows the current `fkst.delivery.observe.v1` delivery projection: queue depth, dead letters, subscriber state, and current delivery rows. Those are engine-delivery facts, not Workflow progress. Acknowledged rows can disappear between polls, and at-least-once delivery can repeat IDs. The devloop health line is shown verbatim; exit code zero is not reinterpreted as proof of `HEALTHY`. The screen cannot retry, requeue, resume, edit topology, open the ledger, or control the engine.
+
+The detailed authority and degradation model is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## 60-second fixture demo
+
+After running `pnpm demo`, use this path:
+
+1. **0–10 seconds — disclosure:** confirm **Recorded demo data** and **READ-ONLY** at the top. The fixture uses `example.invalid` links, so its interactions cannot target a real repository.
+2. **10–30 seconds — Workflow:** scan the issue lanes and PR evidence lane. Note that `state:v1` determines stage while labels are hints.
+3. **30–40 seconds — work detail:** open issue #42 and inspect the trusted evidence sequence and head-bound merge gate. Close the dialog.
+4. **40–50 seconds — Council:** open **Council** and show the three seat verdicts plus the recorded 2/3 decision and dissent.
+5. **50–60 seconds — Runtime:** open **Runtime** and identify queue/DLQ/subscriber values as a recorded delivery-ledger snapshot, not business progress or history.
+
+The longer operator checklist and BFF probes are in [docs/JUDGE-RUNBOOK.md](docs/JUDGE-RUNBOOK.md).
+
+## Fixture truth versus live truth
+
+| Capability | Fixture mode (`pnpm demo`) | Local live mode (`pnpm dev` or `pnpm start`) |
+|---|---|---|
+| Browser source | Committed `demo/fixtures/snapshot.v1.json`, copied into the demo build | `GET /api/v1/snapshot` plus `GET /api/v1/events` |
+| GitHub issues, PRs, markers | Sanitized recorded projection | Optional bounded `gh api graphql` read when exactly one repository and trusted bot are configured |
+| Council | Sanitized app-owned evidence projection | **Unavailable:** live acquisition is not implemented |
+| Substrate | Recorded `fkst.delivery.observe.v1` shape | Optional `fkst-framework observe --durable-root … --json`; unconfigured or failed reads remain unavailable/unknown |
+| Devloop health | Recorded opaque output | Optional first line of public devloop `scripts/run.sh health`, displayed verbatim |
+| Writes | Impossible; always read-only | Read-only by default; one issue-admission write is possible only after every guard passes |
+| Historical claim | Illustrative recorded sequence only | None; polling can miss acknowledged deliveries and repeated IDs are possible |
+
+The fixture is sanitized replay data, not current repository or engine status and not a byte-for-byte capture of the linked public history. It includes one untrusted forged marker to prove author filtering occurs before parsing. Unknown marker schemas are ignored. The replacement fixture IDs and invalid URLs must not be narrated as one newly completed console-created-to-merge run.
+
+## Exact commands
+
+The following table covers every root script in `package.json`, plus the frozen clean-checkout install command.
 
 | Command | Exact behavior |
 |---|---|
 | `pnpm install --frozen-lockfile` | Install the pinned workspace resolution without changing `pnpm-lock.yaml`. |
-| `pnpm install:locked` | Package-script alias for the same frozen install. |
-| `pnpm demo` | Start the Vite app in fixture mode on `127.0.0.1:4173`; no BFF is started. |
-| `pnpm dev` | Start the BFF on `127.0.0.1:8472` and the Vite live-mode app on `127.0.0.1:5173` with a guarded same-origin `/api` proxy. |
-| `pnpm typecheck` | Run every workspace package's declared `typecheck` script, one package at a time. |
-| `pnpm test` | Run every workspace package's declared `test` script, one package at a time. Tests use fake local executables and must never perform a live GitHub write. |
-| `pnpm build` | Run every declared workspace build, one package at a time. The Node BFF intentionally runs TypeScript with Node's type stripping and has no emitted bundle. |
-| `pnpm build:demo` | Produce the static fixture-mode frontend under `app/dist/`. |
-| `pnpm start` | Start the loopback BFF using safe argv assembled from the documented environment values. It does not imply that a frontend is served. |
-| `pnpm smoke:fixture` | Build and non-destructively probe the static fixture path. |
-| `pnpm scrub` | Scan tracked/untracked non-ignored text files and committed history for common secrets; current files are also checked for known unsanitized identities and developer-home paths. It never rewrites files. |
-| `pnpm check` | Run typecheck, tests, build, fixture smoke, and repository scrub in that order. |
+| `pnpm install:locked` | Run the package-script alias for the same frozen install. |
+| `pnpm demo` | Start the Vite app in fixture mode on `127.0.0.1:4173`; no BFF starts. |
+| `pnpm dev` | Start the BFF on `127.0.0.1:8472` and the live-mode Vite app on `127.0.0.1:5173` with a guarded same-origin `/api` proxy. |
+| `pnpm build` | Run each workspace package's declared build serially. The BFF uses Node type stripping and has no emitted bundle. |
+| `pnpm build:demo` | Build the static fixture-mode frontend into `app/dist/`. |
+| `pnpm typecheck` | Run each workspace package's declared typecheck serially. |
+| `pnpm test` | Run each workspace package's tests serially. Tests use local fakes and must never make a live GitHub write. |
+| `pnpm start` | Start the loopback BFF from documented environment values; it does not serve `app/dist`. |
+| `pnpm smoke` | Alias `pnpm smoke:fixture`. |
+| `pnpm smoke:fixture` | Build fixture mode, preview it temporarily on `127.0.0.1:4174`, probe the schema/HTML/disclosure, and stop. |
+| `pnpm scrub` | Read-only scan of current non-ignored text and the history reachable from `HEAD` for common secrets, plus current-file identity and developer-home checks. Unrelated remote branches are outside this release-tree gate. |
+| `pnpm check` | Run typecheck, tests, build, fixture smoke, and scrub in that order. |
 
-The equivalent convenience wrapper is `./scripts/run.sh <command>`, where command is `install`, `demo`, `dev`, `build`, `typecheck`, `test`, `start`, `smoke`, or `scrub`.
+The POSIX convenience wrapper is `./scripts/run.sh <command>`, where `<command>` is `install`, `demo`, `dev`, `build`, `typecheck`, `test`, `start`, `smoke`, or `scrub`.
 
-## Fixture behavior versus live behavior
-
-| Capability | Fixture mode (`pnpm demo`) | Local BFF mode |
-|---|---|---|
-| Browser data source | Committed `snapshot.v1.json` | `GET /api/v1/snapshot` and `GET /api/v1/events` |
-| GitHub credentials | Not used | Required only for configured GitHub reads or the optional write |
-| Substrate | Not used | Optional `fkst-framework observe --durable-root … --json` child process |
-| Devloop health | Recorded, visibly labeled | Optional opaque `scripts/run.sh health` output |
-| Write posture | Always read-only | Read-only by default; optional issue admission only after every guard passes |
-| Historical truth | Recorded illustrative sequence only | None: polling can miss acknowledged deliveries |
-| Unreachable source | Fixture remains available | `unknown`/`unavailable`, never fabricated zero |
-
-Fixture values are sanitized replay data, not current repository or engine status. The fixture includes one deliberately untrusted marker to demonstrate that author filtering happens before parsing. Unknown marker schemas are ignored rather than promoted to facts.
-
-## Architecture and truth boundary
-
-```text
-fixture mode
-demo/fixtures/snapshot.v1.json ── Vite static copy ── browser
-
-local mode
-GitHub ── gh argv adapter ─────────────┐
-fkst-substrate ─ observe --json argv ──┼─ loopback BFF ─ HTTP/SSE ─ browser
-public devloop ─ health argv ──────────┘
-```
-
-There is no console database. Authority remains outside the console:
-
-- Trusted `state:v1` GitHub comment markers are business-state authority. State labels are hints, and their known collisions are lossy.
-- `review-result:v1` and `merge-ready:v1` are the only additional marker schemas projected in this cut. The trust gate runs before any marker parse.
-- `fkst-framework observe --json` describes the current delivery ledger only. Queue depth and dead letters are not business progress.
-- Devloop health is displayed opaquely from its first output line. Exit code zero does not distinguish `HEALTHY` from an anomaly verdict.
-- Client-side deltas are not an authoritative timeline. Acknowledged deliveries can disappear between polls, and at-least-once delivery can repeat IDs.
-
-The BFF binds only `127.0.0.1`, uses safe argv arrays with `execFile` rather than shell strings, sends no permissive CORS headers, and exposes GET-only reads plus one POST-only mutation. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SECURITY.md](docs/SECURITY.md).
-
-## Live prerequisites and startup
-
-Live mode is optional; fixture mode is the credential-free judging path. A useful live runtime panel requires:
-
-- a local clone/build of `fkst-substrate` containing the `fkst-framework` executable;
-- a durable root owned by an existing deployment;
-- optionally, the public devloop checkout's `scripts/run.sh` for its opaque health verdict;
-- Node.js 22.6–26 and pnpm 10.17.1; and
-- `gh` authenticated as a human only if GitHub integration is configured. The human actor must differ from the normalized trusted bot login.
-
-The console never opens `delivery.redb`, never touches the observe socket, never starts or controls the engine, and never sets `FKST_GITHUB_WRITE`.
-
-The server's exact read-only CLI is:
+Live mode is optional. Export selected settings from [`.env.example`](.env.example) before `pnpm start` or `pnpm dev`; the project does not source `.env` or execute it as shell code. [`console.config.example.jsonc`](console.config.example.jsonc) is a reviewable mapping, not a loaded config file. A read-only substrate/health BFF launch can use direct argv:
 
 ```bash
 pnpm --filter ./server start \
@@ -127,79 +112,85 @@ pnpm --filter ./server start \
   --health-script /absolute/path/to/fkst-packages/scripts/run.sh
 ```
 
-`--observe-bin` and `--durable-root` must be supplied together. With neither configured, runtime data degrades to unavailable/unknown rather than zero. The default server URL is <http://127.0.0.1:8472>; API probes are `GET /api/v1/health`, `GET /api/v1/snapshot`, `GET /api/v1/session`, and `GET /api/v1/events`.
+`--observe-bin` and `--durable-root` must be supplied together. Without them, runtime data is unavailable rather than zero. `pnpm start` exposes `GET /api/v1/health`, `GET /api/v1/snapshot`, `GET /api/v1/session`, and `GET /api/v1/events`; use `pnpm dev` for the integrated local UI. There is no one-command production/static live server in this cut.
 
-`pnpm start` accepts the same settings through exported variables listed in `.env.example`; the wrapper translates them into a direct argv vector. It deliberately does not source `.env` or execute configuration as shell code. `console.config.example.jsonc` is a reviewable mapping of the same settings, not an automatically loaded configuration file in this demo cut.
+## Security and the only mutation
 
-For the development topology, export any optional values from `.env.example` and run `pnpm dev`, then open <http://127.0.0.1:5173>. The wrapper fixes the BFF at port 8472 and Vite proxies `/api` to that exact loopback origin. The proxy rejects foreign browser Origins before rewriting the validated same-origin request to the BFF Host/Origin, and it accepts only an origin-only `http://127.0.0.1:<port>` test override.
+The BFF binds exactly `127.0.0.1`, sets no permissive CORS headers, and invokes `gh`, `fkst-framework`, and the optional health runner with `execFile` plus explicit argv arrays. It never opens `delivery.redb`, touches an observe socket, starts the engine, or sets `FKST_GITHUB_WRITE`.
 
-`pnpm start` remains intentionally BFF-only: it does not serve `app/dist`. There is no one-command production/static live UI in this two-hour cut; use `pnpm dev` for the integrated local UI and `pnpm demo` for the credential-free fixture UI.
+The only mutation route is `POST /api/v1/issues`. It may create one issue in exactly one configured sandbox repository with `fkst-dev:enabled` attached by the same `gh issue create` invocation. Admission requires all of these independent guards:
 
-## The only optional mutation
+- explicit `--enable-writes` or `FKST_ENABLE_WRITES=1`, while demo mode remains false;
+- exactly one valid `OWNER/REPOSITORY` allowlist and one trusted bot login;
+- exact loopback Host and Origin, POST method, and the per-launch session token;
+- a bounded JSON object containing exactly `title` and `body`;
+- a resolved authenticated human actor distinct from the normalized bot login; and
+- a returned HTTPS GitHub URL belonging to that exact repository and a positive issue number.
 
-The sole mutation is creating one issue in exactly one configured sandbox repository with `fkst-dev:enabled` attached by the same `gh issue create` invocation. Enabling it requires all of the following:
+No issue edits, label-only writes, markers, bot comments, PR approvals, merges, closes, engine operations, config writes, terminal-goal resume, or arbitrary command endpoints exist. Demo mode cannot enable writes. The full boundary and safe pre-write checklist are in [docs/SECURITY.md](docs/SECURITY.md). No real GitHub mutation has been performed or authorized by this README.
 
-- explicit `--enable-writes` (or `FKST_ENABLE_WRITES=1` through the root wrapper);
-- exactly one valid `--sandbox-repo OWNER/REPOSITORY`;
-- a configured `--bot-login`;
-- a resolved `gh api user` actor distinct from that bot after trim/lowercase/`[bot]` normalization;
-- POST to the one issue endpoint;
-- exact loopback Host and Origin;
-- the per-launch session token; and
-- a valid bounded JSON body.
+## Dependencies, provenance, and authorship
 
-Example launch posture only—this command does not itself create an issue:
+Exactly two pre-existing projects are primary FKST integrations:
 
-```bash
-export FKST_SANDBOX_REPO=OWNER/REPOSITORY
-export FKST_BOT_LOGIN=trusted-loop-agent
-export FKST_ENABLE_WRITES=1
-pnpm start
-```
+| Primary integration | Inspected revision | Relationship |
+|---|---|---|
+| [`ChronoAIProject/fkst-substrate`](https://github.com/ChronoAIProject/fkst-substrate) | `e38358a0552c4133414836bf52df6593908fe547` | External local `fkst-framework observe --json` CLI; not vendored. |
+| Public devloop in [`ChronoAIProject/fkst-packages`](https://github.com/ChronoAIProject/fkst-packages) | `f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b` | External GitHub-native Workflow and optional opaque health source; not vendored. |
 
-The UI must display the resolved actor and resulting issue URL. Demo mode cannot enable writes. There are no issue edits, generic label mutations, marker writes, bot comments, PR approvals, merges, engine controls, config writes, terminal-goal resume, or arbitrary command endpoints.
+The complete devbored product/specification and older devbored, `github-devloop*`, consensus, hosted, desktop/Flutter, and proxy materials are **reference-only provenance**. They are not additional primary integrations and are absent from this cut's shipped import/runtime graph. Node.js, pnpm, React, Vite, TypeScript, `gh`, and browsers are toolchain/runtime dependencies, not FKST product integrations.
 
-## Platform honesty
+The submission period began 2026-07-13. Work attributed to it is this repository's console UI, loopback BFF, normalized snapshot contract, sanitized fixture, tests, and packaging—not the pre-existing FKST runtime or devloop. The worktree began at `9308b5a018af28049c35517946aaae113e323c20`; accepted implementation baseline `9743cfe633b3415278a33fe1b3d02b7ac133a391` added the demo candidate, and the current branch is limited to its bounded quality pass.
 
-The integration scripts and package graph were exercised on macOS 26.5.2 arm64 with Node.js 26.3.0, pnpm 10.17.1, and Chrome 150.0.7871.129. The package contract supports Node 22.6 through 26 because the BFF uses Node's TypeScript type stripping. The CI definition targets the latest Node 22 on Ubuntu, but Linux is not claimed as verified until that workflow has completed successfully in the published repository. Windows is not supported or claimed for this demo: the convenience shell wrapper is POSIX, and no Windows/browser pass has been run.
+Public historical [issue #111](https://github.com/ChronoAIProject/fkst-packages-testing/issues/111) and [PR #77](https://github.com/ChronoAIProject/fkst-packages-testing/pull/77) validated the issue-state and review/merge contracts. They are not one console-created end-to-end run. The sanitized fixture replaces their identifiers and content.
 
-Modern Chromium, Firefox, and Safari should support the standards used by the app, but only the Chrome version above is locally evidenced at this checkpoint.
+Codex sessions directed to use GPT-5.6 Sol implemented the Build Week cut and its tests/docs. Repository prose is not proof of model identity, `/feedback` upload, submission compliance, or personal eligibility. Those external proofs remain outstanding. See [docs/PROVENANCE.md](docs/PROVENANCE.md) for the detailed prior-work, dependency, asset, and authorship boundary.
 
-## Prior work and external dependency provenance
+### License
 
-The submission period began 2026-07-13. The work attributed to that period is this console repository: its React UI, loopback BFF, normalized snapshot contract, sanitized fixture replay, tests, and packaging. It does not claim that the FKST runtime was created during Build Week. This two-hour integration worktree began from `9308b5a018af28049c35517946aaae113e323c20`; the final implementation is preserved by the release commit on `codex/build-week-mvp`, while the required primary Codex `/feedback` Session ID remains external submission evidence.
+This repository's console code is Apache-2.0; see [LICENSE](LICENSE). That license does not relicense upstream integrations, GitHub evidence, package-manager dependencies, fonts, or third-party tools. Font notices, pins, hashes, and SIL OFL 1.1 text are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [docs/third-party/SIL-OFL-1.1.txt](docs/third-party/SIL-OFL-1.1.txt).
 
-Two pre-existing projects are the only primary FKST runtime integrations:
+## Verified evidence
 
-- [`ChronoAIProject/fkst-substrate`](https://github.com/ChronoAIProject/fkst-substrate), locally inspected at `e38358a0552c4133414836bf52df6593908fe547`;
-- the public devloop in [`ChronoAIProject/fkst-packages`](https://github.com/ChronoAIProject/fkst-packages), locally inspected at `f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b`.
+[docs/VERIFICATION.md](docs/VERIFICATION.md) records the settled local checkpoint without implying deployment or submission. Do not silently reinterpret its numbers:
 
-They are external runtime/tool integrations, not vendored or relicensed by this repository's Apache-2.0 license. Node, pnpm, React, Vite, TypeScript, and `gh` are toolchain/runtime dependencies governed by their own licenses. The complete devbored product/specification is reference-only provenance and is not in the shipped import or runtime graph. More detail is recorded in [docs/PROVENANCE.md](docs/PROVENANCE.md).
+- **82/82 tests:** React app 13/13, loopback BFF 36/36, and black-box/integration 33/33 across 12 suites;
+- both production and recorded-demo builds transformed 42 modules;
+- fixture smoke verified the schema, HTML mount, persistent disclosure, and loopback-only preview;
+- the final release-tree scrub examined 100 non-ignored files plus current branch history;
+- read-only UX and security reviews returned their recorded PASS verdicts;
+- an authenticated GitHub read against `ChronoAIProject/fkst-packages-testing` returned a complete, current open set of zero issues and zero PRs with writes disabled;
+- no durable-root substrate observation was possible; and
+- the positive issue-creation path used only a fake local `gh`, not GitHub.
 
-Public historical evidence used to validate the contract includes [sandbox issue #111](https://github.com/ChronoAIProject/fkst-packages-testing/issues/111) for the issue-side state arc and [sandbox PR #77](https://github.com/ChronoAIProject/fkst-packages-testing/pull/77) for the completed review/merge evidence chain. The sanitized committed fixture uses replacement IDs and `example.invalid` URLs; it must not be narrated as a byte-for-byte capture of those links or as a single newly completed console-created-to-merge run.
-
-## Codex and GPT-5.6 attribution
-
-The Build Week cut was developed through Codex sessions directed to use GPT-5.6 Sol. Codex accelerated the work by turning the frozen substrate/devloop contracts into typed fixture and live snapshot paths, implementing the trust-first three-schema marker projection, building the guarded loopback BFF and React console, generating negative write-boundary and black-box tests, and packaging the deterministic judge path and repository scrub.
-
-Pre-existing contract work also used Codex review to identify and correct six integration errors before this cut began. That review is prior-work context, not a claim that the underlying substrate or devloop was built during this event.
-
-Repository prose alone is not proof of model identity or submission eligibility. The final public video must show the relevant Codex/GPT-5.6 configuration or run metadata and explain both how Codex built the console and how Codex workers participate in the loop. A successful `/feedback` upload from the primary build session must replace the placeholder above. Neither artifact has been verified in this worktree.
+The recorded local platform was macOS 26.5.2 arm64, Node.js 26.3.0, pnpm 10.17.1, and Chrome 150.0.7871.129. The package contract is Node.js 22.6–26. Ubuntu/Node 22 CI is defined but not claimed as passed until it runs successfully for this published branch. Firefox, Safari, Windows, and a clean container were not verified.
 
 ## Known limitations
 
-- The fixture is a sanitized deterministic replay, not live status. Its invalid URLs intentionally do not navigate to real targets.
-- The fixture demonstrates the contracted evidence model but is not a one-to-one replay of the public issue #111 / PR #77 identifiers.
-- Live GitHub issue/PR/marker reads are available only when one repository and trusted bot are configured; the bounded adapter then enumerates and projects trusted evidence. With either value absent or a read failure, the collections report unavailable rather than fabricating zero. Live Council acquisition is not implemented and remains unavailable.
-- The integrated same-origin live UI is a Vite development topology. The production BFF does not serve `app/dist`, so there is no packaged one-origin production server or container image in this cut.
-- Only three marker schemas are parsed. Unknown schemas are ignored gracefully.
-- There is no topology panel or topology read contract, no database, no durable console cache, and no authoritative timeline.
-- Runtime health is opaque text, and delivery observation may be unavailable even while GitHub business state exists.
-- Hosted demo, repository, video, Devpost, and `/feedback` artifacts are explicit placeholders.
-- Public-repository secret scanning is not enabled or verified because no public repository URL/configuration exists yet; the local scrub covers the current tree and committed history but is not a substitute for the host feature.
-- Linux CI, Firefox, Safari, Windows, clean-container setup, and a real guarded sandbox issue creation have not yet been evidenced at this checkpoint.
-- This is a two-hour demo candidate, not a production security or availability claim.
+- Fixture values are sanitized illustrative evidence, not live status, and fixture URLs intentionally do not navigate to real targets.
+- Live GitHub reads require one repository and trusted bot. The only real read evidence is the complete empty current-open set described above; populated live acquisition was not observed.
+- Live Council acquisition is unavailable. Council's populated screen is fixture-only.
+- A substrate binary existed, but no deployed durable root was available; real delivery-ledger observation is unavailable.
+- The integrated live UI is a Vite development topology. The BFF does not serve `app/dist`; there is no container or packaged one-origin production server.
+- Only `state:v1`, `review-result:v1`, and `merge-ready:v1` markers are parsed. Unknown schemas are ignored.
+- There is no topology panel, database, durable console cache, authoritative timeline, or engine control surface.
+- Runtime health is opaque text; delivery observation can be unavailable while GitHub business state exists.
+- No real guarded issue creation, Linux CI result, Firefox/Safari/Windows pass, clean-container setup, or public-host secret scanning has been evidenced.
+- This two-hour demo candidate makes no production security, availability, or eligibility claim.
 
-## License
+## External submission gates
 
-The console code in this repository is licensed under Apache License 2.0; see [LICENSE](LICENSE). That license does not relicense the external FKST dependencies, GitHub-hosted evidence, package-manager dependencies, fonts, or third-party tools. Bundled Space Grotesk and IBM Plex font notices, exact package pins and hashes, and the SIL OFL 1.1 text are preserved in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Source publication is complete; every other row remains external and unresolved. A placeholder is not completion evidence.
+
+| Required artifact or gate | Current truth |
+|---|---|
+| Public source repository, or private repo shared with both judging addresses | **PUBLISHED** — isolated candidate branch: [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp); upstream `main` is unchanged |
+| Working judge-accessible hosted demo, sandbox, or test build | **NOT PUBLISHED** — only the local fixture path is documented |
+| Public YouTube video under three minutes with required audio | **NOT PUBLISHED / NOT SUPPLIED** |
+| Primary Codex `/feedback` Session ID with successful upload evidence | **NOT SUPPLIED / NOT VERIFIED** |
+| Completed Devpost description, category, and entry URL | **NOT PUBLISHED / NOT SUPPLIED** |
+| Real durable-root substrate observation | **UNAVAILABLE / NOT VERIFIED** |
+| Real guarded sandbox issue creation | **NOT PERFORMED** |
+| Entrant age, location, account, and other personal eligibility | **NOT VERIFIED BY THIS REPOSITORY** |
+
+Do not replace a row until the artifact is externally accessible and independently checked against the live submission rules.

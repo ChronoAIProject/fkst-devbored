@@ -27,9 +27,9 @@ export function Runtime({ snapshot, transport, error, nowMs, onRetry }: RuntimeP
     <div className="page page--runtime">
       <header className="page-intro">
         <div>
-          <span className="eyebrow">Runtime · observation only</span>
-          <h1>Delivery facts without invented calm</h1>
-          <p>Substrate reports its current delivery ledger. These numbers do not describe business progress, and this console cannot mutate the ledger.</p>
+          <span className="eyebrow">Workflow evidence · Runtime</span>
+          <h1>How work reaches delivery</h1>
+          <p>Runtime is delivery evidence after Workflow decisions. Substrate reports its current ledger; these facts do not describe business progress, and this console cannot mutate them.</p>
         </div>
         <div className="page-intro__facts">
           <span><b>Subscriber</b> {runtime?.subscriberStatus ?? 'unknown'}</span>
@@ -88,11 +88,11 @@ export function Runtime({ snapshot, transport, error, nowMs, onRetry }: RuntimeP
                 <div className="delivery-row delivery-row--head"><span>Delivery ID</span><span>Queue</span><span>State</span><span>Attempts</span><span>Observed</span></div>
                 {runtime.deliveries.map((delivery) => (
                   <div className="delivery-row" key={delivery.id}>
-                    <code>{delivery.id}</code>
-                    <code>{delivery.queue ?? 'unknown'}</code>
-                    <span>{delivery.state ?? 'unknown'}</span>
-                    <span>{delivery.attempts ?? 'unknown'}</span>
-                    <span>{formatTimestamp(delivery.updatedAt)}</span>
+                    <code data-label="Delivery ID">{delivery.id}</code>
+                    <code data-label="Queue">{delivery.queue ?? 'unknown'}</code>
+                    <span data-label="State">{delivery.state ?? 'unknown'}</span>
+                    <span data-label="Attempts">{delivery.attempts ?? 'unknown'}</span>
+                    <span data-label="Observed">{formatTimestamp(delivery.updatedAt)}</span>
                   </div>
                 ))}
               </div>

@@ -4,7 +4,7 @@
 
 The submission-cut work product is the code in this repository: a React/Vite console, a loopback Node/TypeScript BFF, one normalized fixture/live presentation contract, recorded sanitized fixtures, black-box/security tests, and deterministic packaging.
 
-The repository began from Build Week workspace commit `9308b5a018af28049c35517946aaae113e323c20`. The final implementation is preserved by the release commit on `codex/build-week-mvp`; the primary Codex `/feedback` Session ID remains external submission evidence until a successful upload is captured.
+The repository began from Build Week workspace commit `9308b5a018af28049c35517946aaae113e323c20`. Commit `9743cfe633b3415278a33fe1b3d02b7ac133a391` is the accepted implementation baseline; `codex/build-week-mvp` carries the bounded quality pass over it. The primary Codex `/feedback` Session ID remains external submission evidence until a successful upload is captured.
 
 ## Pre-existing primary integrations
 

@@ -15,7 +15,7 @@ Open <http://127.0.0.1:4173>. Do not configure GitHub, substrate, or a `.env` fi
 Pass criteria:
 
 - the page visibly says **Recorded demo data** at all times;
-- Workflow has useful issues and a PR evidence lane;
+- **Workflow** is the primary mechanism and has useful issues plus a PR evidence lane;
 - Council has named seats, a decision, and disclosed dissent;
 - Runtime names its artifact and describes current delivery state rather than business progress;
 - the fixture posture is read-only and New Work cannot perform a live mutation;
@@ -66,7 +66,7 @@ For an integrated live-development UI, stop the standalone BFF and run `pnpm dev
 
 ## Submission evidence still outside this repository
 
-- public repository URL: placeholder;
+- public candidate source: [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp) (isolated branch; unrelated `main` unchanged);
 - hosted static fixture URL: placeholder;
 - public narrated video under three minutes: placeholder;
 - primary Codex `/feedback` Session ID: placeholder; and
