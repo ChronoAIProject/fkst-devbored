@@ -1,0 +1,104 @@
+{
+  "schema": "fkst.task-state/v1",
+  "gate": "G-005",
+  "task_id": "G-005-SYNTHETIC",
+  "recorded_at": "2026-07-20T19:41:58Z",
+  "state": "ACCEPTED",
+  "integration_base_commit": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+  "dependencies": [
+    "G-002",
+    "G-003"
+  ],
+  "exclusive_paths": [
+    ".orchestration-smoke/g-005/result.txt",
+    ".orchestration-smoke/g-005/task-state.json"
+  ],
+  "owner_agent_id": "019f80ff-6ca3-75a0-bcec-d9ee0e416b2e",
+  "owner_provider": "codex",
+  "owner_model": "gpt-5.6-sol",
+  "owner_provider_session": "019f80ff-6d73-7eb2-9049-4667d1dde89c",
+  "worktree_id": "019f80ff-3726-7a83-9a20-68c109b7a34a",
+  "branch": "codex/v2-g005-rework-loop",
+  "review_cycle": 2,
+  "transition_history": [
+    "PROPOSED",
+    "READY",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "OPUS_REVIEW",
+    "CHANGES_REQUESTED",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "OPUS_REVIEW",
+    "OPUS_APPROVED",
+    "PM_REVIEW",
+    "ACCEPTED"
+  ],
+  "submissions": [
+    {
+      "cycle": 1,
+      "commit": "7fcaed7ab1ad9fdba4328a328150b9abc3a11121",
+      "parent": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+      "result": "DEV_VERIFIED"
+    },
+    {
+      "cycle": 2,
+      "commit": "a922349f08e73adcc3e8bdd3409e3ced5d6c60c0",
+      "parent": "7fcaed7ab1ad9fdba4328a328150b9abc3a11121",
+      "result": "DEV_VERIFIED",
+      "same_owner_agent": true,
+      "same_owner_provider_session": true,
+      "prior_commit_preserved": true
+    }
+  ],
+  "failed_review_attempts": [
+    {
+      "agent_id": "019f8101-63c3-7aa1-afda-bd68a37dc3ab",
+      "provider_session_id": "240fdeb1-ed6b-4241-a20c-36a0cb9244dc",
+      "model": "claude-opus-4-8",
+      "result": "terminated_without_verdict_after_stalled_internal_explore",
+      "counts_as_review": false
+    }
+  ],
+  "reviews": [
+    {
+      "cycle": 1,
+      "agent_id": "019f8105-4f78-7d12-b599-53336dc17fbd",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "ccd462a8-0e76-4fb4-83e0-1b9a6c9be9eb",
+      "verdict": "CHANGES_REQUESTED",
+      "findings": [
+        "missing_acceptance_line",
+        "task_trailer_mismatch"
+      ],
+      "repository_authorship": false
+    },
+    {
+      "cycle": 2,
+      "agent_id": "019f8109-76d5-7280-8de6-22e6ee3bbe47",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "bc382264-2baa-44ac-b93b-bbc60218819a",
+      "verdict": "APPROVE",
+      "findings": [],
+      "fresh_from_prior_reviewer": true,
+      "repository_authorship": false,
+      "pre_review_porcelain": "",
+      "post_review_porcelain": ""
+    }
+  ],
+  "pm_decisions": [
+    {
+      "pm_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+      "verdict": "ACCEPTED",
+      "basis": "Same-owner rework preserved the rejected commit, resolved both findings, received a fresh Opus approval, and passed PM history/trailer/file/state/cleanliness checks."
+    }
+  ],
+  "integration": null,
+  "limitations": [
+    "The synthetic branch is disposable governance evidence and is never integrated into product history.",
+    "The initial rejected bootstrap commit intentionally remains in history.",
+    "Normal engineering dispatch still requires G-007."
+  ]
+}

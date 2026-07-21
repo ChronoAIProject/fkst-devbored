@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>devboard — Council · debate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:oklch(16% .011 250); --raise:oklch(20% .012 250); --raise-2:oklch(23% .013 250);
+  --line:oklch(26% .012 250); --line-2:oklch(33% .013 250);
+  --fg:oklch(97% .005 240); --dim:oklch(72% .014 245); --faint:oklch(58% .014 245); --ghost:oklch(46% .012 245);
+  --amber:oklch(81% .15 80); --green:oklch(74% .13 158); --red:oklch(67% .18 18); --gold:oklch(80% .10 85);
+  --blue:oklch(70% .10 250); --violet:oklch(70% .10 300); --teal:oklch(74% .09 195); --rose:oklch(72% .11 350);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:400 13px/1.45 "Inter",sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:1px;border-radius:4px}
+svg{display:block;flex:none}
+
+.app{display:grid;grid-template-columns:236px 300px minmax(0,1fr) 268px;height:100vh}
+@media(max-width:1400px){.app{grid-template-columns:236px 280px minmax(0,1fr)}.tally{display:none}}
+
+/* sidebar */
+.side{background:color-mix(in oklab,var(--raise) 55%,var(--bg));border-right:1px solid var(--line);display:flex;flex-direction:column;padding:10px 8px;gap:2px;min-width:0}
+.ws{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;margin-bottom:6px}
+.ws:hover{background:var(--raise)}
+.logo{font:700 15px/1 "Space Grotesk";letter-spacing:.01em;position:relative;color:var(--fg)}
+.kk{position:relative}
+.knode{position:absolute;left:.04em;top:.36em;width:.205em;height:.205em;border-radius:50%;background:var(--amber);box-shadow:0 0 0 .05em var(--bg)}
+.ws .chev{color:var(--ghost);margin-top:1px}
+.ws .pen{margin-left:auto;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:6px;color:var(--faint);background:var(--bg)}
+.sitem{display:flex;align-items:center;gap:9px;height:28px;padding:0 8px;border-radius:6px;color:var(--dim);font-weight:500;font-size:13px;width:100%;text-align:left}
+.sitem svg{color:var(--faint)}
+.sitem:hover{background:var(--raise);color:var(--fg)}
+.sitem.on{background:var(--raise);color:var(--fg)}
+.sitem.on svg{color:var(--dim)}
+.sitem .n{margin-left:auto;font-size:11.5px;font-weight:400;color:var(--ghost)}
+.shead{display:flex;align-items:center;gap:6px;height:26px;padding:0 8px;margin-top:14px;color:var(--ghost);font-size:11.5px;font-weight:500;width:100%;text-align:left}
+.sub{padding-left:14px;display:flex;flex-direction:column;gap:1px}
+.dot{width:7px;height:7px;border-radius:50%;flex:none}
+.dot.g{background:var(--green)} .dot.y{background:var(--gold)} .dot.n{background:var(--line-2)}
+.sfoot{margin-top:auto;padding:8px;display:flex;align-items:center;gap:7px;color:var(--ghost);font-size:11.5px}
+
+/* debate list */
+.dlist{border-right:1px solid var(--line);overflow-y:auto;min-width:0}
+.dlhd{display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border-bottom:1px solid var(--line);font-weight:500;font-size:13px;position:sticky;top:0;background:var(--bg);z-index:1}
+.dlhd .n{color:var(--ghost);font-weight:400;font-size:11.5px}
+.ditem{display:block;width:100%;text-align:left;padding:10px 14px;border-bottom:1px solid color-mix(in oklab,var(--line) 45%,transparent);cursor:pointer}
+.ditem:hover{background:color-mix(in oklab,var(--raise) 70%,transparent)}
+.ditem.on{background:var(--raise);box-shadow:inset 2px 0 0 var(--amber)}
+.ditem .r1{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.ditem .id{color:var(--ghost);font-size:11px;font-variant-numeric:tabular-nums}
+.ditem .cmt{margin-left:auto;display:inline-flex;align-items:center;gap:4px;color:var(--ghost);font-size:11px;font-variant-numeric:tabular-nums}
+.ditem .cmt.hot{color:var(--gold)}
+.ditem h4{font-weight:500;font-size:12.5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:6px}
+.voices{display:flex;align-items:center;gap:3px}
+.vd{width:14px;height:14px;border-radius:50%;font-size:7px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--bg);flex:none}
+.ditem .st{margin-left:auto;color:var(--ghost);font-size:10.5px}
+
+/* transcript */
+.main{display:flex;flex-direction:column;min-width:0}
+.crumb{display:flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-bottom:1px solid var(--line);flex:none}
+.crumb .t{font-weight:500;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb .sep{color:var(--ghost)}
+.crumb .muted{color:var(--faint);font-weight:400}
+.crumb .id{color:var(--ghost);font-size:11.5px;font-variant-numeric:tabular-nums;flex:none}
+
+.speakers{display:flex;align-items:center;gap:6px;padding:9px 20px;border-bottom:1px solid var(--line);flex:none;flex-wrap:wrap}
+.sp{display:inline-flex;align-items:center;gap:6px;height:25px;padding:0 9px 0 6px;border:1px solid var(--line);border-radius:13px;color:var(--faint);font-size:11.5px;font-weight:500;transition:background .1s,color .1s,border-color .1s}
+.sp:hover{color:var(--dim);border-color:var(--line-2)}
+.sp.on{background:var(--raise-2);color:var(--fg);border-color:var(--line-2)}
+.sp .vd{width:15px;height:15px;font-size:7.5px}
+.sp .c{color:var(--ghost);font-variant-numeric:tabular-nums}
+.sp.on .c{color:var(--dim)}
+.sp.all{padding-left:9px}
+.spx{margin-left:auto;color:var(--ghost);font-size:11.5px}
+
+.thread{overflow-y:auto;flex:1;padding:0 20px 30px}
+.round{display:flex;align-items:center;gap:10px;padding:18px 0 10px;position:sticky;top:0;background:var(--bg);z-index:1}
+.round .rl{font-size:11.5px;font-weight:600;color:var(--dim)}
+.round .rr{flex:1;height:1px;background:var(--line)}
+.round .rq{color:var(--ghost);font-size:11.5px;font-style:italic;max-width:52%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;padding:9px 0}
+.msg .vd{width:22px;height:22px;font-size:8.5px;margin-top:1px}
+.mh{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.mh .who{font-weight:600;font-size:12.5px}
+.mh .role{color:var(--ghost);font-size:11px}
+.mh .tm{margin-left:auto;color:var(--ghost);font-size:11px;font-variant-numeric:tabular-nums}
+.verd{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px;border-radius:9px;font-size:10.5px;font-weight:600;border:1px solid}
+.verd.ok{color:var(--green);border-color:color-mix(in oklab,var(--green) 40%,var(--line));background:color-mix(in oklab,var(--green) 10%,transparent)}
+.verd.no{color:var(--red);border-color:color-mix(in oklab,var(--red) 40%,var(--line));background:color-mix(in oklab,var(--red) 10%,transparent)}
+.verd.mid{color:var(--gold);border-color:color-mix(in oklab,var(--gold) 40%,var(--line));background:color-mix(in oklab,var(--gold) 10%,transparent)}
+.verd.pend{color:var(--faint);border-color:var(--line-2);border-style:dashed}
+.mb{color:var(--dim);font-size:13px;line-height:1.55}
+.mb em{color:var(--faint);font-style:normal;background:color-mix(in oklab,var(--gold) 12%,transparent);padding:0 3px;border-radius:3px}
+.mmeta{display:flex;align-items:center;gap:10px;margin-top:6px;color:var(--ghost);font-size:11px}
+.mmeta a:hover{color:var(--faint)}
+.flip{display:inline-flex;align-items:center;gap:5px;color:var(--violet);font-size:11px;font-weight:500}
+.pending{opacity:.55}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.human{background:color-mix(in oklab,var(--amber) 5%,transparent);border-left:2px solid color-mix(in oklab,var(--amber) 55%,transparent);margin-left:-14px;padding-left:12px;border-radius:0 6px 6px 0}
+.compose{margin-top:16px;background:var(--raise);border:1px solid var(--line);border-radius:9px;padding:10px}
+.compose textarea{width:100%;background:none;border:0;resize:none;color:var(--fg);font:400 13px/1.5 "Inter",sans-serif;min-height:44px}
+.compose textarea::placeholder{color:var(--ghost)}
+.crow{display:flex;align-items:center;gap:8px;margin-top:6px}
+.crow .as{color:var(--ghost);font-size:11px}
+.send{margin-left:auto;background:var(--raise-2);border:1px solid var(--line-2);color:var(--dim);border-radius:6px;padding:4px 12px;font-size:12px;font-weight:500}
+.send:hover{color:var(--fg);border-color:var(--faint)}
+
+/* tally */
+.tally{border-left:1px solid var(--line);overflow-y:auto;padding:16px 16px 30px;min-width:0}
+.thd{font-size:11.5px;font-weight:600;color:var(--dim);margin:18px 0 9px}
+.thd:first-child{margin-top:0}
+.trow{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;color:var(--dim);border-bottom:1px solid color-mix(in oklab,var(--line) 40%,transparent)}
+.trow .vd{width:16px;height:16px;font-size:7.5px}
+.trow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.trow .v{margin-left:auto;font-size:11px;font-weight:600;flex:none}
+.v.ok{color:var(--green)} .v.no{color:var(--red)} .v.mid{color:var(--gold)} .v.pend{color:var(--ghost)}
+.bar{display:flex;height:5px;border-radius:3px;overflow:hidden;margin:8px 0 4px;background:var(--raise-2)}
+.bar i{display:block}
+.blegend{display:flex;gap:10px;color:var(--ghost);font-size:10.5px}
+.blegend span{display:inline-flex;align-items:center;gap:4px}
+.blegend i{width:6px;height:6px;border-radius:2px}
+.conv{display:flex;flex-direction:column;gap:0;margin-top:2px}
+.cstep{display:grid;grid-template-columns:14px minmax(0,1fr);gap:9px;padding:5px 0;font-size:11.5px;color:var(--dim);position:relative}
+.cstep .cd{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--faint);background:var(--bg);margin:4px 0 0 2px;z-index:1}
+.cstep.now .cd{background:var(--amber);border-color:var(--amber)}
+.cstep::before{content:"";position:absolute;left:6.5px;top:0;bottom:0;width:1px;background:var(--line)}
+.cstep:first-child::before{top:9px}
+.cstep:last-child::before{bottom:calc(100% - 9px)}
+.cstep .q{color:var(--ghost);font-size:10.5px;display:block;margin-top:1px}
+.note{color:var(--ghost);font-size:11px;line-height:1.6;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- sidebar -->
+  <nav class="side">
+    <div class="ws">
+      <span class="logo">F<span class="kk">K<i class="knode"></i></span>ST</span>
+      <svg class="chev" width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="pen" title="New issue"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M11.3 2.7a1.6 1.6 0 0 1 2.3 2.3L5.5 13l-3 .7.7-3 8.1-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+    </div>
+    <a class="sitem" href="linear-list.html"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M1.8 8.5 8 2.3l6.2 6.2M3 7.5V13a1 1 0 0 0 1 1h2.5v-3.4h3V14H12a1 1 0 0 0 1-1V7.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Inbox<span class="n">2</span></a>
+    <a class="sitem" href="linear-board.html"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="5" height="11" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2.5" width="5" height="7" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>All work</a>
+    <button class="sitem on"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="3.4" r="1.15" fill="currentColor"/><circle cx="11.9" cy="6" r="1.15" fill="currentColor"/><circle cx="10.4" cy="10.9" r="1.15" fill="currentColor"/><circle cx="5.6" cy="10.9" r="1.15" fill="currentColor"/><circle cx="4.1" cy="6" r="1.15" fill="currentColor"/></svg>Council<span class="n">6</span></button>
+    <button class="shead"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 8 8)"/></svg>Connections</button>
+    <div class="sub">
+      <button class="sitem"><i class="dot g"></i>fkst-packages<span class="n">11</span></button>
+      <button class="sitem"><i class="dot g"></i>devloop-sandbox<span class="n">3</span></button>
+      <button class="sitem"><i class="dot y"></i>godgpt-sdk<span class="n">—</span></button>
+    </div>
+    <div class="sfoot"><i class="dot n"></i>DRY-RUN · synced 2m ago</div>
+  </nav>
+
+  <!-- debates -->
+  <div class="dlist">
+    <div class="dlhd">Debates<span class="n">by heat</span></div>
+
+    <button class="ditem on">
+      <div class="r1"><span class="id">FKS-2431</span><span class="cmt hot"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M13.5 9.5a1.6 1.6 0 0 1-1.6 1.6H5.6L2.5 14V4.2a1.6 1.6 0 0 1 1.6-1.6h7.8a1.6 1.6 0 0 1 1.6 1.6v5.3Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg>31</span></div>
+      <h4>fix: false-terminal on defer-clear</h4>
+      <div class="voices">
+        <span class="vd" style="background:var(--teal)">T</span><span class="vd" style="background:var(--blue)">P</span><span class="vd" style="background:var(--violet)">F</span><span class="vd" style="background:var(--rose)">N</span><span class="vd" style="background:var(--gold)">C</span><span class="vd" style="background:var(--red)">S</span>
+        <span class="st">round 3 · split</span>
+      </div>
+    </button>
+
+    <button class="ditem">
+      <div class="r1"><span class="id">FKS-2391</span><span class="cmt hot"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M13.5 9.5a1.6 1.6 0 0 1-1.6 1.6H5.6L2.5 14V4.2a1.6 1.6 0 0 1 1.6-1.6h7.8a1.6 1.6 0 0 1 1.6 1.6v5.3Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg>26</span></div>
+      <h4>fire_raiser harness fidelity</h4>
+      <div class="voices">
+        <span class="vd" style="background:var(--teal)">T</span><span class="vd" style="background:var(--blue)">P</span><span class="vd" style="background:var(--violet)">F</span><span class="vd" style="background:var(--rose)">N</span><span class="vd" style="background:var(--gold)">C</span>
+        <span class="st">merged</span>
+      </div>
+    </button>
+
+    <button class="ditem">
+      <div class="r1"><span class="id">FKS-2444</span><span class="cmt hot"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M13.5 9.5a1.6 1.6 0 0 1-1.6 1.6H5.6L2.5 14V4.2a1.6 1.6 0 0 1 1.6-1.6h7.8a1.6 1.6 0 0 1 1.6 1.6v5.3Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg>23</span></div>
+      <h4>fix: dependency-release liveness epoch</h4>
+      <div class="voices">
+        <span class="vd" style="background:var(--teal)">T</span><span class="vd" style="background:var(--blue)">P</span><span class="vd" style="background:var(--line-2)">·</span><span class="vd" style="background:var(--line-2)">·</span><span class="vd" style="background:var(--line-2)">·</span>
+        <span class="st">seats 2/5</span>
+      </div>
+    </button>
+
+    <button class="ditem">
+      <div class="r1"><span class="id">FKS-2402</span><span class="cmt"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M13.5 9.5a1.6 1.6 0 0 1-1.6 1.6H5.6L2.5 14V4.2a1.6 1.6 0 0 1 1.6-1.6h7.8a1.6 1.6 0 0 1 1.6 1.6v5.3Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg>19</span></div>
+      <h4>Ratchet G-DEDUP: canonical body helper</h4>
+      <div class="voices">
+        <span class="vd" style="background:var(--teal)">T</span><span class="vd" style="background:var(--blue)">P</span><span class="vd" style="background:var(--violet)">F</span><span class="vd" style="background:var(--rose)">N</span><span class="vd" style="background:var(--gold)">C</span>
+        <span class="st">merged</span>
+      </div>
+    </button>
+
+    <button class="ditem">
+      <div class="r1"><span class="id">FKS-2439</span><span class="cmt"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M13.5 9.5a1.6 1.6 0 0 1-1.6 1.6H5.6L2.5 14V4.2a1.6 1.6 0 0 1 1.6-1.6h7.8a1.6 1.6 0 0 1 1.6 1.6v5.3Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg>17</span></div>
+      <h4>feat: producer-liveness conformance</h4>
+      <div class="voices">
+        <span class="vd" style="background:var(--teal)">T</span><span class="vd" style="background:var(--blue)">P</span><span class="vd" style="background:var(--violet)">F</span><span class="vd" style="background:var(--rose)">N</span><span class="vd" style="background:var(--gold)">C</span>
+        <span class="st">approved 5/5</span>
+      </div>
+    </button>
+
+    <button class="ditem">
+      <div class="r1"><span class="id">FKS-2453</span><span class="cmt"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M13.5 9.5a1.6 1.6 0 0 1-1.6 1.6H5.6L2.5 14V4.2a1.6 1.6 0 0 1 1.6-1.6h7.8a1.6 1.6 0 0 1 1.6 1.6v5.3Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg>14</span></div>
+      <h4>Board hides awaiting-pr rows when state unknown</h4>
+      <div class="voices">
+        <span class="vd" style="background:var(--teal)">T</span><span class="vd" style="background:var(--blue)">P</span><span class="vd" style="background:var(--violet)">F</span><span class="vd" style="background:var(--line-2)">·</span><span class="vd" style="background:var(--line-2)">·</span>
+        <span class="st">converge 2</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- transcript -->
+  <main class="main">
+    <div class="crumb">
+      <span class="id">FKS-2431</span><span class="sep">›</span>
+      <span class="t">fix: false-terminal on defer-clear</span>
+      <span class="sep">·</span><a class="t muted" href="linear-council.html">Council</a><span class="sep">›</span><span class="t muted">debate</span>
+    </div>
+
+    <div class="speakers" id="speakers">
+      <button class="sp all on" data-sp="all">All voices <span class="c">31</span></button>
+      <button class="sp" data-sp="teleology"><span class="vd" style="background:var(--teal)">T</span>teleology <span class="c">6</span></button>
+      <button class="sp" data-sp="parsimony"><span class="vd" style="background:var(--blue)">P</span>parsimony <span class="c">5</span></button>
+      <button class="sp" data-sp="fidelity"><span class="vd" style="background:var(--violet)">F</span>fidelity <span class="c">6</span></button>
+      <button class="sp" data-sp="ownership"><span class="vd" style="background:var(--rose)">N</span>natural-ownership <span class="c">4</span></button>
+      <button class="sp" data-sp="containment"><span class="vd" style="background:var(--gold)">C</span>proportional-containment <span class="c">4</span></button>
+      <button class="sp" data-sp="security"><span class="vd" style="background:var(--red)">S</span>security <span class="c">2</span></button>
+      <button class="sp" data-sp="judge"><span class="vd" style="background:var(--faint)">M</span>meta-judge <span class="c">3</span></button>
+      <button class="sp" data-sp="human"><span class="vd" style="background:var(--amber)">CT</span>calvin-tan <span class="c">1</span></button>
+      <span class="spx" id="spx">showing all 31</span>
+    </div>
+
+    <div class="thread" id="thread">
+
+      <div class="round" data-round><span class="rl">Round 1</span><span class="rq">“Is a liveness-generation epoch the right shape for defer-clear?”</span><span class="rr"></span></div>
+
+      <div class="msg" data-sp="teleology">
+        <span class="vd" style="background:var(--teal)">T</span>
+        <div>
+          <div class="mh"><span class="who">teleology</span><span class="role">consensus seat</span><span class="verd ok">approve</span><span class="tm">10:04</span></div>
+          <div class="mb">The mechanism exists to <em>stop killing receivers that are still working</em>. An epoch that resets on defer-clear serves exactly that purpose — the clock should measure actionable time, not wall time since state entry. Shape follows purpose here.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r1</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="parsimony">
+        <span class="vd" style="background:var(--blue)">P</span>
+        <div>
+          <div class="mh"><span class="who">parsimony</span><span class="role">consensus seat</span><span class="verd no">reject</span><span class="tm">10:06</span></div>
+          <div class="mb">This adds a second clock and a generation counter to a state machine that already has version CAS. <em>Can we not just reset the existing timer on defer-clear?</em> Two mechanisms where one would do is the smell I'm here to catch.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r1</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="fidelity">
+        <span class="vd" style="background:var(--violet)">F</span>
+        <div>
+          <div class="mh"><span class="who">fidelity</span><span class="role">consensus seat</span><span class="verd mid">concern</span><span class="tm">10:07</span></div>
+          <div class="mb">Resetting the existing timer loses the audit trail of how long the entity was blocked. The epoch is more faithful to what actually happened — but the PR doesn't say so, and I won't approve a rationale that isn't written down.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r1</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="ownership">
+        <span class="vd" style="background:var(--rose)">N</span>
+        <div>
+          <div class="mh"><span class="who">natural-ownership</span><span class="role">consensus seat</span><span class="verd ok">approve</span><span class="tm">10:09</span></div>
+          <div class="mb">Liveness belongs to the state's own contract, and this puts the epoch there rather than in a sweep that reaches across states. Ownership is right.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r1</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="containment">
+        <span class="vd" style="background:var(--gold)">C</span>
+        <div>
+          <div class="mh"><span class="who">proportional-containment</span><span class="role">consensus seat</span><span class="verd no">reject</span><span class="tm">10:11</span></div>
+          <div class="mb">One false-terminal incident does not justify a new engine-level concept. Contain it: fix the one state that conflates two liveness classes, don't generalize an epoch across the whole machine yet.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r1</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="judge">
+        <span class="vd" style="background:var(--faint)">M</span>
+        <div>
+          <div class="mh"><span class="who">meta-judge</span><span class="role">narrows the question</span><span class="verd mid">converge</span><span class="tm">10:14</span></div>
+          <div class="mb">2 approve · 2 reject · 1 concern — no consensus. The split is not about correctness, it's about <em>scope</em>: everyone agrees the timer is wrong; they disagree on whether the fix is local or general. Narrowing to: <em>“Fix only the one state that conflates two liveness classes?”</em></div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker converge-round:v1 → r2</span></div>
+        </div>
+      </div>
+
+      <div class="round" data-round><span class="rl">Round 2</span><span class="rq">“Fix only the one state that conflates two liveness classes?”</span><span class="rr"></span></div>
+
+      <div class="msg" data-sp="parsimony">
+        <span class="vd" style="background:var(--blue)">P</span>
+        <div>
+          <div class="mh"><span class="who">parsimony</span><span class="role">consensus seat</span><span class="verd ok">approve</span><span class="flip"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 6h9l-2.5-2.5M13 10H4l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>changed from reject</span><span class="tm">10:22</span></div>
+          <div class="mb">Narrowed, this is one mechanism, not two. Scoped to the single state, I withdraw the objection.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r2</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="containment">
+        <span class="vd" style="background:var(--gold)">C</span>
+        <div>
+          <div class="mh"><span class="who">proportional-containment</span><span class="role">consensus seat</span><span class="verd ok">approve</span><span class="flip"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 6h9l-2.5-2.5M13 10H4l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>changed from reject</span><span class="tm">10:24</span></div>
+          <div class="mb">This is the containment I asked for. Approve, provided the conformance rule lands with it so the class can't silently reappear elsewhere.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r2</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="fidelity">
+        <span class="vd" style="background:var(--violet)">F</span>
+        <div>
+          <div class="mh"><span class="who">fidelity</span><span class="role">consensus seat</span><span class="verd ok">approve</span><span class="tm">10:26</span></div>
+          <div class="mb">Rationale is now written into the PR body and the marker carries the WHY. Faithful. Approve.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r2</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="teleology">
+        <span class="vd" style="background:var(--teal)">T</span>
+        <div>
+          <div class="mh"><span class="who">teleology</span><span class="role">consensus seat</span><span class="verd ok">approve</span><span class="tm">10:27</span></div>
+          <div class="mb">Purpose unchanged and now honestly scoped. Approve.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r2</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="ownership">
+        <span class="vd" style="background:var(--rose)">N</span>
+        <div>
+          <div class="mh"><span class="who">natural-ownership</span><span class="role">consensus seat</span><span class="verd ok">approve</span><span class="tm">10:28</span></div>
+          <div class="mb">Still the right owner. Approve.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus:v1 r2</span></div>
+        </div>
+      </div>
+
+      <div class="msg" data-sp="judge">
+        <span class="vd" style="background:var(--faint)">M</span>
+        <div>
+          <div class="mh"><span class="who">meta-judge</span><span class="role">narrows the question</span><span class="verd ok">consensus reached</span><span class="tm">10:31</span></div>
+          <div class="mb">5/5 approve on the narrowed framing. Two seats moved from reject after scope narrowed — a genuine convergence, not attrition. Handing to implement.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker consensus-reached:v1</span></div>
+        </div>
+      </div>
+
+      <div class="round" data-round><span class="rl">Round 3 · PR review</span><span class="rq">head 4c1e880 · after fix round 1</span><span class="rr"></span></div>
+
+      <div class="msg" data-sp="security">
+        <span class="vd" style="background:var(--red)">S</span>
+        <div>
+          <div class="mh"><span class="who">security</span><span class="role">standing seat</span><span class="verd no">reject</span><span class="tm">11:41</span></div>
+          <div class="mb">The new epoch value is read from the marker without re-verifying the author is the trusted bot. <em>An untrusted comment could reset the liveness clock</em> and park an entity indefinitely. This must fail closed.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>marker review-result:v1 r1</span></div>
+        </div>
+      </div>
+
+      <div class="msg human" data-sp="human">
+        <span class="vd" style="background:var(--amber)" title="calvin-tan">CT</span>
+        <div>
+          <div class="mh"><span class="who">calvin-tan</span><span class="role">human · not the bot</span><span class="tm">11:48</span></div>
+          <div class="mb">Agree with security — this is the same class as the marker-trust bug we hit in #1361. Please add the trusted-author check and a fixture that feeds an untrusted epoch marker.</div>
+          <div class="mmeta"><a href="#">↗ comment</a><span>·</span><span>human input · not a state write</span></div>
+        </div>
+      </div>
+
+      <div class="msg pending" data-sp="teleology">
+        <span class="vd" style="background:var(--teal)">T</span>
+        <div>
+          <div class="mh"><span class="who">teleology</span><span class="role">consensus seat</span><span class="verd pend">waiting</span><span class="tm">—</span></div>
+          <div class="mb">Not yet returned for this head. Fix round 2 in flight.</div>
+        </div>
+      </div>
+
+      <div class="compose">
+        <textarea placeholder="Reply in the debate — posts as a human comment on FKS-2431…"></textarea>
+        <div class="crow">
+          <span class="as">as calvin-tan ✓ human · never as integration-ElonSG</span>
+          <button class="send">Comment</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- tally -->
+  <aside class="tally">
+    <div class="thd">Where each voice stands</div>
+    <div class="trow"><span class="vd" style="background:var(--teal)">T</span><span class="nm">teleology</span><span class="v pend">waiting</span></div>
+    <div class="trow"><span class="vd" style="background:var(--blue)">P</span><span class="nm">parsimony</span><span class="v pend">waiting</span></div>
+    <div class="trow"><span class="vd" style="background:var(--violet)">F</span><span class="nm">fidelity</span><span class="v pend">waiting</span></div>
+    <div class="trow"><span class="vd" style="background:var(--rose)">N</span><span class="nm">natural-ownership</span><span class="v pend">waiting</span></div>
+    <div class="trow"><span class="vd" style="background:var(--gold)">C</span><span class="nm">proportional-containment</span><span class="v pend">waiting</span></div>
+    <div class="trow"><span class="vd" style="background:var(--red)">S</span><span class="nm">security</span><span class="v no">reject</span></div>
+    <div class="trow"><span class="vd" style="background:var(--amber)">CT</span><span class="nm">calvin-tan</span><span class="v no">agrees w/ reject</span></div>
+
+    <div class="thd">Debate volume · 31 comments</div>
+    <div class="bar">
+      <i style="background:var(--teal);width:19%"></i><i style="background:var(--blue);width:16%"></i><i style="background:var(--violet);width:19%"></i><i style="background:var(--rose);width:13%"></i><i style="background:var(--gold);width:13%"></i><i style="background:var(--red);width:7%"></i><i style="background:var(--faint);width:10%"></i><i style="background:var(--amber);width:3%"></i>
+    </div>
+    <div class="blegend"><span><i style="background:var(--violet)"></i>fidelity loudest</span><span><i style="background:var(--amber)"></i>human 1</span></div>
+
+    <div class="thd">Convergence trace</div>
+    <div class="conv">
+      <div class="cstep"><i class="cd"></i><div>Round 1 — no consensus <span class="q">2 approve · 2 reject · 1 concern</span></div></div>
+      <div class="cstep"><i class="cd"></i><div>Narrowed by meta-judge <span class="q">“fix only the conflated state?”</span></div></div>
+      <div class="cstep"><i class="cd"></i><div>Round 2 — reached 5/5 <span class="q">2 seats changed position</span></div></div>
+      <div class="cstep now"><i class="cd"></i><div>Round 3 — PR review reject <span class="q">security · marker trust · fix r2 in flight</span></div></div>
+    </div>
+
+    <div class="note">Seats are codex workers given distinct lenses; each comment is a trusted-bot marker on the GitHub thread. Nothing here is a private channel — the debate <em>is</em> the issue thread. Synced 2m ago.</div>
+  </aside>
+
+</div>
+
+<script>
+// Speaker filter: click a voice to read only what it said.
+const sps = document.querySelectorAll('.sp');
+const msgs = document.querySelectorAll('.msg');
+const rounds = document.querySelectorAll('[data-round]');
+const spx = document.getElementById('spx');
+const active = new Set();
+
+function apply(){
+  const all = active.size === 0;
+  let shown = 0;
+  msgs.forEach(m => {
+    const hit = all || active.has(m.dataset.sp);
+    m.style.display = hit ? '' : 'none';
+    if (hit) shown++;
+  });
+  // hide a round header when everything under it is filtered out
+  rounds.forEach(r => {
+    let n = r.nextElementSibling, any = false;
+    while (n && !n.hasAttribute('data-round')) {
+      if (n.classList.contains('msg') && n.style.display !== 'none') any = true;
+      n = n.nextElementSibling;
+    }
+    r.style.display = any ? '' : 'none';
+  });
+  sps.forEach(s => s.classList.toggle('on', s.dataset.sp === 'all' ? all : active.has(s.dataset.sp)));
+  spx.textContent = all ? 'showing all 31' :
+    'showing ' + shown + ' from ' + active.size + ' voice' + (active.size > 1 ? 's' : '');
+}
+
+sps.forEach(s => s.addEventListener('click', () => {
+  const k = s.dataset.sp;
+  if (k === 'all') active.clear();
+  else active.has(k) ? active.delete(k) : active.add(k);
+  apply();
+}));
+apply();
+</script>
+</body>
+</html>

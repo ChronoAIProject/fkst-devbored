@@ -1,0 +1,40 @@
+{
+  "schema": "fkst.governance-evidence/v1",
+  "gate": "G-001",
+  "recorded_at": "2026-07-20T19:16:31Z",
+  "verdict": "pass",
+  "role": "main_pm",
+  "provider": "openai",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "xhigh",
+  "agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+  "session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+  "originator": "heca",
+  "source": "vscode",
+  "codex_cli_version": "0.144.6",
+  "auth_check": "Logged in using ChatGPT",
+  "auth_scope_note": "The non-secret login check proves ChatGPT authentication, not subscription tier.",
+  "durability": {
+    "single_thread_preserved": true,
+    "session_file": "/Users/chronoai/.codex/sessions/2026/07/20/rollout-2026-07-20T23-14-02-019f8017-5bad-7302-b7fb-e081e3d35205.jsonl"
+  },
+  "evidence_commands": [
+    "codex --version",
+    "codex login status",
+    "jq select(.type == session_meta) projection over the named rollout JSONL",
+    "jq select(.type == turn_context) projection over the named rollout JSONL",
+    "heca-cli daemon status",
+    "heca-cli providers models codex"
+  ],
+  "observed_facts": {
+    "daemon_version": "0.1.0-nightly-20260716-3",
+    "provider_route": "codex",
+    "catalog_model": "gpt-5.6-sol",
+    "catalog_label": "GPT-5.6-Sol"
+  },
+  "limitations": [
+    "This receipt is governance identity evidence only.",
+    "It does not prove the dedicated sanitized Codex worker boundary required by RDY-20.",
+    "It does not authorize engineering dispatch until G-007 passes."
+  ]
+}

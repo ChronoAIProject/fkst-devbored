@@ -1,0 +1,447 @@
+{
+  "schema": "fkst.wave-dispatch/v1",
+  "wave": "R2-step0-wave-a",
+  "recorded_at": "2026-07-21T01:45:28Z",
+  "recorded_at_local": "2026-07-21T09:45:28+08:00",
+  "state": "ACCEPTED",
+  "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+  "pm_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+  "authority": {
+    "app_develop_commit": "4a2fac37cc9a8baa11fab75d6fc46a0130c9cad3",
+    "candidate_integration_commit": "99e7155e74934fd726fd07ba226966e75519f554",
+    "required_app_worktree_base_rule": "Every app task worktree must start from the later clean integration merge commit that contains this accepted dispatch record; 99e7155e74934fd726fd07ba226966e75519f554 is only the pre-dispatch candidate.",
+    "accepted_r2_preflight": "R2-preflight.json",
+    "task_state_contract": "task-state-contract.v1.json",
+    "product_coding_authorized": false,
+    "authorization_gate": "R-039"
+  },
+  "route_contract": {
+    "implementer": {
+      "provider": "codex",
+      "model": "gpt-5.6-sol",
+      "thinking": "xhigh",
+      "heca_mode": "full-access",
+      "one_owner_per_task": true,
+      "subagents_allowed": false
+    },
+    "advisor": {
+      "provider": "claude",
+      "model": "claude-fable-5",
+      "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+      "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+      "authority": "advisory_only",
+      "packet_review_required": true
+    },
+    "reviewer": {
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "fresh_session_per_initial_or_rework_review": true,
+      "repository_authorship": false
+    },
+    "pm": {
+      "provider": "codex",
+      "model": "gpt-5.6-sol",
+      "agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+      "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+      "acceptance_after_fresh_opus_only": true
+    },
+    "rework": "Any Fable, Opus, or PM return goes to the same Sol owner. A returned task must be dev-verified again and receive a fresh Opus session before PM re-acceptance."
+  },
+  "parallelism": {
+    "safe_active_implementer_count": 6,
+    "basis": "G-006 and R1 proved six Heca agents after serialized worktree creation; this wave has four disjoint app task path sets and two separate dependency repositories.",
+    "worktree_creation": "serial",
+    "agent_execution": "parallel",
+    "r010_disposition": "R-010 is intentionally deferred to Wave B because R-008 owns the shared canonical JSON/digest harness. Starting both from the same base would create duplication or a shared-file collision; R-014 fills the sixth safe slot."
+  },
+  "repositories": {
+    "app": {
+      "root": "/Users/chronoai/Desktop/aelf-frontend-work/FKST/fkst-devbored",
+      "integration_branch": "codex/full-app-v2-00-readiness",
+      "integration_worktree_id": "019f81f7-9d7c-7a23-a205-e66284a3a01c"
+    },
+    "public_devloop": {
+      "root": "/Users/chronoai/Desktop/aelf-frontend-work/FKST/packages",
+      "source_base_commit": "f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b",
+      "source_branch": "feat/devbored-loop-scaffold",
+      "planned_branch": "feat/fkst-devbored-loop-visibility",
+      "baseline_topology": "FKST_DEVLOOP_INTEGRATION_BRANCH is unset. The task branches from the exact R-004-pinned public-devloop lineage, never commits to dev or the existing source branch, and does not perform remote merge or topology mutation. This explicit, time-bounded deviation from the default dev base is reconciled only through the packages repository's own dev-targeted PR, CI, and squash route at the later authorized R-005/upstream integration step.",
+      "known_preserved_primary_checkout_status": [
+        "?? .DS_Store"
+      ]
+    },
+    "substrate": {
+      "root": "/Users/chronoai/Desktop/aelf-frontend-work/FKST/substrate",
+      "source_base_commit": "1e03c4f91d7cc9e42dff1dc180623912ea889f65",
+      "source_branch": "dev",
+      "planned_branch": "feat/safe-managed-codex-invocation",
+      "baseline_status": "clean"
+    }
+  },
+  "tasks": [
+    {
+      "id": "R-003",
+      "repository": "app",
+      "depends_on": ["R-001"],
+      "planned_branch": "codex/v2-r003-substrate-host-inventory",
+      "title": "Freeze substrate direct-host and process contract inventory",
+      "exclusive_paths": [
+        "contracts/step0/substrate/direct-host/**",
+        "evidence/step0/R-003/**"
+      ],
+      "required_read_first": [
+        "docs/spec/01-DEPENDENCIES.md",
+        "docs/spec/02-ARCHITECTURE.md",
+        "docs/spec/03-REQUIREMENTS.md",
+        "docs/spec/04-DATA-CONTRACTS.md",
+        "docs/spec/06-SECURITY-OPERATIONS.md",
+        "contracts/step0/substrate/fixtures/current-substrate-manifest.v1.json",
+        "evidence/step0/R-001/evidence.v1.json",
+        "plans/parallel-engineering-task-map.md"
+      ],
+      "acceptance_criteria": [
+        "A machine-readable source map identifies every supported direct-host, supervisor, framework-child, process-group, signal, detach, timeout, log, runtime-root, and durable-root argv/env/file contract by exact substrate commit, path, symbol, and line range.",
+        "Supported, unsupported, and unknown surfaces are distinct closed states; unknown argv/env and inferred lifetime behavior remain red and name their downstream closure task.",
+        "The inventory distinguishes source evidence from executable proof and makes no build, runtime, containment, or product-readiness claim.",
+        "Only the two exclusive prefixes change; substrate and public-devloop repositories remain byte-identical."
+      ],
+      "verification_commands": [
+        "jq -e . contracts/step0/substrate/direct-host/*.json evidence/step0/R-003/*.json",
+        "source-citation digest and line-range verifier recorded in R-003 evidence",
+        "git diff --check and exclusive-path subset check"
+      ],
+      "task_level_fable_required": false
+    },
+    {
+      "id": "R-008",
+      "repository": "app",
+      "depends_on": ["R-007"],
+      "planned_branch": "codex/v2-r008-workflow-corpus",
+      "title": "Freeze executable Workflow JSON, canonicalization, and digest corpus",
+      "exclusive_paths": [
+        "contracts/pubspec.yaml",
+        "contracts/pubspec.lock",
+        "contracts/lib/src/canonical_json.dart",
+        "contracts/lib/src/workflow_contract.dart",
+        "contracts/lib/fkst_workflow_contracts.dart",
+        "contracts/test/workflow_contract_test.dart",
+        "contracts/lua/shared/**",
+        "contracts/lua/workflow/**",
+        "contracts/specs/workflow/**",
+        "evidence/step0/R-008/**"
+      ],
+      "required_read_first": [
+        "docs/spec/04-DATA-CONTRACTS.md",
+        "contracts/specs/workflow/workflow-semantic-contract-v1.json",
+        "contracts/specs/workflow/issue-council-delivery-family-v1.json",
+        "contracts/specs/workflow/workflow-declarative-fixtures-v1.json",
+        "evidence/step0/R-007/dev-verification.json",
+        "docs/spec/evidence/governance/R2-preflight.json"
+      ],
+      "acceptance_criteria": [
+        "One shared app-owned canonical JSON/digest harness is introduced for later Council reuse; no parallel copy of that kernel is permitted.",
+        "Dart and substrate-executed Lua consume the same repo-local corpus and agree byte-for-byte on canonical JSON and SHA-256 digest results.",
+        "Valid, invalid, unknown-key, version, type, cardinality, string/collection bound, digest, and hostile fixtures are executable, not narrative.",
+        "Stage ids and kinds are unique and map exactly one-to-one, in order, to the selected 24-route family; duplicate, reordered, missing, and extra stages/kinds fail closed.",
+        "The existing R-007 semantic authority is preserved. Any semantic contradiction stops for plan mutation instead of being silently redefined.",
+        "The task-scoped Workflow test is green. The known unrelated historical suite remains 19 pass/1 obsolete-fixture failure in the primary checkout and 2 pass/18 ambient-path failures in an isolated worktree, exactly as pinned by R2-preflight-test-transcript.json, until R-059 repairs that harness.",
+        "No dependency/runtime/reference-package import or product/UI code is added."
+      ],
+      "verification_commands": [
+        "cd contracts && dart pub get",
+        "cd contracts && dart analyze && dart test test/workflow_contract_test.dart",
+        "verify the R-001-selected binary SHA-256, then run /Users/chronoai/Desktop/aelf-frontend-work/FKST/substrate/target/release/fkst-framework test --project-root $PWD/contracts/lua/workflow --package-root $PWD/contracts/lua/workflow --report-json $PWD/evidence/step0/R-008/lua-test-report.json",
+        "compare Dart and Lua canonical bytes/digests for every shared fixture",
+        "git diff --check and exclusive-path subset check"
+      ],
+      "task_level_fable_required": true
+    },
+    {
+      "id": "R-014",
+      "repository": "app",
+      "depends_on": ["R-004"],
+      "planned_branch": "codex/v2-r014-devloop-intake-map",
+      "title": "Map intake, claim, and trust behavior to public devloop",
+      "exclusive_paths": [
+        "contracts/step0/devloop/intake-claim-trust/**",
+        "evidence/step0/R-014/**"
+      ],
+      "required_read_first": [
+        "docs/spec/01-DEPENDENCIES.md",
+        "docs/spec/03-REQUIREMENTS.md",
+        "contracts/step0/devloop/public-surface.v1.json",
+        "evidence/step0/R-004/verification.v1.json",
+        "plans/parallel-engineering-task-map.md"
+      ],
+      "acceptance_criteria": [
+        "Exact public export, source symbol, source test, input/output, and idempotency probe identities are recorded for intake, label-only claim, trust-before-parse, and no-write posture.",
+        "Assignee configuration and proxy-coupled scope are explicitly rejected; label mode is the only admitted claim mechanism.",
+        "Any private, reference-package, or absent seam is red and names the downstream task that must remove or gate scope; no app-side reimplementation is proposed.",
+        "The map is pinned to the R-004 public export digest and dependency commit and changes only the two exclusive prefixes."
+      ],
+      "verification_commands": [
+        "jq -e . contracts/step0/devloop/intake-claim-trust/*.json evidence/step0/R-014/*.json",
+        "public-export membership, source-digest, symbol, and source-test identity verifier recorded in R-014 evidence",
+        "bounded forbidden-reference/import scan",
+        "git diff --check and exclusive-path subset check"
+      ],
+      "task_level_fable_required": false
+    },
+    {
+      "id": "R-016",
+      "repository": "app",
+      "depends_on": ["R-004"],
+      "planned_branch": "codex/v2-r016-devloop-review-map",
+      "title": "Map review, head-gate, terminal, restart, and replay behavior",
+      "exclusive_paths": [
+        "contracts/step0/devloop/review-head-terminal-restart/**",
+        "evidence/step0/R-016/**"
+      ],
+      "required_read_first": [
+        "docs/spec/01-DEPENDENCIES.md",
+        "docs/spec/02-ARCHITECTURE.md",
+        "docs/spec/03-REQUIREMENTS.md",
+        "docs/spec/06-SECURITY-OPERATIONS.md",
+        "contracts/step0/devloop/public-surface.v1.json",
+        "evidence/step0/R-004/verification.v1.json",
+        "plans/parallel-engineering-task-map.md"
+      ],
+      "acceptance_criteria": [
+        "Exact public exports, source symbols, source tests, effect authorities, idempotency/replay keys, receipts, and no-write probes are mapped for review, exact-head gate, terminal, restart, and replay behavior.",
+        "Immutable evidence-comment, optional merge, and proxy-free restart capabilities are classified present, absent, private, or insufficient without guessing; missing required seams remain red for R-041/R-042/R-045/R-055.",
+        "Reference packages and devloop internals may be cited only as provenance-bound guide material and never as runtime or authority.",
+        "No app-local replacement, dependency edit, product/UI code, or claim of executable capability proof is introduced."
+      ],
+      "verification_commands": [
+        "jq -e . contracts/step0/devloop/review-head-terminal-restart/*.json evidence/step0/R-016/*.json",
+        "public-export membership, source-digest, symbol, test, and idempotency-probe verifier recorded in R-016 evidence",
+        "bounded forbidden-reference/import scan",
+        "git diff --check and exclusive-path subset check"
+      ],
+      "task_level_fable_required": true
+    },
+    {
+      "id": "R-041",
+      "repository": "public_devloop",
+      "depends_on": ["R-004"],
+      "planned_branch": "feat/fkst-devbored-loop-visibility",
+      "title": "Land the narrow public-devloop visibility change",
+      "exclusive_paths": [
+        "libraries/devloop/fkst.toml",
+        "scripts/check_repo_std_dependency_model.py",
+        "scripts/check_repo_std_dependency_model_test.py"
+      ],
+      "required_read_first": [
+        "AGENTS.md in full",
+        "the app R-004 public-surface contract and verification evidence",
+        "the app R-041 row in plans/parallel-engineering-task-map.md"
+      ],
+      "acceptance_criteria": [
+        "A test first proves the exact fkst-devbored-loop consumer is rejected by the old closed allowlist, then passes after the change.",
+        "Only fkst-devbored-loop is added to the devloop visibility manifest and its exact positive repository guard; no export, library dependency, runtime behavior, package, or other consumer changes.",
+        "Unknown consumers still fail closed and the existing exact-family guard remains mechanical.",
+        "The work occurs on a separate branch and commit from f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b; no app file, remote topology, baseline branch, or preserved .DS_Store is changed."
+      ],
+      "verification_commands": [
+        "python3 scripts/check_repo_std_dependency_model_test.py",
+        "python3 scripts/check_repo.py",
+        "scripts/run.sh test",
+        "git diff --check and exact three-path subset check"
+      ],
+      "task_level_fable_required": true,
+      "task_state_record": "The main PM maintains the canonical task-state record in the app governance repository; the dependency implementer must not edit the app repository."
+    },
+    {
+      "id": "R-051",
+      "repository": "substrate",
+      "depends_on": ["R-001", "R-013"],
+      "planned_branch": "feat/safe-managed-codex-invocation",
+      "title": "Add a safe current-Codex invocation capability to substrate",
+      "exclusive_paths": [
+        "crates/fkst-framework/src/sdk_codex.rs",
+        "crates/fkst-framework/src/mlua_init.rs",
+        "crates/fkst-framework/src/config_registry.rs",
+        "crates/fkst-framework/src/self_test.rs",
+        "crates/fkst-framework/tests/sdk_codex.rs",
+        "SPEC.md",
+        "README.md",
+        "docs/package-repo-contract.md",
+        "docs/architecture.md"
+      ],
+      "required_read_first": [
+        "AGENTS.md in full",
+        "SPEC.md",
+        "docs/architecture.md",
+        "docs/package-repo-contract.md",
+        "the app Codex identity/auth and invocation-policy contracts",
+        "the app R-001 and R-013 verification evidence",
+        "the app R-051 row in plans/parallel-engineering-task-map.md"
+      ],
+      "acceptance_criteria": [
+        "TDD red-to-green tests define a generic substrate capability, not an app/Council/workflow policy, and preserve existing substrate behavior outside the explicitly selected managed invocation.",
+        "The exact installed Codex CLI grammar places global flags before exec, omits context, ignores user config/rules/project docs, uses a dedicated keyring-backed Codex home plus distinct empty process HOME, and always emits an explicit role sandbox with no bypass.",
+        "Strict/untrusted/zero-project-doc posture and disabled personal skills, hooks, web, MCP, apps, plugins, goals, and multi-agent surfaces are represented by installed-CLI-compatible resolved configuration; incompatible managed requirements fail closed.",
+        "The resolved managed invocation satisfies every field of the frozen app fkst.codex-invocation-policy/v1 contract, explicitly including ephemeral session and fail-closed approval/network policy, or fails closed.",
+        "Managed-requirement, resolved-config, and tool-surface digests are deterministic and negative .agents, tool, process, ambient-env, unsupported-model/effort, and bypass probes pass hermetically without reading credentials or invoking a real product worker.",
+        "The managed capability is a first-class parameterized invocation profile, not a compatibility fork or second legacy implementation. The existing absent-sandbox bypass default remains byte-compatible outside that explicit profile because current package behavior depends on it.",
+        "Failure is typed, bounded, grep-able, and does not introduce host business concepts, provider abstraction, persistent agent state, or dependency on the app repository.",
+        "The pinned-base all-target clippy gate is truthfully baseline-red. Its comparator uses Cargo --keep-going plus the digest-pinned jq recipe so two base and two final canonical arrays are each internally byte-identical. The final head introduces no new normalized diagnostic fingerprint or multiplicity anywhere, introduces no lint allowance/configuration, and preserves an exactly equal non-owned-path fingerprint multiset under the same locked toolchain and environment digest.",
+        "Only the declared substrate paths change on a separate branch/commit from dev at 1e03c4f91d7cc9e42dff1dc180623912ea889f65. Any necessary path outside this set requires PM plan mutation before editing."
+      ],
+      "verification_commands": [
+        "cargo fmt --check",
+        "cargo test -p fkst-framework --test sdk_codex",
+        "cargo test -p fkst-framework",
+        "observe cargo clippy -p fkst-framework --all-targets -- -D warnings as BASELINE_RED at exact pinned base 1e03c4f91d7cc9e42dff1dc180623912ea889f65; it is not an absolute-green task result",
+        "run cargo clippy --keep-going -p fkst-framework --all-targets --message-format=json --locked -- -D warnings twice on both the exact pinned base and final feature head under identical rustc/cargo/clippy, lockfile, argv, jq-recipe, and allowlisted-environment digests; canonicalize with R2-r051-clippy-fingerprints.jq; require internal byte equality for each pair, zero new fingerprints or multiplicity anywhere, exact equality for the non-owned-path partition, and no added allow/expect/lint configuration",
+        "scripts/verify.sh",
+        "git diff --check and exclusive-path subset check"
+      ],
+      "task_level_fable_required": true,
+      "task_state_record": "The main PM maintains the canonical task-state record in the app governance repository; the dependency implementer must not edit the app repository."
+    }
+  ],
+  "plan_mutations": [
+    {
+      "id": "R2-R051-CLIPPY-BASELINE-1",
+      "task_id": "R-051",
+      "state": "SUPERSEDED",
+      "recorded_at_utc": "2026-07-21T02:54:42Z",
+      "new_fact": "The accepted absolute-green all-target clippy command exits 101 on the clean pinned substrate base before R-051 changes, so it cannot truthfully serve as an absolute-green feature acceptance gate.",
+      "evidence": "R2-r051-clippy-gate-mutation.json",
+      "disposition": "Retain the repository-wide red observation and replace false absolute-green semantics with a locked, structured, zero-new-diagnostic differential; every non-clippy R-051 gate remains absolute green.",
+      "adr_required": false,
+      "adr_rationale": "The mutation corrects verification semantics for a pre-existing repository condition and changes no authority invariant, dependency boundary, write surface, serialized contract, runtime behavior, or product scope.",
+      "semantic_no_change": [
+        "docs/spec",
+        "docs/spec/08-READINESS.md",
+        "docs/spec/07-TRACEABILITY.md",
+        "plans/parallel-engineering-task-map.md",
+        "plans/full-app-construction.md",
+        "the 211-node/800-edge task graph"
+      ],
+      "implementation_scope_change": false,
+      "product_or_ui_authorized": false,
+      "standing_fable_verdict": "PASS",
+      "fresh_opus_requirement": "The fresh independent R-051 implementation reviewer must reproduce both locked structured clippy runs and the zero-new-diagnostic delta before PM acceptance.",
+      "pm_disposition": "SUPERSEDED_BY_R2-R051-CLIPPY-BASELINE-2",
+      "superseded_by": "R2-R051-CLIPPY-BASELINE-2"
+    },
+    {
+      "id": "R2-R051-CLIPPY-BASELINE-2",
+      "task_id": "R-051",
+      "state": "ACCEPTED",
+      "recorded_at_utc": "2026-07-21T04:22:54Z",
+      "new_fact": "The v1 diagnostic subset without Cargo --keep-going is scheduling-sensitive because denied-warning failures cancel unscheduled targets; Cargo --keep-going yields a repeatable full-target diagnostic multiset.",
+      "evidence": "R2-r051-clippy-gate-mutation-v2.json",
+      "canonicalizer": "R2-r051-clippy-fingerprints.jq",
+      "disposition": "Use two locked --keep-going runs on base and final, canonicalize through the digest-pinned jq recipe, require internal byte identity for each pair, and enforce the unchanged zero-new/exact-non-owned/owned-subset rules. Keep the original command only as BASELINE_RED evidence.",
+      "adr_required": false,
+      "adr_rationale": "The v2 mutation repairs comparator reproducibility without changing authority, dependencies, write surfaces, serialized contracts, runtime behavior, or product scope.",
+      "semantic_no_change": [
+        "docs/spec",
+        "docs/spec/08-READINESS.md",
+        "docs/spec/07-TRACEABILITY.md",
+        "plans/parallel-engineering-task-map.md",
+        "plans/full-app-construction.md",
+        "the 211-node/800-edge task graph"
+      ],
+      "implementation_scope_change": false,
+      "product_or_ui_authorized": false,
+      "standing_fable_verdict": "PASS_WITH_PRECISION_APPLIED",
+      "fresh_opus_requirement": "The fresh independent R-051 reviewer must reexecute two base and two final --keep-going runs with the pinned recipe and reproduce every differential and absolute-green gate before PM acceptance.",
+      "pm_disposition": "ACCEPTED"
+    }
+  ],
+  "global_constraints": [
+    "Exactly two primary FKST dependencies remain fkst-substrate and public devloop. devbored, github-devloop*, consensus, and github-proxy remain reference-only.",
+    "Workflow and Council remain the app-owned mechanisms and authority. Public devloop supplies reusable mechanics; substrate supplies generic process/runtime primitives.",
+    "No product UI, application runtime, package graph, symlink, remote PR/merge, or product launch is authorized in this wave.",
+    "App agents may not edit dependency repositories. Dependency agents may not edit the app or the other dependency repository.",
+    "No task may edit docs/spec, plans, shared app barrels, existing unrelated tests, CI, or another task's path except the main PM updating governance records.",
+    "No task may create or edit a shared README, index, .gitignore, or other parent file directly under contracts/step0, contracts/specs, contracts/lua, or evidence/step0; all artifacts stay inside an exclusive task path.",
+    "Every artifact commit has exactly one FKST-Task, FKST-Agent-ID, FKST-Provider, FKST-Model, and FKST-Provider-Session trailer.",
+    "Credential material, keychain contents, personal dotfiles, and unredacted environment dumps are out of scope."
+  ],
+  "collision_gate": {
+    "planned_path_sets_pairwise_checked": 15,
+    "planned_collisions": [],
+    "accepted_commit_gate": "Before integration, compute every accepted commit's actual changed-path set from its repository base, require it to be a subset of its exclusive paths, and require pairwise intersections among same-repository tasks to be empty.",
+    "integration_order": ["R-003", "R-008", "R-014", "R-016", "R-041", "R-051"]
+  },
+  "review_and_integration": {
+    "implementation_submission": "Each Sol owner commits one self-contained artifact and supplies command transcripts plus clean pre/post porcelain.",
+    "fable": "The standing advisor reviews this packet and every task marked task_level_fable_required; advice never approves.",
+    "opus": "Every task commit receives a fresh independent read-only Opus review. Rework receives another fresh Opus session.",
+    "pm": "The identified main PM checks the exact diff, tests, boundaries, dependency status, evidence truthfulness, and Opus freshness before ACCEPTED.",
+    "integration": "App commits are integrated only into the dedicated integration worktree. Dependency commits remain pinned separate-repository artifacts until their own reviewed integration route is authorized; the app records exact accepted commit ids without importing or symlinking source."
+  },
+  "limitations": [
+    "This record authorizes only R-003, R-008, R-014, R-016, R-041, and R-051.",
+    "R-010 begins only after the R-008 canonical harness is integrated into its base.",
+    "R-059 remains intentionally outside the RUN traceability family because it repairs contract-test fixture portability and provenance, not runtime behavior.",
+    "R-039 still blocks all product and UI implementation."
+  ],
+  "fable_advisory": {
+    "reviewed_at": "2026-07-21T01:54:25Z",
+    "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+    "provider": "claude",
+    "model": "claude-fable-5",
+    "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+    "verdict": "CHANGES_REQUIRED",
+    "authority": "advisory_only",
+    "repository_authorship": false,
+    "pre_post_porcelain_identical": true,
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "finding": "R-008 full dart test gate is impossible before R-059 because an unrelated historical test requires an ambient sibling checkout.",
+        "pm_disposition": "APPLIED: scope the blocking gate to the owned Workflow test and preserve the exact known full-suite transcript as an expected residual until R-059."
+      },
+      {
+        "severity": "MEDIUM",
+        "finding": "R-051 omitted explicit ephemeral-session and fail-closed approval/network policy closure.",
+        "pm_disposition": "APPLIED: require the resolved profile to satisfy every frozen R-013 invocation-policy field or fail closed."
+      },
+      {
+        "severity": "LOW",
+        "finding": "The shared-parent-file prohibition was not explicit.",
+        "pm_disposition": "APPLIED: forbid shared parent README/index/.gitignore or other parent artifacts under all four shared trees."
+      },
+      {
+        "severity": "LOW",
+        "finding": "R-008 Lua execution needed an exact supported substrate seam.",
+        "pm_disposition": "APPLIED: pin the R-001-selected binary, exact test argv, package root, and report path."
+      },
+      {
+        "severity": "LOW",
+        "finding": "R-041 lineage deviation and R-051 no-dual-mode framing needed explicit dispositions.",
+        "pm_disposition": "APPLIED: bind R-041 to later repository-native reconciliation and define R-051 as a first-class parameterized profile that preserves the current default outside the profile."
+      }
+    ],
+    "endorsed_without_correction": [
+      "six-task wave choice and safe parallel capacity",
+      "R-010 deferral behind the R-008 shared harness",
+      "task-state placeholders and per-repository bases",
+      "exact two-primary-dependency and Workflow/Council authority boundaries",
+      "collision, fresh-Opus, same-owner rework, PM, and R-039 gates"
+    ]
+  },
+  "pm_decision": {
+    "decided_at": "2026-07-21T01:55:03Z",
+    "decided_at_local": "2026-07-21T09:55:03+08:00",
+    "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "pm_provider": "codex",
+    "pm_model": "gpt-5.6-sol",
+    "pm_provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+    "decision": "ACCEPTED",
+    "basis": [
+      "All five Fable corrections are applied exactly and its unaffected architecture checks remain valid.",
+      "The six task packets have satisfied dependencies, exact acceptance criteria, disjoint same-repository paths, and pinned repository bases.",
+      "The corrected R-041 unit-test command passes 12 tests on the pinned source, and the R-051 sdk_codex target compiles on the pinned substrate base.",
+      "No task authorizes product/UI/runtime graph coding, a third primary dependency, reference-package authority, symlinks, remote topology changes, or application launch.",
+      "Every implementation still requires task-level Fable where marked, fresh independent Opus review, same-owner rework, and a separate PM acceptance audit."
+    ],
+    "next_action": "Commit this accepted packet, merge it into the clean integration worktree, then create worktrees serially and bind six Sol owners."
+  }
+}

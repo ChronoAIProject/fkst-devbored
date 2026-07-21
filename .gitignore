@@ -1,0 +1,5 @@
+.DS_Store
+*.log
+.fkst/run/
+fixtures/local/
+build/

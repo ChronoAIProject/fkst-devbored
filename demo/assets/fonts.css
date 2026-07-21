@@ -1,0 +1,16 @@
+/* Vendored locally so the demo runs offline / air-gapped — no Google-CDN request.
+   Inter latin subset is a single variable file covering weights 400-600. */
+@font-face{
+  font-family:'Inter';
+  font-style:normal;
+  font-weight:400 600;
+  font-display:swap;
+  src:url('../fonts/inter-latin.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Space Grotesk';
+  font-style:normal;
+  font-weight:700;
+  font-display:swap;
+  src:url('../fonts/space-grotesk-latin-700.woff2') format('woff2');
+}

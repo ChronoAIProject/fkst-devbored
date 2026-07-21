@@ -1,0 +1,246 @@
+{
+  "schema": "fkst.declarative-council-fixtures/v1",
+  "contractRef": "council-v1.contract.json#R-009/council-v1",
+  "claimStatus": "PLANNED_UNVERIFIED",
+  "executionNotice": "These fixtures declare expected outcomes. jq checks only JSON syntax and fixture shape; no Council reducer, schema implementation, Dart/Lua parity, Codex execution, or evidence transport ran in R-009.",
+  "sharedInputs": {
+    "definitions": {
+      "council-core": {
+        "schema": "fkst.devbored.council.v1",
+        "id": "council-core",
+        "version": 1,
+        "name": "Core Delivery Council",
+        "seats": [
+          {"id": "product-seat", "displayName": "Product", "lens": "product"},
+          {"id": "architecture-seat", "displayName": "Architecture", "lens": "architecture"},
+          {"id": "quality-seat", "displayName": "Quality", "lens": "quality"},
+          {"id": "security-seat", "displayName": "Security", "lens": "security"}
+        ],
+        "policies": {
+          "unanimous-design": {
+            "roster": ["product-seat", "architecture-seat"],
+            "agreement": "unanimous",
+            "maxRounds": 2,
+            "timeoutSeconds": 300,
+            "dissentRule": "explicitChangesRequested"
+          },
+          "majority-review": {
+            "roster": ["product-seat", "architecture-seat", "quality-seat", "security-seat"],
+            "agreement": "simpleMajority",
+            "maxRounds": 3,
+            "timeoutSeconds": 300,
+            "dissentRule": "explicitChangesRequested"
+          },
+          "three-seat-review": {
+            "roster": ["product-seat", "architecture-seat", "quality-seat"],
+            "agreement": "simpleMajority",
+            "maxRounds": 3,
+            "timeoutSeconds": 300,
+            "dissentRule": "explicitChangesRequested"
+          }
+        }
+      }
+    },
+    "contributionSets": {
+      "two-all-approve": [
+        {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"approve","contributionDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","codexRunRef":"codex-run-001","excerpt":"Product constraints satisfied.","at":"2026-07-21T00:00:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"approve","contributionDigest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","codexRunRef":"codex-run-002","excerpt":"Architecture constraints satisfied.","at":"2026-07-21T00:00:02Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+      ],
+      "two-approve-abstain": [
+        {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"approve","contributionDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","codexRunRef":"codex-run-003","excerpt":"Approve.","at":"2026-07-21T00:01:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"abstain","contributionDigest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","codexRunRef":"codex-run-004","excerpt":"No grounded verdict.","at":"2026-07-21T00:01:02Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+      ],
+      "three-simple-majority": [
+        {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"approve","contributionDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","codexRunRef":"codex-run-005","excerpt":"Approve.","at":"2026-07-21T00:02:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"approve","contributionDigest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","codexRunRef":"codex-run-006","excerpt":"Approve.","at":"2026-07-21T00:02:02Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"quality-seat","lens":"quality","executionStatus":"completed","verdict":"abstain","contributionDigest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","codexRunRef":"codex-run-007","excerpt":"Abstain.","at":"2026-07-21T00:02:03Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+      ],
+      "four-seat-tie": [
+        {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"approve","contributionDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","codexRunRef":"codex-run-008","excerpt":"Approve.","at":"2026-07-21T00:03:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"approve","contributionDigest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","codexRunRef":"codex-run-009","excerpt":"Approve.","at":"2026-07-21T00:03:02Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"quality-seat","lens":"quality","executionStatus":"completed","verdict":"abstain","contributionDigest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","codexRunRef":"codex-run-010","excerpt":"Abstain.","at":"2026-07-21T00:03:03Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"security-seat","lens":"security","executionStatus":"completed","verdict":"abstain","contributionDigest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","codexRunRef":"codex-run-011","excerpt":"Abstain.","at":"2026-07-21T00:03:04Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+      ],
+      "changes-failure-timeout": [
+        {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"abstain","contributionDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","codexRunRef":"codex-run-012","excerpt":"Abstain.","at":"2026-07-21T00:04:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"changesRequested","contributionDigest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","codexRunRef":"codex-run-013","excerpt":"Boundary must be corrected.","at":"2026-07-21T00:04:02Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"quality-seat","lens":"quality","executionStatus":"failed","verdict":"failed","contributionDigest":null,"codexRunRef":"codex-run-014","excerpt":null,"at":"2026-07-21T00:04:03Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"security-seat","lens":"security","executionStatus":"timeout","verdict":"failed","contributionDigest":null,"codexRunRef":"codex-run-015","excerpt":null,"at":"2026-07-21T00:04:04Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+      ],
+      "four-no-approval-no-change": [
+        {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"abstain","contributionDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","codexRunRef":"codex-run-016","excerpt":"Abstain.","at":"2026-07-21T00:05:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"architecture-seat","lens":"architecture","executionStatus":"failed","verdict":"failed","contributionDigest":null,"codexRunRef":"codex-run-017","excerpt":null,"at":"2026-07-21T00:05:02Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"quality-seat","lens":"quality","executionStatus":"timeout","verdict":"failed","contributionDigest":null,"codexRunRef":"codex-run-018","excerpt":null,"at":"2026-07-21T00:05:03Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"security-seat","lens":"security","executionStatus":"failed","verdict":"failed","contributionDigest":null,"codexRunRef":null,"excerpt":null,"at":"2026-07-21T00:05:04Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+      ],
+      "four-majority-with-minority-change": [
+        {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"approve","contributionDigest":"1111111111111111111111111111111111111111111111111111111111111111","codexRunRef":"codex-run-019","excerpt":"Approve.","at":"2026-07-21T00:07:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"approve","contributionDigest":"2222222222222222222222222222222222222222222222222222222222222222","codexRunRef":"codex-run-020","excerpt":"Approve.","at":"2026-07-21T00:07:02Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"quality-seat","lens":"quality","executionStatus":"completed","verdict":"approve","contributionDigest":"3333333333333333333333333333333333333333333333333333333333333333","codexRunRef":"codex-run-021","excerpt":"Approve.","at":"2026-07-21T00:07:03Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"security-seat","lens":"security","executionStatus":"completed","verdict":"changesRequested","contributionDigest":"4444444444444444444444444444444444444444444444444444444444444444","codexRunRef":"codex-run-022","excerpt":"Security change required.","at":"2026-07-21T00:07:04Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+      ],
+      "two-unanimous-with-change": [
+        {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"approve","contributionDigest":"5555555555555555555555555555555555555555555555555555555555555555","codexRunRef":"codex-run-023","excerpt":"Approve.","at":"2026-07-21T00:08:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+        {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"changesRequested","contributionDigest":"6666666666666666666666666666666666666666666666666666666666666666","codexRunRef":"codex-run-024","excerpt":"Architecture change required.","at":"2026-07-21T00:08:02Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+      ]
+    }
+  },
+  "fixtures": [
+    {
+      "id": "definition-valid-bounded",
+      "kind": "definitionValidation",
+      "input": {"definitionRef": "council-core"},
+      "expected": {"admission":"VALID","policyCount":3,"seatOrder":["product-seat","architecture-seat","quality-seat","security-seat"],"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "definition-empty-seats-invalid",
+      "kind": "definitionValidation",
+      "input": {"mutation":{"definitionRef":"council-core","replace":{"seats":[]}}},
+      "expected": {"admission":"INVALID","errorCode":"council.seats.bounds","decision":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "definition-duplicate-seat-id-invalid",
+      "kind": "definitionValidation",
+      "input": {"mutation":{"definitionRef":"council-core","appendSeat":{"id":"product-seat","displayName":"Duplicate","lens":"implementation"}}},
+      "expected": {"admission":"INVALID","errorCode":"council.seats.duplicateId","decision":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "policy-unknown-roster-seat-invalid",
+      "kind": "definitionValidation",
+      "input": {"mutation":{"definitionRef":"council-core","policyId":"unanimous-design","replaceRoster":["product-seat","unknown-seat"]}},
+      "expected": {"admission":"INVALID","errorCode":"council.policy.roster.unresolvedSeat","decision":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "unanimous-all-approve",
+      "kind": "decision",
+      "input": {"definitionRef":"council-core","policyId":"unanimous-design","contributionsRef":"two-all-approve"},
+      "expected": {"admission":"VALID","decision":"approved","dissent":[],"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "unanimous-abstain-inconclusive",
+      "kind": "decision",
+      "input": {"definitionRef":"council-core","policyId":"unanimous-design","contributionsRef":"two-approve-abstain"},
+      "expected": {"admission":"VALID","decision":"inconclusive","dissent":[],"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "unanimous-change-defeats-approval",
+      "kind": "decision",
+      "input": {"definitionRef":"council-core","policyId":"unanimous-design","contributionsRef":"two-unanimous-with-change"},
+      "expected": {"admission":"VALID","decision":"changesRequested","approveCount":1,"fullRosterCount":2,"dissent":["architecture-seat"],"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "simple-majority-more-than-half",
+      "kind": "decision",
+      "input": {"definitionRef":"council-core","policyId":"three-seat-review","contributionsRef":"three-simple-majority"},
+      "expected": {"admission":"VALID","decision":"approved","approveCount":2,"fullRosterCount":3,"dissent":[],"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "simple-majority-approval-precedes-minority-change",
+      "kind": "decision",
+      "input": {"definitionRef":"council-core","policyId":"majority-review","contributionsRef":"four-majority-with-minority-change"},
+      "expected": {"admission":"VALID","decision":"approved","approveCount":3,"fullRosterCount":4,"dissent":["security-seat"],"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "simple-majority-tie-inconclusive",
+      "kind": "decision",
+      "input": {"definitionRef":"council-core","policyId":"majority-review","contributionsRef":"four-seat-tie"},
+      "expected": {"admission":"VALID","decision":"inconclusive","approveCount":2,"fullRosterCount":4,"dissent":[],"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "changes-requested-precedes-inconclusive",
+      "kind": "decision",
+      "input": {"definitionRef":"council-core","policyId":"majority-review","contributionsRef":"changes-failure-timeout"},
+      "expected": {"admission":"VALID","decision":"changesRequested","dissent":["architecture-seat"],"failedSeats":["quality-seat","security-seat"],"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "abstain-failure-timeout-missing-never-approve",
+      "kind": "decision",
+      "input": {"definitionRef":"council-core","policyId":"majority-review","contributionsRef":"four-no-approval-no-change"},
+      "expected": {"admission":"VALID","decision":"inconclusive","approveCount":0,"dissent":[],"missingInvocationSeat":"security-seat","claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "missing-seat-normalizes-to-explicit-failed-slot",
+      "kind": "runtimeNormalization",
+      "input": {"definitionRef":"council-core","policyId":"unanimous-design","rawContributions":[{"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"approve"}],"deadlineReached":true},
+      "expected": {"admission":"NORMALIZE","orderedSeatIds":["product-seat","architecture-seat"],"synthesizedContribution":{"seatId":"architecture-seat","lens":"architecture","executionStatus":"failed","verdict":"failed","contributionDigest":null,"codexRunRef":null,"excerpt":null,"at":"2026-07-21T00:06:02Z","schema":"fkst.devbored.council-seat-evidence.v1"},"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-023"}
+    },
+    {
+      "id": "missing-contribution-in-emitted-fact-invalid",
+      "kind": "evidenceValidation",
+      "input": {"definitionRef":"council-core","policyId":"unanimous-design","emittedSeatIds":["product-seat"]},
+      "expected": {"admission":"INVALID","errorCode":"council.round.contributions.missing","decision":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "duplicate-contribution-invalid",
+      "kind": "evidenceValidation",
+      "input": {"definitionRef":"council-core","policyId":"unanimous-design","emittedSeatIds":["product-seat","product-seat"]},
+      "expected": {"admission":"INVALID","errorCode":"council.round.contributions.duplicate","decision":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "extra-contribution-invalid",
+      "kind": "evidenceValidation",
+      "input": {"definitionRef":"council-core","policyId":"unanimous-design","emittedSeatIds":["product-seat","architecture-seat","quality-seat"]},
+      "expected": {"admission":"INVALID","errorCode":"council.round.contributions.extra","decision":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "reordered-contribution-invalid",
+      "kind": "evidenceValidation",
+      "input": {"definitionRef":"council-core","policyId":"unanimous-design","emittedSeatIds":["architecture-seat","product-seat"]},
+      "expected": {"admission":"INVALID","errorCode":"council.round.contributions.order","decision":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "wrong-lens-contribution-invalid",
+      "kind": "evidenceValidation",
+      "input": {"definitionRef":"council-core","policyId":"unanimous-design","contribution":{"seatId":"architecture-seat","lens":"security","executionStatus":"completed","verdict":"approve"}},
+      "expected": {"admission":"INVALID","errorCode":"council.round.contributions.lensMismatch","decision":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "failed-status-pair-invalid",
+      "kind": "evidenceValidation",
+      "input": {"contribution":{"seatId":"quality-seat","lens":"quality","executionStatus":"failed","verdict":"approve"}},
+      "expected": {"admission":"INVALID","errorCode":"council.contribution.statusVerdictMismatch","decision":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "approved-ends-stage",
+      "kind": "roundProgression",
+      "input": {"definitionRef":"council-core","policyId":"majority-review","round":1,"decision":"approved"},
+      "expected": {"stageComplete":true,"stageOutcome":"approved","nextRound":null,"reasonCode":null,"workflowRoute":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-011"}
+    },
+    {
+      "id": "changes-requested-ends-stage",
+      "kind": "roundProgression",
+      "input": {"definitionRef":"council-core","policyId":"majority-review","round":1,"decision":"changesRequested"},
+      "expected": {"stageComplete":true,"stageOutcome":"changesRequested","nextRound":null,"reasonCode":null,"workflowRoute":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-011"}
+    },
+    {
+      "id": "below-cap-inconclusive-continues-internally",
+      "kind": "roundProgression",
+      "input": {"definitionRef":"council-core","policyId":"majority-review","round":2,"decision":"inconclusive"},
+      "expected": {"stageComplete":false,"stageOutcome":null,"nextRound":3,"reasonCode":null,"workflowRoute":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-023"}
+    },
+    {
+      "id": "at-cap-inconclusive-exhausts-without-routing",
+      "kind": "roundProgression",
+      "input": {"definitionRef":"council-core","policyId":"majority-review","round":3,"decision":"inconclusive"},
+      "expected": {"stageComplete":true,"stageOutcome":"inconclusive","nextRound":null,"reasonCode":"councilRoundsExhausted","workflowRoute":null,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-011"}
+    },
+    {
+      "id": "round-over-cap-invalid",
+      "kind": "roundProgression",
+      "input": {"definitionRef":"council-core","policyId":"majority-review","round":4,"decision":"inconclusive"},
+      "expected": {"admission":"INVALID","errorCode":"council.round.overCap","seatInvocations":0,"claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-010"}
+    },
+    {
+      "id": "accepted-round-replay-is-zero-invocation",
+      "kind": "replay",
+      "input": {"qualifiedEntityKey":"connection-1:github.com:chrono/example:issue:42","runId":"run-001","stageId":"council-review","round":2,"headSha":"1111111111111111111111111111111111111111","acceptedEnvelopeDigest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
+      "expected": {"admission":"REPLAY_ACCEPTED","seatInvocations":0,"returnsSameEnvelopeDigest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee","claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-031"}
+    },
+    {
+      "id": "replay-conflict-fails-closed",
+      "kind": "replay",
+      "input": {"qualifiedEntityKey":"connection-1:github.com:chrono/example:issue:42","runId":"run-001","stageId":"council-review","round":2,"headSha":"1111111111111111111111111111111111111111","acceptedEnvelopeDigest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee","observedConflictingDigest":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
+      "expected": {"admission":"INVALID_CONFLICT","seatInvocations":0,"errorCode":"council.round.replayConflict","claimStatus":"PLANNED_UNVERIFIED","downstreamTask":"R-031"}
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "schema": "fkst.task-state/v1",
+  "task_id": "R-041",
+  "state": "ACCEPTED",
+  "repository": "public_devloop",
+  "integration_base_commit": "f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b",
+  "dependencies": ["R-004"],
+  "exclusive_paths": ["libraries/devloop/fkst.toml", "scripts/check_repo_std_dependency_model.py", "scripts/check_repo_std_dependency_model_test.py"],
+  "owner_agent_id": "019f8265-8b50-70c2-8db0-0e3fda9737f9",
+  "owner_provider": "codex",
+  "owner_model": "gpt-5.6-sol",
+  "owner_provider_session": "019f8265-8bfc-7b63-8e4f-d5567b026d8e",
+  "owner_worktree_id": "019f8264-599c-7370-8598-f20827af7ee9",
+  "owner_worktree_path": "/Users/chronoai/Library/Application Support/heca/worktrees/0b1c3b41/r041-devloop-visibility",
+  "owner_branch": "feat/fkst-devbored-loop-visibility",
+  "review_cycle": 1,
+  "transition_history": [
+    "PROPOSED",
+    "READY",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "FABLE_ADVISORY",
+    "DEV_VERIFIED",
+    "OPUS_REVIEW",
+    "OPUS_APPROVED",
+    "PM_REVIEW",
+    "ACCEPTED"
+  ],
+  "submissions": [
+    {
+      "review_cycle": 0,
+      "commit": "b23d66323cd83fe7c3ea4de022e27876f90c4dc6",
+      "result": "DEV_VERIFIED",
+      "submitted_at_utc": "2026-07-21T02:25:45Z",
+      "parent": "f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b",
+      "artifacts": [
+        "libraries/devloop/fkst.toml",
+        "scripts/check_repo_std_dependency_model.py",
+        "scripts/check_repo_std_dependency_model_test.py"
+      ],
+      "checks": [
+        "python3 scripts/check_repo_std_dependency_model_test.py: PASS (13 tests)",
+        "python3 scripts/check_repo.py: PASS with pre-existing warnings",
+        "scripts/run.sh test: PASS (21 packages; composed conformance 31/31)",
+        "git diff --check: PASS",
+        "exact three-path subset check: PASS",
+        "main-PM independent focused rerun: PASS (13 tests)"
+      ],
+      "owner_metadata": {
+        "agent_id": "019f8265-8b50-70c2-8db0-0e3fda9737f9",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_session_id": "019f8265-8bfc-7b63-8e4f-d5567b026d8e"
+      },
+      "limitations": [
+        "This commit changes public-devloop visibility only; it does not prove app-package loadability or integration.",
+        "The pinned feature-lineage commit must later be reconciled through repository-native PR, CI, and squash; R-005 must pin the landed commit and reverify the unchanged export surface."
+      ]
+    }
+  ],
+  "advisories": [
+    {
+      "review_cycle": 0,
+      "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+      "provider": "claude",
+      "model": "claude-fable-5",
+      "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+      "verdict": "PASS",
+      "reviewed_head": "b23d66323cd83fe7c3ea4de022e27876f90c4dc6",
+      "authority": "advisory_only",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "Exactly one commit over the pinned lineage changes only the three authorized files; the exact manifest and closed-family guard admit only fkst-devbored-loop; old-family, admitted-family, and unknown-consumer tests pass; no export, dependency closure, Lua behavior, topology, app file, Workflow/Council authority, or reference-only status changes.",
+      "residual_gates": [
+        "Fresh independent Opus review must reproduce the reported commands before PM acceptance.",
+        "R-005 must pin the repository-native landed commit and reverify the unchanged public export surface.",
+        "RDY-03 remains FAIL until R-005 and the loadable app-package proof pass."
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "review_cycle": 1,
+      "agent_id": "019f8281-b9b3-7a11-9361-37bf4fa30f8d",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "74cb1cbc-509e-4994-b673-788cba871132",
+      "verdict": "APPROVE",
+      "reviewed_head": "b23d66323cd83fe7c3ea4de022e27876f90c4dc6",
+      "authority": "independent_review",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "Fresh Opus independently reproduced the 13 repository guard tests, full 21-package and 31-check suite, exact single-commit three-path scope, five provenance trailers, unchanged 118-export public surface, unchanged library dependency closure, and fail-closed old-family and unknown-consumer behavior.",
+      "limitations": [
+        "The review approves only the pinned feature-lineage artifact; it does not perform repository-native PR, CI, squash, or app integration.",
+        "App-package loadability remains unproven."
+      ]
+    }
+  ],
+  "pm_decisions": [
+    {
+      "review_cycle": 1,
+      "decision": "ACCEPTED",
+      "decided_at_utc": "2026-07-21T02:50:32Z",
+      "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+      "pm_provider": "codex",
+      "pm_model": "gpt-5.6-sol",
+      "pm_provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+      "accepted_artifact_commit": "b23d66323cd83fe7c3ea4de022e27876f90c4dc6",
+      "accepted_source_head": "b23d66323cd83fe7c3ea4de022e27876f90c4dc6",
+      "basis": "Standing Fable passed, fresh Opus approved after reproducing the complete suite, and the main PM independently reran all 13 guard tests plus exact commit, path, diff, trailer, and clean pre/post checks.",
+      "residual_gates": [
+        "R-005 must land the change through the public-devloop repository-native PR, CI, and squash route and pin the landed commit.",
+        "R-005 must reverify the unchanged 118-export surface and app-package loadability.",
+        "RDY-03 remains FAIL until those proofs pass."
+      ]
+    }
+  ],
+  "integration": null
+}

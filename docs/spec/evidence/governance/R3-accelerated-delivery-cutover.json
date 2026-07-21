@@ -1,0 +1,215 @@
+{
+  "schema": "fkst.execution-cutover/v1",
+  "status": "ACTIVE",
+  "recorded_at_utc": "2026-07-21T05:24:26Z",
+  "pre_mutation_head": "173e245532d932407d24ee9482ace9179d05b788",
+  "candidate_commit": "74488f006bd135e01bf316b2b52ad69011604c71",
+  "activation_commit": "804bb63b70d53bf07611e56f19bedb7bb11ff5da",
+  "main_pm": {
+    "agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "provider": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205"
+  },
+  "human_hg00_directive": {
+    "source": "current conversation",
+    "actor": "human_user",
+    "decision": "APPROVE_ACCELERATED_EXECUTION_PREPARATION_AND_ACTIVATION_IF_REVIEW_GREEN",
+    "verbatim_intent": "ok lets replan and do the new approach i want this done asap",
+    "scope": [
+      "replace repeated per-task PM acceptance with mechanical package integration",
+      "use human gates after specific completions",
+      "continue automatically between gates",
+      "maximize safe parallel engineering"
+    ],
+    "does_not_authorize": [
+      "HG-01 fixture UI",
+      "HG-02 local runtime",
+      "HG-03 live effects",
+      "HG-04 release candidate",
+      "HG-05 submission"
+    ]
+  },
+  "old_process": "One review loop per each of 211 nodes: Sol owner, optional/standing Fable, fresh Opus, full PM acceptance, then integration.",
+  "new_process": "The 211 nodes remain traceability criteria and are owned exactly once by 35 cohesive packages: fresh Sol owner, focused/package tests, fresh Opus, same-owner rework, deterministic staged integration, candidate branch, Fable and human milestone gates.",
+  "grandfathered_v1_tasks": {
+    "integrated": ["R-003", "R-008", "R-014", "R-016", "R-051"],
+    "complete_under_v1_then_adopt": ["R-041"],
+    "history_rule": "No existing v1 record is converted, rewritten, or granted candidate status by this mutation."
+  },
+  "machine_plan": {
+    "requirement_count": 211,
+    "package_count": 35,
+    "human_gate_count": 5,
+    "graph_node_count": 40,
+    "root": "AP-00",
+    "missing_requirements": 0,
+    "duplicate_primary_owners": 0,
+    "cycles": 0,
+    "path_scope_overlaps": 0,
+    "requirement_dependency_violations": 0,
+    "full_product_completion_nodes": 40,
+    "deadline_slice_authorized": false,
+    "verification_command": "node tool/verify_accelerated_plan.mjs",
+    "R_059_disposition": "AP-02 contract-harness portability; intentionally outside RUN-1..8"
+  },
+  "unchanged_invariants": {
+    "primary_dependencies": ["fkst-substrate", "public-devloop"],
+    "app_authority": ["Workflow", "Council"],
+    "reference_only": ["devbored", "github-devloop*", "consensus", "github-proxy"],
+    "devloop_rule": "Public devloop is reused as capability and guide; missing generic authority is never hard-reimplemented in the app.",
+    "effects_rule": "Every action above the current tier fails closed without a matching candidate-bound human receipt."
+  },
+  "historical_hash_guard": {
+    "docs/spec/evidence/governance/task-state-contract.v1.json": "0ddafa0994dc2278f0da28b2d8d780959ea797ac",
+    "docs/spec/evidence/governance/task-state-template.json": "b8e4aa410cf0fb170760b905e515d72bf6e79899",
+    "docs/spec/evidence/governance/R2-dispatch.json": "e5993940f592b8a2a311173125991c4493fccbad",
+    "docs/spec/evidence/governance/task-states/R-003.json": "e9fd5f961aa4d7aa3c217f5687b63c1ef195a69b",
+    "docs/spec/evidence/governance/task-states/R-008.json": "9cb4076bd0d7e6de1f836f86443621489596a468",
+    "docs/spec/evidence/governance/task-states/R-014.json": "2386e02f8edf98a9dad183b2895c0f17a466cdd9",
+    "docs/spec/evidence/governance/task-states/R-016.json": "ac25a5be295f6082b37ed30b94460bdd76315d22"
+  },
+  "open_v1_records_at_cutover": {
+    "rule": "The cutover blob is read from pre_mutation_head and must retain an exact structural prefix. Only state, review_cycle, transition_history, submissions, advisories, reviews, pm_decisions, and integration may append or advance under v1. Each current blob is re-baselined here with its exact closure state and receipt; all other fields remain byte-equivalent as parsed JSON.",
+    "records": {
+      "R-041": {
+        "path": "docs/spec/evidence/governance/task-states/R-041.json",
+        "cutover_blob": "852237a3b69fe2a93a3cbd59e62a879a32830dc7",
+        "current_blob": "852237a3b69fe2a93a3cbd59e62a879a32830dc7",
+        "current_state": "ACCEPTED",
+        "closure_receipt": null,
+        "next_permitted_change": "Repository-native integration may append an exact landing/pin receipt; update current_blob/current_state in the same evidence commit."
+      },
+      "R-051": {
+        "path": "docs/spec/evidence/governance/task-states/R-051.json",
+        "cutover_blob": "3f0f14318870f605fcf2aa5d3229a5c12eefe551",
+        "current_blob": "78887ff7bcdc350468307cd22e14d6fbfcab5adf",
+        "current_state": "INTEGRATED",
+        "closure_receipt": {
+          "implementation_commit": "e38358a0552c4133414836bf52df6593908fe547",
+          "opus_agent_id": "019f8311-6f44-70e3-ae6e-70f79b34eaf2",
+          "opus_provider_session_id": "32064d31-e404-4189-abbd-b368edad7deb",
+          "opus_verdict": "APPROVE",
+          "pm_decision": "ACCEPTED",
+          "substrate_dev_head": "e38358a0552c4133414836bf52df6593908fe547",
+          "external_push_or_release": false
+        }
+      }
+    }
+  },
+  "pre_activation_review_cycles": [
+    {
+      "cycle": 1,
+      "reviewed_commit": "968c60d7ee5697c024f3ba48649a36baf144c25b",
+      "fable": {
+        "agent_id": "019f8326-82d5-71d1-8ca9-194a00456ebc",
+        "provider_session_id": "aebe96f0-c030-485a-a805-dba02412359c",
+        "model": "claude-fable-5",
+        "verdict": "CHANGES_REQUIRED",
+        "repository_authorship": false
+      },
+      "opus": {
+        "agent_id": "019f8326-82d5-71d1-8ca9-195f8c608bef",
+        "provider_session_id": "9c5103ed-6d92-4eb7-909f-53c042476c2d",
+        "model": "claude-opus-4-8",
+        "verdict": "CHANGES_REQUESTED",
+        "repository_authorship": false
+      },
+      "common_blocker": "The Markdown verifier followed four umbrella-workspace links outside the repository, so a fresh isolated worktree could not reproduce HG-00 green.",
+      "pm_additional_findings": [
+        "Sixteen original requirement dependency edges were not preserved transitively by package ownership, including the U-001 gate mutation and the AP-28/AP-29 split.",
+        "AP-07's path scope nested later loop-package owners.",
+        "Historical PM-gate wording and readiness rows were stale after ADR-034 and R2-A integration.",
+        "A deadline slice was implied without an explicit human RESCOPE and truthful claim ceiling."
+      ],
+      "disposition": "Same-PM correction; material graph/verifier changes require fresh Fable and fresh Opus review of the corrected exact commit."
+    },
+    {
+      "cycle": 2,
+      "reviewed_commit": "542813002fdac9595657285b7a71f056d558cd0e",
+      "fable": {
+        "agent_id": "019f833b-f84d-7f30-8941-f69c7b55891c",
+        "provider_session_id": "4ac0f1bd-d5ce-4bf8-8644-b5cd1cf2cd97",
+        "model": "claude-fable-5",
+        "verdict": "CHANGES_REQUIRED",
+        "repository_authorship": false
+      },
+      "opus": {
+        "agent_id": "019f833b-f84d-7f30-8941-f68f333f9c32",
+        "provider_session_id": "c3d7f58b-b78d-47bf-b9d4-7ad5acb89b86",
+        "model": "claude-opus-4-8",
+        "verdict": "APPROVE",
+        "repository_authorship": false,
+        "independent": true
+      },
+      "fable_blockers": [
+        "The human-facing deadline snapshot claimed an R-051 Opus result not yet recorded in the repository authority.",
+        "The fixed historical hash guard included open R-041/R-051 records whose required v1 closure must append to them."
+      ],
+      "disposition": "Record the completed R-051 v1 review/integration; split closed immutable hashes from structurally append-only open-v1 cutover prefixes; apply all verifier hardening observations; run fresh cycle 3 on the exact correction commit."
+    },
+    {
+      "cycle": 3,
+      "reviewed_commit": "74488f006bd135e01bf316b2b52ad69011604c71",
+      "fable": {
+        "agent_id": "019f8348-b83a-7e11-88ce-f4d369a009e9",
+        "provider_session_id": "eb064784-82c0-44ad-949a-c81ff5f26316",
+        "model": "claude-fable-5",
+        "verdict": "PASS",
+        "repository_authorship": false,
+        "pre_post_porcelain_identical": true
+      },
+      "opus": {
+        "agent_id": "019f8348-b83a-7e11-88ce-f4ce76b2b66a",
+        "provider_session_id": "b91283ae-e4e3-4b2a-8308-a4b88607100e",
+        "model": "claude-opus-4-8",
+        "verdict": "APPROVE",
+        "repository_authorship": false,
+        "pre_post_porcelain_identical": true,
+        "independent": true
+      },
+      "disposition": "Both mandatory reviewers approved the exact correction commit. Their only residual observation was the non-blocking R-051 submission timestamp ordering corrected by this receipt-only commit."
+    }
+  ],
+  "fable_review": {
+    "agent_id": "019f8348-b83a-7e11-88ce-f4d369a009e9",
+    "provider_session_id": "eb064784-82c0-44ad-949a-c81ff5f26316",
+    "model": "claude-fable-5",
+    "verdict": "PASS",
+    "reviewed_commit": "74488f006bd135e01bf316b2b52ad69011604c71",
+    "repository_authorship": false,
+    "pre_post_porcelain_identical": true
+  },
+  "independent_opus_review": {
+    "agent_id": "019f8348-b83a-7e11-88ce-f4ce76b2b66a",
+    "provider_session_id": "b91283ae-e4e3-4b2a-8308-a4b88607100e",
+    "model": "claude-opus-4-8",
+    "verdict": "APPROVE",
+    "reviewed_commit": "74488f006bd135e01bf316b2b52ad69011604c71",
+    "repository_authorship": false,
+    "pre_post_porcelain_identical": true,
+    "independent": true
+  },
+  "pm_disposition": {
+    "decision": "ACCEPTED_FOR_ACTIVATION",
+    "decided_at_utc": "2026-07-21T06:17:11Z",
+    "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "pm_provider": "codex",
+    "pm_model": "gpt-5.6-sol",
+    "pm_provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+    "accepted_candidate_commit": "74488f006bd135e01bf316b2b52ad69011604c71",
+    "basis": "The 211-requirement/35-package/40-node graph is complete and acyclic; all dependency, authority, path-scope, open-v1, Markdown, transition, fail-closed, and deadline-slice checks pass; Fable passed and fresh independent Opus approved the exact candidate; no product, runtime, live effect, release, or submission authority is granted."
+  },
+  "activation": {
+    "active": true,
+    "activated_at_utc": "2026-07-21T06:18:21Z",
+    "decision": "APPROVE_ACCELERATED_EXECUTION",
+    "review_receipt_commit": "804bb63b70d53bf07611e56f19bedb7bb11ff5da",
+    "current_tier": "T0_FOUNDATION",
+    "next_human_gate": "HG-01",
+    "new_v2_dispatch_authorized": true,
+    "product_or_ui_coding_authorized": false,
+    "runtime_coding_authorized": false,
+    "external_effect_authorized": false
+  }
+}

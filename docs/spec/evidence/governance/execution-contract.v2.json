@@ -1,0 +1,161 @@
+{
+  "schema": "fkst.execution-contract/v2",
+  "status": "active",
+  "supersedes_for_new_dispatch": "fkst.task-state-contract/v1",
+  "history_rule": "Closed G, R1, R2, and fkst.task-state/v1 records remain hash-pinned immutable history. Already-dispatched open R2 work completes by append-only v1 transitions whose cutover prefix and each closure re-baseline are verified. New work begins under v2 only after the R3 cutover receipt is activated.",
+  "roles": {
+    "main_pm": {
+      "provider": "codex",
+      "model": "gpt-5.6-sol",
+      "authority": [
+        "schedule dependency-ready packages",
+        "freeze package boundaries",
+        "run mechanical candidate-integration checks",
+        "integrate mechanically green packages",
+        "assemble milestone dossiers"
+      ],
+      "not_authorized": [
+        "waive a red check",
+        "substitute for independent Opus review",
+        "perform a second full package acceptance review",
+        "grant a human authorization tier"
+      ]
+    },
+    "implementation_owner": {
+      "provider": "codex",
+      "model": "gpt-5.6-sol",
+      "rule": "One fresh owner per package; the same owner performs every correction for that package."
+    },
+    "independent_reviewer": {
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "rule": "One fresh read-only Opus session reviews the exact implementation commit. A materially changed artifact requires another fresh Opus session."
+    },
+    "technical_advisor": {
+      "provider": "claude",
+      "model": "claude-fable-5",
+      "rule": "Fable advises only on architecture, dependency/authority boundaries, plan mutations, live-effect boundaries, milestone reconciliation, and release. Fable does not implement or approve ordinary packages."
+    },
+    "human": {
+      "rule": "The human alone grants T1 through T5 using a candidate-bound gate receipt. Silence, timeout, or ambiguous wording is not approval."
+    }
+  },
+  "package_states": [
+    "PROPOSED",
+    "READY",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "OPUS_REVIEW",
+    "CHANGES_REQUESTED",
+    "OPUS_APPROVED",
+    "INTEGRATION_CHECK",
+    "CANDIDATE_INTEGRATED",
+    "INVALIDATED",
+    "BLOCKED",
+    "SUPERSEDED"
+  ],
+  "normal_transitions": {
+    "PROPOSED": ["READY", "BLOCKED", "SUPERSEDED"],
+    "READY": ["IN_DEVELOPMENT", "BLOCKED", "SUPERSEDED"],
+    "IN_DEVELOPMENT": ["DEV_VERIFIED", "BLOCKED", "SUPERSEDED"],
+    "DEV_VERIFIED": ["OPUS_REVIEW", "IN_DEVELOPMENT", "BLOCKED", "SUPERSEDED"],
+    "OPUS_REVIEW": ["CHANGES_REQUESTED", "OPUS_APPROVED", "BLOCKED"],
+    "CHANGES_REQUESTED": ["IN_DEVELOPMENT", "BLOCKED", "SUPERSEDED"],
+    "OPUS_APPROVED": ["INTEGRATION_CHECK", "IN_DEVELOPMENT", "BLOCKED"],
+    "INTEGRATION_CHECK": ["CANDIDATE_INTEGRATED", "IN_DEVELOPMENT", "BLOCKED"],
+    "CANDIDATE_INTEGRATED": ["INVALIDATED"],
+    "INVALIDATED": ["IN_DEVELOPMENT", "BLOCKED", "SUPERSEDED"],
+    "BLOCKED": ["READY", "SUPERSEDED"],
+    "SUPERSEDED": []
+  },
+  "mechanical_integration_checks": [
+    "exact implementation commit exists",
+    "Sol provider/model/session and all provenance trailers agree",
+    "fresh Opus reviewed that exact commit",
+    "reviewer has no repository authorship and clean pre/post porcelain",
+    "Opus verdict is APPROVE",
+    "every covered requirement acceptance criterion maps to a command and result",
+    "focused and package tests pass at the reviewed commit",
+    "changed paths are within the package's declared scope",
+    "changed paths do not collide with another active or candidate-integrated package",
+    "dependency packages exist on the candidate base",
+    "exactly two primary FKST dependencies remain",
+    "reference-only packages are absent from imports, runtime graph, and copied production code",
+    "Workflow and Council remain app-owned authority",
+    "current human tier authorizes the package and every exercised effect",
+    "staged integration succeeds in a disposable worktree",
+    "candidate smoke, import, graph, and diff checks pass",
+    "source, staged, and candidate worktrees are clean after checks"
+  ],
+  "milestone_states": [
+    "OPEN",
+    "EVIDENCE_READY",
+    "PM_REPORTED",
+    "FABLE_ADVISORY",
+    "HUMAN_REVIEW",
+    "HUMAN_APPROVED",
+    "HUMAN_RETURNED",
+    "RESCOPE_REQUIRED",
+    "SUPERSEDED"
+  ],
+  "milestone_transitions": {
+    "OPEN": ["EVIDENCE_READY", "RESCOPE_REQUIRED", "SUPERSEDED"],
+    "EVIDENCE_READY": ["PM_REPORTED", "OPEN", "RESCOPE_REQUIRED", "SUPERSEDED"],
+    "PM_REPORTED": ["FABLE_ADVISORY", "EVIDENCE_READY", "RESCOPE_REQUIRED", "SUPERSEDED"],
+    "FABLE_ADVISORY": ["HUMAN_REVIEW", "EVIDENCE_READY", "RESCOPE_REQUIRED", "SUPERSEDED"],
+    "HUMAN_REVIEW": ["HUMAN_APPROVED", "HUMAN_RETURNED", "RESCOPE_REQUIRED"],
+    "HUMAN_APPROVED": [],
+    "HUMAN_RETURNED": ["OPEN", "SUPERSEDED"],
+    "RESCOPE_REQUIRED": ["OPEN", "SUPERSEDED"],
+    "SUPERSEDED": []
+  },
+  "human_gate_required_fields": {
+    "HG-01": ["candidate_commit", "package_receipt_digests", "dependency_digests", "workflow_contract_digest", "council_contract_digest", "required_v1_artifacts", "evidence"],
+    "HG-02": ["candidate_commit", "package_receipt_digests", "dependency_digests", "workflow_contract_digest", "council_contract_digest", "compatibility_manifest_digest", "evidence"],
+    "HG-03": ["candidate_commit", "target_scope", "effect_allowlist", "remaining_use_count", "expires_at_utc", "evidence"],
+    "HG-04": ["candidate_commit", "package_receipt_digests", "artifact_sha256", "evidence"],
+    "HG-05": ["candidate_commit", "artifact_sha256", "claim_set_digest", "demo_asset_digests", "evidence"]
+  },
+  "authorization_tiers": {
+    "T0_FOUNDATION": {
+      "allows": ["specification", "contracts", "fixtures", "source maps", "compatibility manifests", "isolated no-write readiness probes"],
+      "forbids": ["Flutter product UI", "app runtime launch", "app-level Codex execution", "live Git or GitHub effects", "release or submission"]
+    },
+    "T1_FIXTURE_UI": {
+      "adds": ["Flutter shell", "layer lints", "theme and navigation", "accessibility harness", "fixture galleries", "pure domain ports", "fake-backed use cases and UI"],
+      "forbids": ["production process/filesystem/database/network adapters", "credentials", "loop launch", "Codex worker execution", "remote effects", "runtime claims from fixtures"]
+    },
+    "T2_LOCAL_DRY": {
+      "adds": ["contained local process/filesystem/store infrastructure", "read-only adapters", "thin app loop runtime", "local managed-root effects", "complete DRY vertical slice", "runtime-connected UI"],
+      "forbids": ["remote label/comment/push/PR effects", "merge", "signing", "notarization", "submission"]
+    },
+    "T3_CONTROLLED_LIVE": {
+      "adds": ["only the exact repository/account/issue/effect envelope, candidate commit, run count, and expiry named by the human receipt"],
+      "forbids": ["every unnamed effect", "production or user repository access", "merge unless separately admitted and explicitly authorized", "force push", "deletion", "ambiguous automatic retry"]
+    },
+    "T4_RELEASE_CANDIDATE": {
+      "adds": ["packaging", "authorized signing/notarization", "clean-install and recovery checks", "demo recording", "release-candidate evidence"],
+      "forbids": ["public tag", "release publication", "Hackathon submission"]
+    },
+    "T5_SUBMISSION": {
+      "adds": ["only the exact approved artifact, tag/release, Hackathon submission, and associated final external actions"],
+      "forbids": ["artifact or claim substitution", "scope expansion", "unapproved external cleanup"]
+    }
+  },
+  "human_decisions": [
+    "APPROVE_T1_FIXTURE_UI",
+    "APPROVE_T2_LOCAL_DRY",
+    "APPROVE_T3_CONTROLLED_LIVE",
+    "APPROVE_T4_RELEASE_CANDIDATE",
+    "APPROVE_T5_SUBMISSION",
+    "RETURN",
+    "RESCOPE"
+  ],
+  "fail_closed_rules": [
+    "A package may not exercise behavior above the current authorization tier.",
+    "A pending gate leaves the previous tier as the hard ceiling.",
+    "Human approval cannot waive red tests, dependency violations, reference-only imports, reviewer authorship, missing evidence, or unsafe effects.",
+    "A regression in a tier's safety mechanism suspends that tier and all higher tiers until same-owner correction, fresh Opus review, and mechanical reintegration.",
+    "Every live authorization is target-bound, effect-bound, count-bound, and time-bound; ambiguity consumes the attempt and holds."
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "schema": "fkst.plan-mutation/v1",
+  "id": "R2-R051-CLIPPY-BASELINE-1",
+  "task_id": "R-051",
+  "specification_version": "full-app/v2",
+  "state": "SUPERSEDED",
+  "recorded_at_utc": "2026-07-21T02:54:42Z",
+  "supersession": {
+    "superseded_at_utc": "2026-07-21T04:22:54Z",
+    "superseded_by": "R2-R051-CLIPPY-BASELINE-2",
+    "evidence": "R2-r051-clippy-gate-mutation-v2.json",
+    "reason": "Cargo cancels unscheduled targets after denied-warning failures unless --keep-going is used, so the v1 fingerprint subset and its 190/373 anchor are scheduling-sensitive and cannot be a reproducible comparator.",
+    "preserved_dispositions": [
+      "The original non-keep-going command remains truthful BASELINE_RED evidence only.",
+      "The verification-only boundary, no-ADR determination, absolute-green non-clippy gates, and implementation scope remain unchanged.",
+      "This record remains immutable history and is not silently rewritten as the v2 anchor."
+    ]
+  },
+  "recorded_by": {
+    "role": "main_pm",
+    "agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "provider": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205"
+  },
+  "trigger": {
+    "accepted_packet": "R2-dispatch.json#R-051",
+    "original_command": "cargo clippy -p fkst-framework --all-targets -- -D warnings",
+    "new_fact": "The original command fails on the clean pinned base before any R-051 change, so an absolute-green interpretation is impossible and would force either a false claim or unauthorized unrelated cleanup.",
+    "affected_step_stopped": "R-051 may continue in-scope implementation and absolute-green non-clippy verification, but may not reach DEV_VERIFIED, Fable task review, Opus review, or PM acceptance until this accepted differential gate and its final-head evidence are bound."
+  },
+  "pinned_base": {
+    "repository": "fkst-substrate",
+    "checkout_path": "/Users/chronoai/Desktop/aelf-frontend-work/FKST/substrate",
+    "branch": "dev",
+    "commit": "1e03c4f91d7cc9e42dff1dc180623912ea889f65",
+    "tree": "bac9f1bb83a996d38168b2f4f882509f1e8f980a",
+    "pre_porcelain_lines": [],
+    "post_porcelain_lines": [],
+    "pre_post_porcelain_identical": true
+  },
+  "reproducible_baseline": {
+    "argv": [
+      "cargo",
+      "clippy",
+      "-p",
+      "fkst-framework",
+      "--all-targets",
+      "--message-format=json",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "argv_nul_sha256": "e31c7d52d8784b0910f35dedcb469d14ffcbc800ab5bd99e9dcc8e0c0de8c39c",
+    "exit_code": 101,
+    "result": "BASELINE_RED",
+    "rustc": "rustc 1.94.1 (e408947bf 2026-03-25)",
+    "cargo": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
+    "clippy": "clippy 0.1.94 (e408947bfd 2026-03-25)",
+    "toolchain_transcript_sha256": "604a8b6c7b16f69f026136034b069ffaca55078a5a9f76d4f177547939adba3d",
+    "cargo_lock_sha256": "00358036500e2bb7a0341c86a9bdcfde10c434e2bcf307a6abb4ac6820116642",
+    "cargo_lock_git_blob": "b181718da5dc3e40374b19dbd4e1b2f97d86b7c6",
+    "allowlisted_environment_keys": [
+      "PATH",
+      "RUSTFLAGS",
+      "CARGO_TARGET_DIR",
+      "CARGO_HOME",
+      "RUSTUP_TOOLCHAIN",
+      "RUSTC_WRAPPER",
+      "RUSTC_WORKSPACE_WRAPPER",
+      "CARGO_BUILD_RUSTC_WRAPPER"
+    ],
+    "allowlisted_environment_nul_sha256": "af002603049e7c196111ad62c75190a1e87e83a42ad464006dd11147f8e7f38f",
+    "environment_values_recorded": false,
+    "raw_jsonl_sha256": "91a81743f7311b4fcf55fc2fba90d95efd9a44011dbc8590bc82c2f66a50bd91",
+    "stderr_sha256": "eb9c6c5103dad6b7c8706231a5feed0c1cf717c4beccf572cebc430cb62aec89"
+  },
+  "fingerprint_contract": {
+    "input": "Cargo JSON lines whose reason is compiler-message and whose diagnostic code is non-null.",
+    "tuple": [
+      "diagnostic code",
+      "first primary-span repo-relative file, or <no-primary>",
+      "diagnostic message"
+    ],
+    "normalization": "Sort tuples lexicographically by code, file, and message; group exact tuples; record exact multiplicity. Source line/column, rendered ANSI text, target order, and summary diagnostics without a code are excluded.",
+    "canonical_encoding": "Pretty JSON array emitted by jq with keys code, file, message, multiplicity in that order and one trailing newline.",
+    "baseline": {
+      "distinct_fingerprint_rows": 190,
+      "total_multiplicity": 373,
+      "owned_path_distinct_rows": 10,
+      "owned_path_total_multiplicity": 19,
+      "non_owned_path_distinct_rows": 180,
+      "non_owned_path_total_multiplicity": 354,
+      "canonical_sha256": "92d85823a67effe08da6bf8d708172c72c0b0cd9f248e0b2926ace6781878986"
+    },
+    "owned_path_partition": [
+      "crates/fkst-framework/src/sdk_codex.rs",
+      "crates/fkst-framework/src/mlua_init.rs",
+      "crates/fkst-framework/src/config_registry.rs",
+      "crates/fkst-framework/src/self_test.rs",
+      "crates/fkst-framework/tests/sdk_codex.rs"
+    ],
+    "pass_rule": [
+      "The final run uses the identical argv, toolchain transcript, Cargo.lock, and allowlisted-environment digests.",
+      "The final non-owned-path fingerprint multiset is exactly equal to the baseline non-owned-path multiset.",
+      "For every owned-path fingerprint, final multiplicity is less than or equal to baseline multiplicity.",
+      "No final fingerprint absent from the baseline is allowed in any partition.",
+      "The R-051 diff adds no allow, expect, cap-lints, lint-level, or lint-configuration escape.",
+      "Both expected exit codes remain 101 because unrelated baseline diagnostics remain; neither exit is called PASS by itself."
+    ]
+  },
+  "absolute_green_gates_unchanged": [
+    "cargo fmt --check",
+    "cargo test -p fkst-framework --test sdk_codex",
+    "cargo test -p fkst-framework",
+    "scripts/verify.sh",
+    "git diff --check",
+    "exclusive-path subset check",
+    "clean pre/post porcelain"
+  ],
+  "forbidden_dispositions": [
+    "Do not edit unrelated baseline paths.",
+    "Do not add blanket or local lint allowances to manufacture a green result.",
+    "Do not drop clippy observation or reduce R-051 behavior to avoid diagnostics.",
+    "Do not claim the repository-wide clippy invocation passes.",
+    "Do not include unredacted environment values or personal configuration in evidence."
+  ],
+  "boundary_disposition": {
+    "adr_required": false,
+    "adr_rationale": "This is a verification-truth correction for a pre-existing repository condition. Authority, dependencies, writes, serialized contracts, runtime behavior, and product scope are unchanged.",
+    "spec_semantics_changed": false,
+    "readiness_rows_changed": false,
+    "traceability_rows_changed": false,
+    "task_graph_changed": false,
+    "task_nodes": 211,
+    "task_edges": 800,
+    "primary_dependencies": [
+      "fkst-substrate",
+      "public devloop"
+    ],
+    "workflow_and_council_authority_changed": false,
+    "product_or_ui_authorized": false
+  },
+  "standing_fable_advisory": {
+    "reviewed_at_utc": "2026-07-21T02:53:14Z",
+    "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+    "provider": "claude",
+    "model": "claude-fable-5",
+    "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+    "verdict": "PASS",
+    "authority": "advisory_only",
+    "repository_authorship": false,
+    "pre_post_porcelain_identical": true,
+    "mandatory_precision_applied": [
+      "structured JSON fingerprints with multiplicity",
+      "non-owned exact equality and owned subset rules",
+      "zero new fingerprints anywhere",
+      "no lint allowance/configuration",
+      "identical toolchain, argv, environment, and lock identities",
+      "bounded baseline/final/delta evidence",
+      "absolute-green non-clippy gates"
+    ]
+  },
+  "fresh_review_requirement": {
+    "implementation_review_cycle": "fresh independent Opus session after final R-051 DEV_VERIFIED head",
+    "required_reproduction": "Run both exact locked structured commands, regenerate canonical fingerprints, verify the delta rules and all absolute-green gates, and report clean pre/post state with repository_authorship=false.",
+    "satisfied": false
+  },
+  "pm_decision": {
+    "decided_at_utc": "2026-07-21T02:54:42Z",
+    "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "provider": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+    "decision": "ACCEPTED",
+    "basis": "The base failure is independently reproducible, the differential retains regression power without widening task scope, standing Fable passed the precision contract, no ADR trigger changes, and task-level fresh Opus plus PM acceptance remain mandatory.",
+    "governance_repository_authorship": true
+  },
+  "files_updated_together": [
+    "docs/spec/evidence/governance/R2-dispatch.json",
+    "docs/spec/evidence/governance/R2-r051-clippy-gate-mutation.json",
+    "docs/spec/evidence/governance/README.md",
+    "docs/spec/evidence/governance/task-states/R-051.json"
+  ],
+  "next_action": "Bind this accepted mutation to the R-051 owner, capture the final-head fingerprint artifact and delta, then run standing Fable task review, fresh Opus review, and the main-PM acceptance audit."
+}

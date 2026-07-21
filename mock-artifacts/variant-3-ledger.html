@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>fkst devboard — V3 Ledger (split, text-first)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:oklch(16% .011 250); --raise:oklch(20% .012 250); --raise-2:oklch(23% .013 250);
+  --line:oklch(26% .012 250); --line-2:oklch(33% .013 250);
+  --fg:oklch(97% .005 240); --dim:oklch(72% .014 245); --faint:oklch(58% .014 245); --ghost:oklch(46% .012 245);
+  --amber:oklch(81% .15 80); --amber-ink:oklch(22% .04 80);
+  --green:oklch(74% .13 158); --red:oklch(67% .18 18); --gold:oklch(80% .10 85);
+  --ui:"IBM Plex Sans",sans-serif; --mono:"IBM Plex Mono",monospace; --display:"Space Grotesk",sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:400 14px/1.5 var(--ui)}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font:500 11px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ghost)}
+
+/* top strip */
+.strip{display:flex;align-items:center;gap:14px;padding:10px 20px;border-bottom:1px solid var(--line)}
+.logo{font:700 17px/1 var(--display);position:relative}
+.kk{position:relative}
+.knode{position:absolute;left:.04em;top:.36em;width:.205em;height:.205em;border-radius:50%;background:var(--amber);box-shadow:0 0 0 .05em var(--bg)}
+.dot{width:6px;height:6px;border-radius:50%;flex:none}
+.dot.g{background:var(--green)} .dot.y{background:var(--gold)} .dot.n{background:var(--line-2)}
+.cchip{display:inline-flex;align-items:center;gap:7px;font:400 12.5px var(--mono);color:var(--faint);padding:4px 10px;border-radius:6px;border:1px solid transparent;transition:color .12s ease,background .12s ease}
+.cchip:hover{color:var(--dim);background:var(--raise)}
+.cchip.on{color:var(--fg);background:var(--raise);border-color:var(--line)}
+.spacer{flex:1}
+.hstat{font:400 11.5px var(--mono);color:var(--ghost)}
+.hstat b{font-weight:500;color:var(--green)}
+.posture{display:inline-flex;align-items:center;gap:6px;font:500 11px var(--mono);letter-spacing:.06em;color:var(--faint);background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:4px 9px}
+.newbtn{background:var(--amber);color:var(--amber-ink);font-weight:500;font-size:12.5px;border-radius:6px;padding:5px 11px;transition:filter .12s ease}
+.newbtn:hover{filter:brightness(1.06)}
+
+/* split */
+.split{display:grid;grid-template-columns:minmax(0,58fr) minmax(0,42fr);height:calc(100vh - 49px)}
+@media(max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.detail{display:none}}
+
+/* ledger */
+.ledger{border-right:1px solid var(--line);overflow-y:auto;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.lhead{display:flex;gap:10px;align-items:center;padding:12px 20px 8px;position:sticky;top:0;background:var(--bg)}
+.lhead .rule{flex:1;height:1px;background:var(--line)}
+.lrow{display:grid;grid-template-columns:52px 76px 110px minmax(0,1fr) 148px 44px;gap:14px;align-items:baseline;padding:5.5px 20px;font-size:12.5px;color:var(--dim);cursor:pointer;transition:background .12s ease;min-width:0}
+.lrow:hover{background:var(--raise)}
+.lrow.sel{background:var(--raise);box-shadow:inset 2px 0 0 var(--amber)}
+.ts{color:var(--ghost);font-size:11.5px}
+.id{color:var(--faint)}
+.st{font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.st.n{color:var(--faint)} .st.g{color:var(--green)} .st.y{color:var(--gold)} .st.r{color:var(--red)}
+.ti{font-family:var(--ui);color:var(--fg);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.who{color:var(--ghost);font-size:11.5px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag{color:var(--ghost);font-size:11.5px;text-align:right}
+.lfoot{padding:14px 20px 20px;font-size:11px;color:var(--ghost);line-height:1.7}
+
+/* detail */
+.detail{overflow-y:auto;padding:22px 24px}
+.pill{display:inline-flex;align-items:center;gap:6px;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);background:var(--raise);border:1px solid var(--line-2);border-radius:6px;padding:4px 9px}
+.detail h2{font:600 17px/1.35 var(--ui);margin:12px 0 4px}
+.dmeta{font:400 12px var(--mono);color:var(--ghost)}
+.sect{margin-top:24px}
+.sect .eyebrow{display:block;margin-bottom:10px}
+.tl{border-left:1px solid var(--line);margin-left:5px;padding-left:16px;display:flex;flex-direction:column;gap:11px}
+.tli{position:relative;font-size:13px;color:var(--dim)}
+.tli::before{content:"";position:absolute;left:-20.5px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--bg);border:1.5px solid var(--faint)}
+.tli.cur::before{background:var(--amber);border-color:var(--amber)}
+.tli .m{font:400 11px var(--mono);color:var(--ghost);display:block}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;font-size:13px;color:var(--dim)}
+.kv .v{font:500 12px var(--mono);color:var(--faint);text-align:right}
+.kv .v.ok{color:var(--green)} .kv .v.warn{color:var(--gold)}
+.compose{margin-top:10px;background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:10px}
+.compose textarea{width:100%;background:none;border:0;resize:none;color:var(--fg);font:400 13.5px/1.5 var(--ui);min-height:48px}
+.compose textarea::placeholder{color:var(--ghost)}
+.crow{display:flex;align-items:center;gap:8px;margin-top:8px}
+.actor{font:400 11px var(--mono);color:var(--ghost)}
+.send{margin-left:auto;background:var(--raise-2);border:1px solid var(--line-2);color:var(--dim);border-radius:6px;padding:4px 12px;font-size:12.5px;transition:color .12s ease,border-color .12s ease}
+.send:hover{color:var(--fg);border-color:var(--faint)}
+.out{display:flex;gap:14px;margin-top:14px}
+.out a{font-size:13px;color:var(--faint);transition:color .12s ease}
+.out a:hover{color:var(--dim)}
+.prov{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font:400 11px/1.7 var(--mono);color:var(--ghost)}
+</style>
+</head>
+<body>
+
+<div class="strip">
+  <a class="logo" href="#">F<span class="kk">K<i class="knode"></i></span>ST</a>
+  <button class="cchip on"><i class="dot g"></i>fkst-packages</button>
+  <button class="cchip"><i class="dot g"></i>devloop-sandbox</button>
+  <button class="cchip"><i class="dot y"></i>godgpt-sdk · unknown</button>
+  <div class="spacer"></div>
+  <span class="hstat"><b>HEALTHY</b> · q7 · inflight3 · dlq0 · as of 2m</span>
+  <span class="posture"><i class="dot n"></i>DRY-RUN</span>
+  <button class="newbtn">+ issue</button>
+</div>
+
+<div class="split">
+
+  <!-- ledger -->
+  <div class="ledger">
+
+    <div class="lhead"><span class="eyebrow">Open · by last transition</span><span class="rule"></span></div>
+
+    <div class="lrow sel">
+      <span class="ts">11:34</span><span class="id">PR·2444</span><span class="st n">reviewing</span>
+      <span class="ti">fix: dependency-release liveness epoch</span>
+      <span class="who">integration-ElonSG</span><span class="ag">18m</span>
+    </div>
+    <div class="lrow">
+      <span class="ts">11:29</span><span class="id">#2441</span><span class="st n">implementing</span>
+      <span class="ti">Label oscillation on dependency-release</span>
+      <span class="who">integration-ElonSG</span><span class="ag">42m</span>
+    </div>
+    <div class="lrow">
+      <span class="ts">11:22</span><span class="id">PR·2439</span><span class="st g">merge-ready</span>
+      <span class="ti">feat: producer-liveness conformance</span>
+      <span class="who">integration-ElonSG</span><span class="ag">41m</span>
+    </div>
+    <div class="lrow">
+      <span class="ts">11:18</span><span class="id">#207</span><span class="st n">implementing</span>
+      <span class="ti">Seed goal: hello-loop smoke · devloop-sandbox</span>
+      <span class="who">integration-mac-mini</span><span class="ag">6m</span>
+    </div>
+    <div class="lrow">
+      <span class="ts">11:06</span><span class="id">#2453</span><span class="st n">thinking</span>
+      <span class="ti">Board hides awaiting-pr rows when state unknown</span>
+      <span class="who">unclaimed</span><span class="ag">28m</span>
+    </div>
+    <div class="lrow">
+      <span class="ts">10:58</span><span class="id">PR·2431</span><span class="st y">fixing·r2</span>
+      <span class="ti">fix: false-terminal on defer-clear</span>
+      <span class="who">integration-ElonSG</span><span class="ag">1h02</span>
+    </div>
+    <div class="lrow">
+      <span class="ts">10:47</span><span class="id">#2466</span><span class="st n">thinking</span>
+      <span class="ti">Doctor: detect duplicate durable roots</span>
+      <span class="who">unclaimed</span><span class="ag">12m</span>
+    </div>
+    <div class="lrow">
+      <span class="ts">10:31</span><span class="id">#2412</span><span class="st n">awaiting-pr</span>
+      <span class="ti">Sync-scan ping-pong on integration branch</span>
+      <span class="who">integration-ElonSG</span><span class="ag">1h05</span>
+    </div>
+    <div class="lrow">
+      <span class="ts">10:12</span><span class="id">#2460</span><span class="st n">ready</span>
+      <span class="ti">Intake: milestone filter ignores sibling repos</span>
+      <span class="who">integration-ElonSG</span><span class="ag">2h10</span>
+    </div>
+    <div class="lrow">
+      <span class="ts">09:44</span><span class="id">#2437</span><span class="st r">dep-wait</span>
+      <span class="ti">Harvest step drops worktree on slice gate — blocked by #2433</span>
+      <span class="who">integration-ElonSG</span><span class="ag">3h12</span>
+    </div>
+
+    <div class="lhead"><span class="eyebrow">Terminal · 24h</span><span class="rule"></span></div>
+    <div class="lrow" style="opacity:.62">
+      <span class="ts">11:25</span><span class="id">PR·2418</span><span class="st g">merged</span>
+      <span class="ti">chore: shrink saga allowlist</span>
+      <span class="who">integration-ElonSG</span><span class="ag">9m</span>
+    </div>
+    <div class="lrow" style="opacity:.62">
+      <span class="ts">08:19</span><span class="id">#2402</span><span class="st r">blocked</span>
+      <span class="ti">Ratchet slicer: cross-repo milestone map — WHY: true-stall r3</span>
+      <span class="who">—</span><span class="ag">3h</span>
+    </div>
+
+    <div class="lfoot">
+      rows are trusted state:v1 transitions re-derived every poll · labels are hints, never rows<br>
+      godgpt-sdk unreachable → its work reads <em>unknown</em>, never 0
+    </div>
+  </div>
+
+  <!-- detail -->
+  <div class="detail">
+    <span class="pill">reviewing</span>
+    <h2>fix: dependency-release liveness epoch</h2>
+    <div class="dmeta">PR #2444 · fkst-packages · head 9f31c2a · from issue #2441 · claim integration-ElonSG (assignee mode)</div>
+
+    <div class="sect">
+      <span class="eyebrow">Lifecycle · trusted state:v1 · integration-ElonSG</span>
+      <div class="tl">
+        <div class="tli">thinking <span class="m">v3 · 09:14</span></div>
+        <div class="tli">ready <span class="m">v5 · 10:02 · deps clear</span></div>
+        <div class="tli">implementing <span class="m">v6 · 10:04 · worktree wt-2441</span></div>
+        <div class="tli">pr-open <span class="m">v8 · 11:31 · PR #2444</span></div>
+        <div class="tli cur">reviewing <span class="m">v9 · 11:34 · current · seats 2/5</span></div>
+      </div>
+    </div>
+
+    <div class="sect">
+      <span class="eyebrow">Merge gate</span>
+      <div class="kv">
+        <span>Review consensus</span><span class="v warn">2 / 5 seats</span>
+        <span>CI checks</span><span class="v">running · 3/5</span>
+        <span>Head-bound approval</span><span class="v">—</span>
+        <span>Mergeable</span><span class="v ok">clean</span>
+        <span>Posture</span><span class="v">DRY-RUN — merge holds at gate</span>
+      </div>
+    </div>
+
+    <div class="sect">
+      <span class="eyebrow">Comment · human input</span>
+      <div class="compose">
+        <textarea placeholder="Comment on PR #2444…"></textarea>
+        <div class="crow">
+          <span class="actor">as calvin-tan ✓ human</span>
+          <button class="send">Comment</button>
+        </div>
+      </div>
+      <div class="out"><a href="#">Open PR ↗</a><a href="#">Issue #2441 ↗</a><a href="#">Raw markers</a></div>
+    </div>
+
+    <div class="prov">markers are fact · labels are hints · claim = assignee lease<br>projection of gh poll (2m) + observe snapshot (14s) · nothing is live</div>
+  </div>
+
+</div>
+</body>
+</html>

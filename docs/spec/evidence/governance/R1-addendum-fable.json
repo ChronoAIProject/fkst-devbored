@@ -1,0 +1,40 @@
+{
+  "schema": "fkst.fable-advisory/v1",
+  "record": "FABLE_R1_ADDENDUM",
+  "recorded_at": "2026-07-21T01:08:42Z",
+  "advisor": {
+    "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+    "provider": "claude",
+    "model": "claude-fable-5",
+    "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+    "authority": "advisory_only"
+  },
+  "verdict": "PASS",
+  "reviewed_scope": [
+    "docs/spec/evidence/governance/task-state-contract.v1.json",
+    "docs/spec/evidence/governance/task-state-template.json",
+    "docs/spec/evidence/governance/R1-integration.json",
+    "docs/spec/evidence/governance/R1-dispatch.json",
+    "docs/spec/evidence/governance/R1-opus-review-checklist.md",
+    "docs/spec/evidence/governance/README.md",
+    "plans/parallel-engineering-task-map.md task-state section",
+    "docs/spec/08-READINESS.md R1 reconciliation"
+  ],
+  "verified": [
+    "The closed vocabulary and canonical submission core close both Wave-R1 governance findings for R2.",
+    "Fable remains advisory-only; fresh Opus, same-owner rework, PM acceptance, and integration gates are not weakened.",
+    "The six integration-state commits, aggregate content head, 26 changed paths, declared order, and 15 empty pairwise intersections are internally consistent.",
+    "Readiness remains STOP; frozen semantic contracts move only to PARTIAL and no runtime, visibility, binary provenance, GitHub context, Codex auth, or product/UI PASS is claimed.",
+    "The exact two-primary-dependency and Workflow/Council mechanism boundaries remain intact."
+  ],
+  "finding": {
+    "severity": "MEDIUM",
+    "blocking": false,
+    "detail": "Commit the authoritative docs/spec, plans, and governance set before R2 dispatch so future packets cite a commit and drift is diff-based.",
+    "pm_disposition": "ACCEPTED; freeze the authority set before any R2 owner is dispatched."
+  },
+  "repository_authorship": false,
+  "pre_review_head": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+  "post_review_head": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+  "worktree_was_dirty_by_expected_authority_changes": true
+}

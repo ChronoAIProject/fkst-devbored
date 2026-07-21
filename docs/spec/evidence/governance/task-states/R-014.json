@@ -1,0 +1,105 @@
+{
+  "schema": "fkst.task-state/v1",
+  "task_id": "R-014",
+  "state": "INTEGRATED",
+  "repository": "app",
+  "integration_base_commit": "db1c492e9b091c4d5c254a62dca8036c41acdbd8",
+  "dependencies": ["R-004"],
+  "exclusive_paths": ["contracts/step0/devloop/intake-claim-trust/**", "evidence/step0/R-014/**"],
+  "owner_agent_id": "019f8265-8762-7fb3-ace1-84b7e8b530f2",
+  "owner_provider": "codex",
+  "owner_model": "gpt-5.6-sol",
+  "owner_provider_session": "019f8265-87fb-74c1-b4bf-aa6454e28ae5",
+  "owner_worktree_id": "019f8264-5776-7fd3-8935-ad83f5b6a8a7",
+  "owner_worktree_path": "/Users/chronoai/Library/Application Support/heca/worktrees/80693732/r014-devloop-intake-map",
+  "owner_branch": "codex/v2-r014-devloop-intake-map",
+  "review_cycle": 1,
+  "transition_history": [
+    "PROPOSED",
+    "READY",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "OPUS_REVIEW",
+    "OPUS_APPROVED",
+    "PM_REVIEW",
+    "ACCEPTED",
+    "INTEGRATED"
+  ],
+  "submissions": [
+    {
+      "review_cycle": 0,
+      "commit": "a3d62a8cffcb84f10e3613398a685c8e87193f29",
+      "result": "DEV_VERIFIED",
+      "submitted_at_utc": "2026-07-21T02:16:54Z",
+      "parent": "db1c492e9b091c4d5c254a62dca8036c41acdbd8",
+      "artifacts": [
+        "contracts/step0/devloop/intake-claim-trust/intake-claim-trust-map.v1.json",
+        "evidence/step0/R-014/verify_source_map.py",
+        "evidence/step0/R-014/verification.v1.json"
+      ],
+      "checks": [
+        "jq -e over all R-014 JSON: PASS",
+        "verify_source_map.py: PASS_SOURCE_IDENTITY_ONLY",
+        "bounded forbidden executable import/reference scan: PASS",
+        "git diff --check and exclusive-path subset: PASS",
+        "dependency and worktree pre/post porcelain: unchanged"
+      ],
+      "runtime_claim_status": "NOT_CLAIMED",
+      "limitations": [
+        "The artifact proves declarative source, export, and reference-test identity only; it does not prove app or dependency behavior.",
+        "Reference tests remain provenance-bound and reference-only.",
+        "R-030, R-041/R-005, R-024/R-045, R-012/R-018/R-049, and R-039 remain downstream gates."
+      ]
+    }
+  ],
+  "advisories": [],
+  "reviews": [
+    {
+      "review_cycle": 1,
+      "agent_id": "019f8283-ade9-7013-bcf9-61a1bc16fc03",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "c8dac779-ce56-40ce-9a96-306d44c7c393",
+      "verdict": "APPROVE",
+      "reviewed_head": "774c4401cfd5613e36ee11afaf3ec4bb865bacef",
+      "authority": "independent_review",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "Fresh Opus independently reproduced valid JSON, the pinned ff81e189 export digest and source-identity verifier, exact four-path scope, two-commit provenance trailers, red rejection of assignee/proxy/reference-only seams, exactly two primary dependencies, Workflow/Council authority, and no product or runtime authorization.",
+      "limitations": [
+        "Identity-only review; no Lua, dependency, or app behavior was executed.",
+        "The verifier remains contingent on the exact R-004 package source pin."
+      ]
+    }
+  ],
+  "pm_decisions": [
+    {
+      "review_cycle": 1,
+      "decision": "ACCEPTED",
+      "decided_at_utc": "2026-07-21T02:45:34Z",
+      "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+      "pm_provider": "codex",
+      "pm_model": "gpt-5.6-sol",
+      "pm_provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+      "accepted_artifact_commit": "a3d62a8cffcb84f10e3613398a685c8e87193f29",
+      "accepted_source_head": "774c4401cfd5613e36ee11afaf3ec4bb865bacef",
+      "basis": "The owner submission and fresh Opus review are coherent, and the main PM independently reproduced the verifier, JSON, diff, exclusive-path, two-commit, trailer-cardinality, and clean pre/post checks.",
+      "residual_gates": [
+        "R-030 must prove behavior and no-write semantics.",
+        "R-041 and R-005 must close app-package visibility and pin the landed public-devloop commit.",
+        "R-024 and R-045 must prove duplicate, conflict, and receipt handling.",
+        "R-012, R-018, and R-049 must preserve assignee/proxy rejection.",
+        "R-039 continues to block product and UI implementation."
+      ]
+    }
+  ],
+  "integration": {
+    "integrated_at_utc": "2026-07-21T05:06:32Z",
+    "integration_branch": "codex/full-app-v2-00-readiness",
+    "integration_merge_commit": "2d5ca26",
+    "aggregate_head_after_integration": "a6d0804779c6fef2436d11b2e3ee5f6e6c2eb80f",
+    "actual_changed_path_count": 4,
+    "collision_gate": "PASS",
+    "wave_gate": "R2-WAVE-A-PASS"
+  }
+}

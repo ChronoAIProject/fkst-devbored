@@ -1,0 +1,170 @@
+{
+  "schema": "fkst.task-state/v1",
+  "task_id": "R-008",
+  "state": "INTEGRATED",
+  "repository": "app",
+  "integration_base_commit": "db1c492e9b091c4d5c254a62dca8036c41acdbd8",
+  "dependencies": ["R-007"],
+  "exclusive_paths": ["contracts/pubspec.yaml", "contracts/pubspec.lock", "contracts/lib/src/canonical_json.dart", "contracts/lib/src/workflow_contract.dart", "contracts/lib/fkst_workflow_contracts.dart", "contracts/test/workflow_contract_test.dart", "contracts/lua/shared/**", "contracts/lua/workflow/**", "contracts/specs/workflow/**", "evidence/step0/R-008/**"],
+  "owner_agent_id": "019f8265-854c-7121-8cb1-32cdd750a7e4",
+  "owner_provider": "codex",
+  "owner_model": "gpt-5.6-sol",
+  "owner_provider_session": "019f8265-85fa-7d42-bad3-216a3ca2a6dd",
+  "owner_worktree_id": "019f8264-56ca-7342-b023-7968a7897553",
+  "owner_worktree_path": "/Users/chronoai/Library/Application Support/heca/worktrees/80693732/r008-workflow-corpus",
+  "owner_branch": "codex/v2-r008-workflow-corpus",
+  "review_cycle": 1,
+  "transition_history": [
+    "PROPOSED",
+    "READY",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "FABLE_ADVISORY",
+    "RETURNED",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "FABLE_ADVISORY",
+    "DEV_VERIFIED",
+    "OPUS_REVIEW",
+    "OPUS_APPROVED",
+    "PM_REVIEW",
+    "ACCEPTED",
+    "INTEGRATED"
+  ],
+  "submissions": [
+    {
+      "review_cycle": 0,
+      "commit": "19f608ae7636dce9adc161ad7dfa1d1bc98d5192",
+      "result": "DEV_VERIFIED",
+      "submitted_at_utc": "2026-07-21T02:27:29Z",
+      "parent": "db1c492e9b091c4d5c254a62dca8036c41acdbd8",
+      "artifacts": [
+        "contracts/specs/workflow/workflow-canonical-corpus-v1.json",
+        "contracts/lib/src/canonical_json.dart",
+        "contracts/lib/src/workflow_contract.dart",
+        "contracts/lua/shared/canonical_json.lua",
+        "contracts/lua/workflow/workflow_contract.lua"
+      ],
+      "checks": [
+        "Dart analyze and 7 focused tests: PASS",
+        "substrate-executed Lua report: 7 passed, 0 failed",
+        "Dart/Lua canonical byte and SHA-256 parity: PASS",
+        "diff, exclusive-path, trailer, and dependency immutability checks: PASS"
+      ],
+      "runtime_claim_status": "NO_RUNTIME_CLAIM"
+    },
+    {
+      "review_cycle": 0,
+      "commit": "0479a2a8ec50a9caf7d8f4822680c72d4a96df8a",
+      "result": "DEV_VERIFIED",
+      "submitted_at_utc": "2026-07-21T02:50:01Z",
+      "parent": "18e449481af646ab78cb1197f79e36dfd2c3ea3b",
+      "artifacts": [
+        "contracts/specs/workflow/workflow-canonical-corpus-v1.json",
+        "contracts/lib/src/canonical_json.dart",
+        "contracts/lua/shared/canonical_json.lua",
+        "contracts/test/workflow_contract_test.dart",
+        "contracts/lua/workflow/tests/workflow_contract_test.lua",
+        "evidence/step0/R-008/dev-verification.json",
+        "evidence/step0/R-008/lua-test-report.json"
+      ],
+      "checks": [
+        "Dart analyze and 9 focused tests: PASS",
+        "substrate-executed Lua report: 9 passed, 0 failed with deterministic report",
+        "lone high/low surrogate, valid pair, invalid escape/hex, unterminated/control, depth 32/33, UTF-8 document bound, and paired unsupported encode-type cases: PASS",
+        "explicit Lua unsigned bytewise key comparator: present",
+        "main-PM independent Dart/Lua rework reproduction: PASS",
+        "diff, exclusive-path, trailer, and dependency immutability checks: PASS"
+      ],
+      "runtime_claim_status": "NO_RUNTIME_CLAIM",
+      "limitations": [
+        "Council reuse remains downstream and may not fork the shared canonical kernel.",
+        "The unrelated historical full-suite residual remains assigned to R-059."
+      ]
+    },
+    {
+      "review_cycle": 0,
+      "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+      "provider": "claude",
+      "model": "claude-fable-5",
+      "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+      "verdict": "PASS",
+      "reviewed_head": "1ea7a10584f31e76aadfeb1cb16d3a2cd6de3f80",
+      "reviewed_at_utc": "2026-07-21T03:02:33Z",
+      "authority": "advisory_only",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "The corrective head rejects lone and invalid surrogate forms consistently, preserves valid-pair canonicalization, executes paired malformed/depth/document/unsupported-type hostility in both languages, uses an explicit unsigned bytewise Lua comparator, passes locked Dart 9/9 and deterministic Lua 9/0, preserves the frozen R-007 Workflow authority and shared Council-safe kernel, and changes no dependency/runtime/product boundary.",
+      "residual_gates": [
+        "Fresh independent Opus review and main-PM acceptance remain required.",
+        "R-010 may reuse the canonical kernel only after R-008 integration.",
+        "R-043, R-022, and R-059 retain manifest, runtime-consumption, and historical-suite closure."
+      ]
+    }
+  ],
+  "advisories": [
+    {
+      "review_cycle": 0,
+      "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+      "provider": "claude",
+      "model": "claude-fable-5",
+      "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+      "verdict": "CHANGES_REQUIRED",
+      "reviewed_head": "18e449481af646ab78cb1197f79e36dfd2c3ea3b",
+      "authority": "advisory_only",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "severity": "MEDIUM",
+      "finding": "The initial corpus omitted executable depth/document/unsupported-type/malformed-Unicode coverage, and Dart accepted lone-surrogate escapes that the Lua path rejected.",
+      "smallest_same_owner_correction": "Validate Dart surrogate pairing; add shared hostile/boundary corpus cases and paired encode-side tests in both suites; use an explicit unsigned bytewise Lua key comparator."
+    }
+  ],
+  "reviews": [
+    {
+      "review_cycle": 1,
+      "agent_id": "019f82e5-1b55-7002-bc71-4e378f4fa62d",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "9cc1436d-2765-40e7-87c3-d24ddde40d4b",
+      "verdict": "APPROVE",
+      "reviewed_at_utc": "2026-07-21T04:28:29Z",
+      "reviewed_head": "1ea7a10584f31e76aadfeb1cb16d3a2cd6de3f80",
+      "authority": "independent_review",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "Fresh Opus reproduced locked Dart analysis and 9/9 tests plus two deterministic substrate-Lua 9/0 runs; verified shared-corpus byte and digest parity, hostile Unicode/depth/byte/number/duplicate/unsupported cases, explicit unsigned Lua ordering, exact 24-route family, four-commit provenance and scope, exactly two primary dependencies, Workflow/Council authority, and no runtime/UI/reference-package import.",
+      "limitations": [
+        "Parity is proven for the frozen shared corpus and exact pinned substrate binary.",
+        "R-011, R-022, R-043, and R-059 retain assignment, runtime, manifest, and historical-suite closure."
+      ]
+    }
+  ],
+  "pm_decisions": [
+    {
+      "review_cycle": 1,
+      "decision": "ACCEPTED",
+      "decided_at_utc": "2026-07-21T05:02:47Z",
+      "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+      "pm_provider": "codex",
+      "pm_model": "gpt-5.6-sol",
+      "pm_provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+      "accepted_artifact_commit": "0479a2a8ec50a9caf7d8f4822680c72d4a96df8a",
+      "accepted_source_head": "1ea7a10584f31e76aadfeb1cb16d3a2cd6de3f80",
+      "basis": "Standing Fable passed the same-owner correction, fresh Opus approved and independently reproduced every task gate, and the PM's prior locked Dart/Lua, hostile-corpus, scope, trailer, and clean-state reproduction remains bound to the unchanged reviewed head.",
+      "residual_gates": [
+        "R-010 may now reuse but may not fork the canonical kernel after integration.",
+        "R-011/R-022/R-043 retain assignment, runtime consumption, manifest, and exhaustion proof.",
+        "R-059 retains the unrelated historical full-suite portability repair."
+      ]
+    }
+  ],
+  "integration": {
+    "integrated_at_utc": "2026-07-21T05:06:32Z",
+    "integration_branch": "codex/full-app-v2-00-readiness",
+    "integration_merge_commit": "4fee980",
+    "aggregate_head_after_integration": "a6d0804779c6fef2436d11b2e3ee5f6e6c2eb80f",
+    "actual_changed_path_count": 15,
+    "collision_gate": "PASS",
+    "wave_gate": "R2-WAVE-A-PASS"
+  }
+}

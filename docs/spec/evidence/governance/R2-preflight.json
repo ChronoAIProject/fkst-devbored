@@ -1,0 +1,185 @@
+{
+  "schema": "fkst.wave-preflight/v1",
+  "wave": "R2-contract-and-source-map",
+  "recorded_at": "2026-07-21T01:14:00Z",
+  "state": "ACCEPTED",
+  "accepted_at": "2026-07-21T01:37:09Z",
+  "pm": {
+    "agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "provider": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205"
+  },
+  "base": {
+    "authority_branch": "develop",
+    "authority_head_before_mutation": "fbe715048af53a5b69f0cba31a5c6078b4860b96",
+    "integration_branch": "codex/full-app-v2-00-readiness",
+    "integration_head_before_mutation": "ea42eaf431efa38adba43f9e77595ad9efff5679"
+  },
+  "shared_gate_observation": {
+    "static_analysis": {
+      "worktree_id": "019f81f7-9d7c-7a23-a205-e66284a3a01c",
+      "worktree_path": "/Users/chronoai/Library/Application Support/heca/worktrees/80693732/full-app-v2-00-readiness",
+      "commit": "ea42eaf431efa38adba43f9e77595ad9efff5679",
+      "command": "dart analyze --fatal-infos",
+      "exit_code": 0,
+      "result": "No issues found"
+    },
+    "isolated_worktree_test": {
+      "worktree_id": "019f81f7-9d7c-7a23-a205-e66284a3a01c",
+      "worktree_path": "/Users/chronoai/Library/Application Support/heca/worktrees/80693732/full-app-v2-00-readiness",
+      "branch": "codex/full-app-v2-00-readiness",
+      "commit": "ea42eaf431efa38adba43f9e77595ad9efff5679",
+      "command": "dart test --reporter expanded",
+      "exit_code": 1,
+      "result": "2 passed, 18 failed before semantic evaluation because contracts/test/round_trip_test.dart resolved fixtures through a nonexistent sibling packages/packages/devbored path",
+      "transcript": "R2-preflight-test-transcript.json#isolated_heca_integration_worktree"
+    },
+    "primary_checkout_test": {
+      "checkout_path": "/Users/chronoai/Desktop/aelf-frontend-work/FKST/fkst-devbored",
+      "branch": "develop",
+      "commit": "fbe715048af53a5b69f0cba31a5c6078b4860b96",
+      "command": "dart test --reporter expanded",
+      "exit_code": 1,
+      "result": "19 passed, 1 failed: the obsolete devbored.config.v1 valid fixture contains unsupported $.stages.design.enabled",
+      "transcript": "R2-preflight-test-transcript.json#primary_checkout_with_ambient_sibling"
+    },
+    "json_and_diff_gate": {
+      "command": "jq empty over integrated contract/evidence JSON plus git diff --check",
+      "exit_code": 0,
+      "result": "PASS"
+    }
+  },
+  "new_fact": "The historical Dart contract suite depends on ambient sibling-workspace layout and is therefore not portable to the isolated worktrees required by ORG-02/G-006.",
+  "boundary_disposition": {
+    "reference_runtime_authority_added": false,
+    "dependency_added": false,
+    "ambient_symlink_or_path_workaround_allowed": false,
+    "required_solution": "Repository-local fixtures with exact reference source commit/path/SHA provenance, retained only for differential/reference checks; app Workflow/Council corpora remain default authority.",
+    "adr_required": false,
+    "adr_rationale": "R-059 changes only test-fixture location and provenance discipline; it strengthens the existing reference-only boundary without changing an authority invariant, dependency boundary, write surface, or serialized contract."
+  },
+  "plan_mutation": {
+    "task_added": "R-059",
+    "depends_on": [
+      "R-008",
+      "R-010"
+    ],
+    "new_downstream_edge": "R-059 -> R-020",
+    "affected_downstream_steps_stopped": [
+      "R-020 and every non-R product task already remain blocked"
+    ],
+    "task_nodes_before": 210,
+    "task_edges_before": 797,
+    "task_nodes_after": 211,
+    "task_edges_after": 800,
+    "graph_validation": {
+      "duplicates": 0,
+      "missing_dependencies": 0,
+      "roots": [
+        "G-001"
+      ],
+      "acyclic": true
+    }
+  },
+  "files_updated_together": [
+    "plans/parallel-engineering-task-map.md",
+    "plans/full-app-construction.md",
+    "docs/spec/08-READINESS.md",
+    "docs/spec/07-TRACEABILITY.md",
+    "docs/spec/evidence/governance/README.md",
+    "docs/spec/evidence/governance/R2-preflight.json",
+    "docs/spec/evidence/governance/R2-preflight-test-transcript.json"
+  ],
+  "advisories": [
+    {
+      "review_cycle": 1,
+      "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+      "provider": "claude",
+      "model": "claude-fable-5",
+      "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+      "verdict": "PASS_WITH_LOW_PRECOMMIT_CORRECTIONS",
+      "authority": "advisory_only",
+      "repository_authorship": false,
+      "corrections_applied": [
+        "Renumbered the final Step-0 construction item from duplicate 15 to 16.",
+        "Reconciled files_updated_together and recorded the explicit no-ADR disposition."
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "review_cycle": 1,
+      "agent_id": "019f8243-85d7-76a0-9361-8f06952bbdff",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "319d7567-2c28-435a-8d35-21617a5066e2",
+      "initial_verdict": "CHANGES_REQUESTED",
+      "same_session_follow_up_verdict": "APPROVE",
+      "counts_as_final_approval": false,
+      "repository_authorship": false,
+      "findings": [
+        "Record the explicit ADR disposition.",
+        "Pin the observed tests to exact checkout/worktree/commit/transcript identities."
+      ]
+    },
+    {
+      "review_cycle": 2,
+      "agent_id": "019f824a-7af6-7a81-b2ec-4cef9db17ea1",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "7bf9675a-4ad4-4071-bdd0-ece3cf5b4f28",
+      "verdict": "APPROVE",
+      "fresh_from_cycle_1": true,
+      "repository_authorship": false,
+      "reviewed_base_head": "fbe715048af53a5b69f0cba31a5c6078b4860b96",
+      "pre_post_porcelain_identical": true,
+      "independent_checks": [
+        "Reproduced the primary-checkout +19 -1 result and verified the isolated +2 -18 evidence and identities.",
+        "Recounted 211 unique nodes and 800 edges with one root, no missing dependencies, and no cycle.",
+        "Confirmed the no-ADR disposition, two-primary-dependency boundary, Workflow/Council authority, R-020 dependency, and intentional RUN-family omission."
+      ]
+    }
+  ],
+  "rework": {
+    "same_pm_agent": true,
+    "same_pm_provider_session": true,
+    "adr_disposition_recorded": true,
+    "test_identity_and_transcript_recorded": true,
+    "fresh_opus_review_required": true,
+    "fresh_opus_review_satisfied": true
+  },
+  "pm_decisions": [
+    {
+      "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+      "provider": "codex",
+      "model": "gpt-5.6-sol",
+      "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+      "verdict": "ACCEPTED",
+      "audit_result": "PM_AUDIT_R2_PREFLIGHT=PASS",
+      "repository_authorship_during_audit": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "The two-environment failure is reproducible and provenance-pinned; R-059 is the minimal corrective task; the 211-node/800-edge graph is complete and acyclic; the no-ADR disposition is valid; the exact fkst-substrate plus public-devloop boundary and Workflow/Council authority remain intact; fresh Opus cycle 2 approved; and no product code is authorized or present."
+    }
+  ],
+  "acceptance_validation": {
+    "governance_and_contract_json": "PASS",
+    "git_diff_check": "PASS",
+    "markdown_files_checked": 45,
+    "local_links_checked": 98,
+    "broken_local_links": 0,
+    "unbalanced_markdown_fences": 0,
+    "task_nodes": 211,
+    "task_edges": 800,
+    "duplicate_nodes": 0,
+    "missing_dependencies": 0,
+    "roots": [
+      "G-001"
+    ],
+    "acyclic": true,
+    "changed_paths": 7,
+    "product_or_runtime_implementation_paths_changed": false
+  },
+  "product_coding_authorized": false,
+  "next_action": "Commit the accepted mutation on develop, merge that immutable authority into the readiness integration branch, then create R2 worktrees from the resulting integration head."
+}

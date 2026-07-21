@@ -1,0 +1,96 @@
+{
+  "schema": "fkst.council-contract-corpus/v1",
+  "corpusId": "AP-02/R-010",
+  "definition": {
+    "schema": "fkst.devbored.council.v1",
+    "id": "delivery-council",
+    "version": 1,
+    "name": "Delivery Council",
+    "seats": [
+      {"id": "product-seat", "displayName": "Product", "lens": "product"},
+      {"id": "architecture-seat", "displayName": "Architecture", "lens": "architecture"},
+      {"id": "quality-seat", "displayName": "Quality", "lens": "quality"}
+    ],
+    "policies": {
+      "implementation-review": {
+        "roster": ["architecture-seat", "quality-seat", "product-seat"],
+        "agreement": "simpleMajority",
+        "maxRounds": 3,
+        "timeoutSeconds": 300,
+        "dissentRule": "explicitChangesRequested"
+      },
+      "design-review": {
+        "roster": ["product-seat", "architecture-seat"],
+        "agreement": "unanimous",
+        "maxRounds": 2,
+        "timeoutSeconds": 240,
+        "dissentRule": "explicitChangesRequested"
+      }
+    }
+  },
+  "canonical": {
+    "json": "{\"id\":\"delivery-council\",\"name\":\"Delivery Council\",\"policies\":{\"design-review\":{\"agreement\":\"unanimous\",\"dissentRule\":\"explicitChangesRequested\",\"maxRounds\":2,\"roster\":[\"product-seat\",\"architecture-seat\"],\"timeoutSeconds\":240},\"implementation-review\":{\"agreement\":\"simpleMajority\",\"dissentRule\":\"explicitChangesRequested\",\"maxRounds\":3,\"roster\":[\"architecture-seat\",\"quality-seat\",\"product-seat\"],\"timeoutSeconds\":300}},\"schema\":\"fkst.devbored.council.v1\",\"seats\":[{\"displayName\":\"Product\",\"id\":\"product-seat\",\"lens\":\"product\"},{\"displayName\":\"Architecture\",\"id\":\"architecture-seat\",\"lens\":\"architecture\"},{\"displayName\":\"Quality\",\"id\":\"quality-seat\",\"lens\":\"quality\"}],\"version\":1}",
+    "sha256": "67d82be78e4408a92954345e169a6c380d78efaf67fede3d152213740127e6f3"
+  },
+  "definitionCases": [
+    {"id": "valid", "accepted": true, "mutations": []},
+    {"id": "unknown-field", "accepted": false, "error": "unknown_key", "mutations": [{"op": "add", "path": ["prompt"], "value": "forbidden"}]},
+    {"id": "wrong-schema", "accepted": false, "error": "schema", "mutations": [{"op": "replace", "path": ["schema"], "value": "devbored.config.v1"}]},
+    {"id": "empty-seats", "accepted": false, "error": "seats_bounds", "mutations": [{"op": "replace", "path": ["seats"], "value": []}]},
+    {"id": "over-seat-bound", "accepted": false, "error": "seats_bounds", "mutations": [{"op": "append", "path": ["seats"], "value": {"id":"implementation-seat","displayName":"Implementation","lens":"implementation"}}, {"op": "append", "path": ["seats"], "value": {"id":"security-seat","displayName":"Security","lens":"security"}}, {"op": "append", "path": ["seats"], "value": {"id":"sixth-seat","displayName":"Sixth","lens":"quality"}}]},
+    {"id": "duplicate-seat", "accepted": false, "error": "duplicate_seat", "mutations": [{"op": "replace", "path": ["seats", 1, "id"], "value": "product-seat"}]},
+    {"id": "wrong-lens", "accepted": false, "error": "enum", "mutations": [{"op": "replace", "path": ["seats", 0, "lens"], "value": "teleology"}]},
+    {"id": "empty-policies", "accepted": false, "error": "policies_bounds", "mutations": [{"op": "replace", "path": ["policies"], "value": {}}]},
+    {"id": "duplicate-roster", "accepted": false, "error": "duplicate_roster_seat", "mutations": [{"op": "replace", "path": ["policies", "design-review", "roster", 1], "value": "product-seat"}]},
+    {"id": "unknown-roster-seat", "accepted": false, "error": "unknown_roster_seat", "mutations": [{"op": "replace", "path": ["policies", "design-review", "roster", 1], "value": "security-seat"}]},
+    {"id": "rounds-over-bound", "accepted": false, "error": "bound", "mutations": [{"op": "replace", "path": ["policies", "design-review", "maxRounds"], "value": 4}]},
+    {"id": "timeout-over-bound", "accepted": false, "error": "bound", "mutations": [{"op": "replace", "path": ["policies", "design-review", "timeoutSeconds"], "value": 901}]},
+    {"id": "wrong-agreement", "accepted": false, "error": "enum", "mutations": [{"op": "replace", "path": ["policies", "design-review", "agreement"], "value": "consensus"}]},
+    {"id": "wrong-dissent-rule", "accepted": false, "error": "dissent_rule", "mutations": [{"op": "replace", "path": ["policies", "design-review", "dissentRule"], "value": "semantic"}]}
+  ],
+  "contributions": {
+    "design-approved": [
+      {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"approve","contributionDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","codexRunRef":"codex-1","excerpt":"Approve.","at":"2026-07-21T00:00:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+      {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"approve","contributionDigest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","codexRunRef":"codex-2","excerpt":"Approve.","at":"2026-07-21T00:00:02Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+    ],
+    "design-inconclusive": [
+      {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"approve","contributionDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","codexRunRef":"codex-3","excerpt":"Approve.","at":"2026-07-21T00:01:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+      {"seatId":"architecture-seat","lens":"architecture","executionStatus":"timeout","verdict":"failed","contributionDigest":null,"codexRunRef":"codex-4","excerpt":null,"at":"2026-07-21T00:01:02Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+    ],
+    "review-majority-with-dissent": [
+      {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"approve","contributionDigest":"1111111111111111111111111111111111111111111111111111111111111111","codexRunRef":"codex-5","excerpt":"Approve.","at":"2026-07-21T00:02:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+      {"seatId":"quality-seat","lens":"quality","executionStatus":"completed","verdict":"approve","contributionDigest":"2222222222222222222222222222222222222222222222222222222222222222","codexRunRef":"codex-6","excerpt":"Approve.","at":"2026-07-21T00:02:02Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+      {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"changesRequested","contributionDigest":"3333333333333333333333333333333333333333333333333333333333333333","codexRunRef":"codex-7","excerpt":"Change requested.","at":"2026-07-21T00:02:03Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+    ],
+    "review-changes": [
+      {"seatId":"architecture-seat","lens":"architecture","executionStatus":"completed","verdict":"changesRequested","contributionDigest":"4444444444444444444444444444444444444444444444444444444444444444","codexRunRef":"codex-8","excerpt":"Change requested.","at":"2026-07-21T00:03:01Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+      {"seatId":"quality-seat","lens":"quality","executionStatus":"failed","verdict":"failed","contributionDigest":null,"codexRunRef":"codex-9","excerpt":null,"at":"2026-07-21T00:03:02Z","schema":"fkst.devbored.council-seat-evidence.v1"},
+      {"seatId":"product-seat","lens":"product","executionStatus":"completed","verdict":"abstain","contributionDigest":"5555555555555555555555555555555555555555555555555555555555555555","codexRunRef":"codex-10","excerpt":"Abstain.","at":"2026-07-21T00:03:03Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+    ]
+  },
+  "roundCases": [
+    {"id":"approved","policyId":"design-review","accepted":true,"fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-approved","decision":"approved","dissent":[],"stageComplete":true,"reasonCode":null}},
+    {"id":"below-cap-inconclusive","policyId":"design-review","accepted":true,"fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-inconclusive","decision":"inconclusive","dissent":[],"stageComplete":false,"reasonCode":null}},
+    {"id":"at-cap-inconclusive","policyId":"design-review","accepted":true,"fact":{"round":2,"inputHeadSha":null,"contributionsRef":"design-inconclusive","decision":"inconclusive","dissent":[],"stageComplete":true,"reasonCode":"councilRoundsExhausted"}},
+    {"id":"majority-precedes-dissent","policyId":"implementation-review","accepted":true,"fact":{"round":1,"inputHeadSha":"1111111111111111111111111111111111111111","contributionsRef":"review-majority-with-dissent","decision":"approved","dissent":["product-seat"],"stageComplete":true,"reasonCode":null}},
+    {"id":"changes-requested","policyId":"implementation-review","accepted":true,"fact":{"round":1,"inputHeadSha":null,"contributionsRef":"review-changes","decision":"changesRequested","dissent":["architecture-seat"],"stageComplete":true,"reasonCode":null}},
+    {"id":"missing","policyId":"design-review","accepted":false,"error":"missing_contribution","fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-approved","contributionMutation":{"op":"remove","index":1},"decision":"approved","dissent":[],"stageComplete":true,"reasonCode":null}},
+    {"id":"duplicate","policyId":"design-review","accepted":false,"error":"duplicate_contribution","fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-approved","contributionMutation":{"op":"replace-copy","index":1,"from":0},"decision":"approved","dissent":[],"stageComplete":true,"reasonCode":null}},
+    {"id":"extra","policyId":"design-review","accepted":false,"error":"extra_contribution","fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-approved","contributionMutation":{"op":"append-copy","from":0},"decision":"approved","dissent":[],"stageComplete":true,"reasonCode":null}},
+    {"id":"reordered","policyId":"design-review","accepted":false,"error":"reordered_contribution","fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-approved","contributionMutation":{"op":"swap","left":0,"right":1},"decision":"approved","dissent":[],"stageComplete":true,"reasonCode":null}},
+    {"id":"wrong-lens","policyId":"design-review","accepted":false,"error":"wrong_lens","fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-approved","contributionMutation":{"op":"replace-field","index":1,"field":"lens","value":"security"},"decision":"approved","dissent":[],"stageComplete":true,"reasonCode":null}},
+    {"id":"unknown-evidence-field","policyId":"design-review","accepted":false,"error":"unknown_key","fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-approved","contributionMutation":{"op":"add-field","index":1,"field":"score","value":1},"decision":"approved","dissent":[],"stageComplete":true,"reasonCode":null}},
+    {"id":"status-verdict","policyId":"design-review","accepted":false,"error":"status_verdict","fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-approved","contributionMutation":{"op":"replace-field","index":1,"field":"executionStatus","value":"failed"},"decision":"approved","dissent":[],"stageComplete":true,"reasonCode":null}},
+    {"id":"over-round-bound","policyId":"design-review","accepted":false,"error":"bound","fact":{"round":3,"inputHeadSha":null,"contributionsRef":"design-inconclusive","decision":"inconclusive","dissent":[],"stageComplete":true,"reasonCode":"councilRoundsExhausted"}},
+    {"id":"decision-mismatch","policyId":"design-review","accepted":false,"error":"decision_mismatch","fact":{"round":1,"inputHeadSha":null,"contributionsRef":"design-approved","decision":"inconclusive","dissent":[],"stageComplete":false,"reasonCode":null}},
+    {"id":"dissent-mismatch","policyId":"implementation-review","accepted":false,"error":"dissent_mismatch","fact":{"round":1,"inputHeadSha":null,"contributionsRef":"review-changes","decision":"changesRequested","dissent":[],"stageComplete":true,"reasonCode":null}}
+  ],
+  "normalization": {
+    "policyId": "design-review",
+    "rawContributionsRef": "design-approved",
+    "removeIndex": 1,
+    "missingAt": "2026-07-21T00:09:00Z",
+    "expectedSeatIds": ["product-seat", "architecture-seat"],
+    "expectedMissing": {"seatId":"architecture-seat","lens":"architecture","executionStatus":"failed","verdict":"failed","contributionDigest":null,"codexRunRef":null,"excerpt":null,"at":"2026-07-21T00:09:00Z","schema":"fkst.devbored.council-seat-evidence.v1"}
+  }
+}

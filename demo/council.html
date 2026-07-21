@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Council sandbox — fixture authoring</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+.app{grid-template-columns:minmax(0,1fr)}
+.main{display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.council-head{border-bottom:1px solid var(--line);flex:none}
+.council-head>.crumbbar{padding:0 20px}
+.council-titlebar{display:flex;align-items:center;gap:16px;padding:11px 20px 13px}
+.crumb-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none}
+.status-pill{display:inline-flex;align-items:center;gap:6px;min-height:25px;padding:3px 9px;border:1px solid var(--line);border-radius:13px;color:var(--faint);font-size:11px;font-weight:500;white-space:nowrap}
+.status-pill i{width:6px;height:6px;border-radius:50%;background:var(--ghost)}
+.status-pill.ok{color:var(--green);border-color:color-mix(in oklab,var(--green) 35%,var(--line))}
+.status-pill.ok i{background:var(--green)}
+.status-pill.bad{color:var(--red);border-color:color-mix(in oklab,var(--red) 35%,var(--line))}
+.status-pill.bad i{background:var(--red)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:29px;padding:4px 11px;border:1px solid var(--line-2);border-radius:6px;color:var(--dim);font-size:12px;font-weight:600;transition:background .12s,border-color .12s,color .12s}
+.btn:hover:not(:disabled){background:var(--raise-2);border-color:var(--faint);color:var(--fg)}
+.btn.primary{background:var(--amber);border-color:transparent;color:var(--ink)}
+.btn.primary:hover:not(:disabled){background:color-mix(in oklab,var(--amber) 92%,white)}
+.btn.danger{color:var(--red);border-color:color-mix(in oklab,var(--red) 34%,var(--line))}
+.btn.ghost{border-color:transparent;color:var(--faint)}
+.btn.small{min-height:25px;padding:3px 8px;font-size:11px}
+.btn:disabled{cursor:not-allowed;opacity:.4}
+.tabs{display:flex;align-items:center;gap:2px;min-height:42px;padding:0 20px;border-bottom:1px solid var(--line);flex:none}
+.tab{align-self:stretch;padding:0 12px;border-bottom:2px solid transparent;color:var(--faint);font-size:12.5px;font-weight:500;margin-bottom:-1px}
+.tab:hover{color:var(--dim)}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--amber)}
+.tab .count{margin-left:6px;color:var(--faint);font-variant-numeric:tabular-nums}
+.contract-ref{margin-left:auto;color:var(--faint);font:500 10.5px/1.4 var(--mono)}
+.body{flex:1;min-width:0;overflow-y:auto;padding:18px 20px 42px}
+.pane[hidden]{display:none}
+.notice{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:color-mix(in oklab,var(--raise) 66%,var(--bg));color:var(--dim);font-size:11.5px;line-height:1.55}
+.notice::before{content:"";width:7px;height:7px;margin-top:5px;border-radius:50%;background:var(--faint);flex:none}
+.notice.loading::before{background:var(--faint)}
+.notice.error{border-color:color-mix(in oklab,var(--red) 32%,var(--line));color:color-mix(in oklab,var(--red) 78%,var(--dim))}
+.notice.error::before{background:var(--red)}
+.notice.success{border-color:color-mix(in oklab,var(--green) 26%,var(--line))}
+.notice.success::before{background:var(--green)}
+.notice code,.path{font:500 10.5px/1.45 var(--mono);color:var(--faint);overflow-wrap:anywhere}
+.intro{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
+.intro p{max-width:760px;color:var(--faint);font-size:12.5px;line-height:1.65}
+.intro b{color:var(--dim);font-weight:600}
+.subset-disclosure{margin:-6px 0 20px;padding:10px 12px;border:1px solid var(--line-2);border-radius:8px;background:var(--raise);color:var(--faint);font-size:11.5px;line-height:1.6}
+.subset-disclosure b{color:var(--dim);font-weight:650}
+.section-head{display:flex;align-items:center;gap:9px;margin:24px 0 10px}
+.section-head:first-of-type{margin-top:0}
+.section-head h2{font-size:12.5px;font-weight:600}
+.section-head .meta{color:var(--faint);font-size:11px}
+.section-head .rule{height:1px;flex:1;background:var(--line)}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px}
+.field{grid-column:span 4;display:flex;flex-direction:column;gap:5px;min-width:0}
+.field.wide{grid-column:span 6}
+.field.full{grid-column:1/-1}
+label,.label{color:var(--faint);font-size:10.5px;font-weight:600;letter-spacing:.025em}
+.field-meta{color:var(--faint);font-size:10px;font-weight:400;margin-left:5px}
+input,select{width:100%;min-height:34px;padding:6px 9px;border:1px solid var(--line);border-radius:6px;background:var(--raise);color:var(--fg);font:500 12px/1.3 "Inter",sans-serif}
+input:hover,select:hover{border-color:var(--line-2)}
+input:focus,select:focus{border-color:var(--amber);outline:2px solid color-mix(in oklab,var(--amber) 30%,transparent);outline-offset:1px}
+input:disabled,select:disabled{opacity:.45;cursor:not-allowed}
+input[readonly]{color:var(--faint);background:color-mix(in oklab,var(--raise) 55%,var(--bg));cursor:default}
+.micro{color:var(--faint);font-size:10px;line-height:1.45}
+input[data-root-field="id"],input[data-root-field="schema"],[data-seat-field="id"],[data-policy-id-field]{font-family:var(--mono)}
+.card-list{display:flex;flex-direction:column;gap:8px}
+.editor-card{border:1px solid color-mix(in oklab,var(--line) 84%,transparent);border-radius:9px;background:var(--raise);overflow:hidden}
+.editor-card-head{display:flex;align-items:center;gap:9px;min-width:0;min-height:39px;padding:6px 11px;border-bottom:1px solid color-mix(in oklab,var(--line) 68%,transparent)}
+.index{display:flex;align-items:center;justify-content:center;width:21px;height:21px;border:1px solid var(--line-2);border-radius:50%;color:var(--faint);font-size:10px;font-weight:600;font-variant-numeric:tabular-nums}
+.editor-card-head h3{min-width:0;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.editor-card-head .summary{min-width:0;color:var(--faint);font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.editor-card-head .actions{margin-left:auto;display:flex;gap:4px}
+.seat-role{padding:9px 11px 0;color:var(--dim);font-size:11px;line-height:1.5}
+.seat-role strong{color:var(--faint);font-weight:650}
+.editor-card-body{padding:11px}
+.seat-card .field{grid-column:span 4}
+.policy-card .field{grid-column:span 3}
+.policy-card .field.roster-field{grid-column:1/-1}
+.roster{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid var(--line);border-radius:7px;background:color-mix(in oklab,var(--bg) 52%,var(--raise));min-height:36px}
+.seat-check{position:relative;display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:3px 8px;border:1px solid var(--line);border-radius:13px;color:var(--faint);font-size:10.5px;font-weight:500;cursor:pointer;user-select:none}
+.seat-check:hover{color:var(--dim);border-color:var(--line-2)}
+.seat-check:has(input:checked){color:var(--fg);border-color:color-mix(in oklab,var(--amber) 44%,var(--line));background:color-mix(in oklab,var(--amber) 8%,var(--raise))}
+.seat-check input{appearance:none;width:7px;min-height:7px;height:7px;padding:0;border:0;border-radius:50%;background:var(--line-2)}
+.seat-check input:checked{background:var(--amber)}
+.empty-state{padding:16px;border:1px dashed var(--line-2);border-radius:8px;color:var(--faint);font-size:11.5px;text-align:center}
+.findings{border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.finding-summary{display:flex;align-items:center;gap:8px;min-height:39px;padding:8px 12px;background:color-mix(in oklab,var(--raise) 68%,var(--bg));color:var(--dim);font-size:11.5px;font-weight:600}
+.finding-summary i{width:7px;height:7px;border-radius:50%;background:var(--ghost)}
+.findings.valid .finding-summary{color:var(--green)}
+.findings.valid .finding-summary i{background:var(--green)}
+.findings.invalid .finding-summary{color:var(--red)}
+.findings.invalid .finding-summary i{background:var(--red)}
+.finding-list{list-style:none}
+.finding{display:grid;grid-template-columns:minmax(125px,.55fr) minmax(135px,.75fr) minmax(220px,2fr);gap:12px;padding:9px 12px;border-top:1px solid color-mix(in oklab,var(--line) 62%,transparent);font-size:11px;line-height:1.5}
+.finding .code{color:var(--red);font:600 10.5px/1.5 var(--mono);overflow-wrap:anywhere}
+.finding .message{color:var(--dim)}
+.preview-shell{display:grid;grid-template-columns:minmax(280px,1fr) minmax(300px,.9fr);gap:12px;align-items:start}
+.preview-card{border:1px solid var(--line);border-radius:9px;background:var(--raise);overflow:hidden}
+.preview-head{padding:12px 13px;border-bottom:1px solid var(--line)}
+.preview-head h2{font-size:12.5px;font-weight:600}
+.preview-head p{margin-top:4px;color:var(--faint);font-size:11px;line-height:1.5}
+.preview-body{padding:12px 13px}
+.preview-label{display:flex;align-items:flex-start;gap:8px;margin-bottom:12px;padding:9px 10px;border:1px solid color-mix(in oklab,var(--gold) 34%,var(--line));border-radius:7px;background:color-mix(in oklab,var(--gold) 8%,var(--raise));color:var(--gold);font-size:11px;font-weight:600;line-height:1.5}
+.preview-label::before{content:"LIMIT";margin-top:1px;padding:1px 4px;border:1px solid currentColor;border-radius:3px;font-size:8px;letter-spacing:.07em}
+.verdict-list{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.verdict-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(145px,.8fr);gap:10px;align-items:center;padding:8px 9px;border:1px solid color-mix(in oklab,var(--line) 78%,transparent);border-radius:7px;background:color-mix(in oklab,var(--bg) 50%,var(--raise))}
+.seat-name{display:flex;align-items:center;gap:8px;min-width:0}
+.lens-dot{display:flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:50%;background:var(--line-2);color:var(--dim);font-size:9px;font-weight:700;text-transform:uppercase;flex:none}
+.seat-name strong{display:block;font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seat-name span{display:block;color:var(--faint);font-family:var(--mono);font-size:9.5px;overflow-wrap:anywhere}
+.result{min-height:194px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:18px;text-align:center}
+.result-kicker{color:var(--faint);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.decision{margin-top:8px;font:700 clamp(24px,4vw,38px)/1 "Space Grotesk",sans-serif;letter-spacing:-.035em;color:var(--fg);overflow-wrap:anywhere}
+.decision.approved{color:var(--green)}
+.decision.changesRequested{color:var(--gold)}
+.decision.inconclusive{color:var(--faint)}
+.result-detail{max-width:330px;margin-top:10px;color:var(--faint);font-size:11.5px;line-height:1.6}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:auto;border-top:1px solid var(--line);background:var(--line)}
+.result-stat{padding:9px;background:var(--raise);text-align:center}
+.result-stat b{display:block;font-size:13px;font-variant-numeric:tabular-nums}
+.result-stat span{color:var(--faint);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em}
+.json-preview{margin-top:12px;max-height:240px;overflow:auto;padding:10px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--faint);font:500 10.5px/1.55 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.foot{flex:none;padding:10px 20px 13px;border-top:1px solid var(--line);color:var(--faint);font-size:10.5px;line-height:1.6}
+.foot b{color:var(--faint);font-weight:600}
+@media(max-width:920px){.field,.seat-card .field{grid-column:span 6}.policy-card .field{grid-column:span 6}.preview-shell{grid-template-columns:1fr}.contract-ref{display:none}}
+@media(max-width:680px){body{height:auto;min-height:100%}.app{display:block}.main{min-height:calc(100vh - 86px)}.council-head>.crumbbar{padding:0 12px}.council-titlebar{align-items:flex-start;flex-direction:column;padding:10px 12px 12px}.crumb-actions{margin-left:0;width:100%;flex-wrap:wrap}.tabs,.body{padding-left:12px;padding-right:12px}.tabs{overflow-x:auto}.field,.field.wide,.seat-card .field,.policy-card .field{grid-column:1/-1}.intro{display:block}.editor-card-head{align-items:flex-start;flex-wrap:wrap}.editor-card-head .summary{order:3;width:100%;padding-left:30px;white-space:normal}.finding{grid-template-columns:1fr;gap:3px}.preview-shell{grid-template-columns:minmax(0,1fr)}.verdict-row{grid-template-columns:1fr}.foot{padding-left:12px;padding-right:12px}}
+</style>
+<script src="assets/banner.js" defer></script>
+</head>
+<body>
+<noscript>
+  <nav class="noscript-nav" aria-label="Demo screens">
+    <a href="board.html">Board</a>
+    <a href="debate.html">Who decided</a>
+    <a href="council.html" aria-current="page">Council sandbox</a>
+    <a href="selftest.html">Self-test</a>
+    <a href="runtime.html">Engine (live)</a>
+  </nav>
+  <div class="noscript-panel"><b>Recorded demo data — fixture mode, no live engine.</b> Council authoring and validation did not run because JavaScript is disabled. Serve <code>demo/</code> over HTTP and enable JavaScript to load the local contract and validator module.</div>
+</noscript>
+<div class="app">
+  <main class="main">
+    <header class="council-head">
+      <div class="crumbbar" aria-label="Page location">fkst-devbored › Council · fixture authoring</div>
+      <div class="council-titlebar">
+        <div class="page-header__copy">
+          <h1 class="page-title">Council sandbox</h1>
+          <p class="page-lede">Author and inspect one contract-bounded CouncilDefinition fixture.</p>
+        </div>
+        <div class="crumb-actions">
+          <span class="status-pill" id="validation-pill"><i></i><span>waiting for contract</span></span>
+          <button class="btn primary" id="export-button" type="button" disabled>
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.5v7m0 0 2.5-2.5M8 9.5 5.5 7M3 11.5v1.2c0 .45.35.8.8.8h8.4c.45 0 .8-.35.8-.8v-1.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Export JSON
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Council authoring sections">
+      <button class="tab" id="definition-tab" type="button" role="tab" aria-selected="true" aria-controls="definition-pane" data-tab="definition">Definition <span class="count" id="definition-count">—</span></button>
+      <button class="tab" id="preview-tab" type="button" role="tab" aria-selected="false" aria-controls="preview-pane" data-tab="preview">Preview decision</button>
+      <span class="contract-ref">contract /council-v1.contract.json</span>
+    </div>
+
+    <div class="body">
+      <div class="notice loading" id="contract-status" role="status">Loading <code>demo/fixtures/contract/council-v1.contract.json</code>…</div>
+      <div class="notice loading" id="validator-status" role="status">Loading the Council validator module…</div>
+
+      <section class="pane" id="definition-pane" role="tabpanel" aria-labelledby="definition-tab">
+        <div class="intro">
+          <p>This is a <b>fixture authoring surface</b>, not a product editor. Contract-derived controls cover the wire schema; SafeId and non-empty-name UTF-8 limits; seat, policy, roster, round, and timeout limits; and the seat-lens, seat-verdict, agreement-policy, and dissent-rule vocabularies. Version bounds are hard-coded draft bounds, not contract-derived. Prompt bodies, models, routing, and runtime activation are intentionally absent.</p>
+        </div>
+        <div class="subset-disclosure" role="note"><b>Sandbox subset.</b> Policy roster order follows definition-seat order; this surface has no reorder controls. Version is a draft value only (hard-coded range 1–2,147,483,647), and lineage validation is unavailable.</div>
+
+        <div class="section-head"><h2>Identity</h2><span class="meta">required wire fields</span><span class="rule"></span></div>
+        <div class="grid" id="identity-fields">
+          <div class="field wide">
+            <label for="definition-name">Display name <span class="field-meta" id="name-limit"></span></label>
+            <input id="definition-name" data-root-field="name" type="text" autocomplete="off" disabled>
+            <span class="micro">Human-readable label only; it grants no authority.</span>
+          </div>
+          <div class="field wide">
+            <label for="definition-id">Council ID <span class="field-meta" id="id-limit"></span></label>
+            <input id="definition-id" data-root-field="id" type="text" spellcheck="false" autocomplete="off" disabled>
+            <span class="micro path">/id · SafeId</span>
+          </div>
+          <div class="field wide">
+            <label for="definition-schema">Wire schema</label>
+            <input id="definition-schema" data-root-field="schema" type="text" readonly disabled>
+            <span class="micro path">/schema · exact contract literal</span>
+          </div>
+          <div class="field wide">
+            <label for="definition-version">Version</label>
+            <input id="definition-version" data-root-field="version" type="number" min="1" max="2147483647" step="1" disabled>
+            <span class="micro path">/version · hard-coded draft range 1–2,147,483,647 · lineage unavailable</span>
+          </div>
+        </div>
+
+        <div class="section-head"><h2>Seats</h2><span class="meta" id="seat-bound">contract-bound</span><span class="rule"></span><button class="btn small" id="add-seat" type="button" disabled>＋ Add seat</button></div>
+        <div class="card-list" id="seat-list"><div class="empty-state">Seat controls unlock when the fixture contract is available.</div></div>
+
+        <div class="section-head"><h2>Policies</h2><span class="meta" id="policy-bound">contract-bound</span><span class="rule"></span><button class="btn small" id="add-policy" type="button" disabled>＋ Add policy</button></div>
+        <div class="card-list" id="policy-list"><div class="empty-state">Policy controls unlock when the fixture contract is available.</div></div>
+
+        <div class="section-head"><h2>Live validation</h2><span class="meta">code · JSON pointer · message</span><span class="rule"></span></div>
+        <div class="findings" id="findings" aria-live="polite">
+          <div class="finding-summary"><i></i><span>Waiting for contract and validator.</span></div>
+        </div>
+
+        <div class="section-head"><h2>JSON fixture</h2><span class="meta">exact export payload</span><span class="rule"></span></div>
+        <pre class="json-preview" id="json-preview">{}</pre>
+      </section>
+
+      <section class="pane" id="preview-pane" role="tabpanel" aria-labelledby="preview-tab" hidden>
+        <div class="intro"><p>Assign one bounded verdict to each roster seat. The result is calculated by the validator’s pure agreement reducer and does not model execution, evidence admission, round progression, routing, or activation.</p></div>
+        <div class="preview-label">limited preview — agreement reduction only, not the full round contract</div>
+        <div class="preview-shell">
+          <div class="preview-card">
+            <div class="preview-head">
+              <h2>Roster verdicts</h2>
+              <p>Roster order follows definition-seat order; this sandbox has no reorder controls.</p>
+            </div>
+            <div class="preview-body">
+              <div class="field full">
+                <label for="preview-policy">Policy</label>
+                <select id="preview-policy" disabled></select>
+                <span class="micro path" id="preview-policy-path">/policies</span>
+              </div>
+              <div class="verdict-list" id="verdict-list"><div class="empty-state">A valid policy roster is required for preview.</div></div>
+            </div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-head">
+              <h2>Agreement reduction</h2>
+              <p id="agreement-copy">Waiting for a selected policy.</p>
+            </div>
+            <div class="result" id="preview-result" aria-live="polite">
+              <span class="result-kicker">preview blocked</span>
+              <div class="decision">—</div>
+              <p class="result-detail">validator unavailable — agreement reduction not run</p>
+            </div>
+            <div class="result-grid">
+              <div class="result-stat"><b id="approve-count">—</b><span>approve</span></div>
+              <div class="result-stat"><b id="change-count">—</b><span>changes</span></div>
+              <div class="result-stat"><b id="roster-count">—</b><span>roster</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="foot"><b>This sandbox activates nothing and exports a local JSON file only.</b> It does not write to a repository, engine, connection, workflow, roster, or running Council.</footer>
+  </main>
+</div>
+
+<script type="module">
+const CONTRACT_URL = './fixtures/contract/council-v1.contract.json';
+const VALIDATOR_URL = './assets/validator.js';
+
+const state = {
+  contract: null,
+  validator: null,
+  validatorContext: null,
+  definition: null,
+  validatorReady: false,
+  findings: [],
+  validationAdmission: 'UNAVAILABLE',
+  validationRun: 0,
+  previewRun: 0,
+  activePolicyId: '',
+  previewVerdicts: new Map(),
+};
+
+const els = {
+  contractStatus: document.querySelector('#contract-status'),
+  validatorStatus: document.querySelector('#validator-status'),
+  validationPill: document.querySelector('#validation-pill'),
+  exportButton: document.querySelector('#export-button'),
+  definitionCount: document.querySelector('#definition-count'),
+  seatBound: document.querySelector('#seat-bound'),
+  policyBound: document.querySelector('#policy-bound'),
+  nameLimit: document.querySelector('#name-limit'),
+  idLimit: document.querySelector('#id-limit'),
+  identityFields: document.querySelector('#identity-fields'),
+  seatList: document.querySelector('#seat-list'),
+  policyList: document.querySelector('#policy-list'),
+  addSeat: document.querySelector('#add-seat'),
+  addPolicy: document.querySelector('#add-policy'),
+  findings: document.querySelector('#findings'),
+  jsonPreview: document.querySelector('#json-preview'),
+  previewPolicy: document.querySelector('#preview-policy'),
+  previewPolicyPath: document.querySelector('#preview-policy-path'),
+  verdictList: document.querySelector('#verdict-list'),
+  agreementCopy: document.querySelector('#agreement-copy'),
+  previewResult: document.querySelector('#preview-result'),
+  approveCount: document.querySelector('#approve-count'),
+  changeCount: document.querySelector('#change-count'),
+  rosterCount: document.querySelector('#roster-count'),
+};
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function pointerSegment(value) {
+  return String(value).replaceAll('~', '~0').replaceAll('/', '~1');
+}
+
+function asPointer(path) {
+  if (Array.isArray(path)) return `/${path.map(pointerSegment).join('/')}`;
+  if (typeof path !== 'string' || path.length === 0) return '/';
+  if (path.startsWith('/')) return path;
+  if (path.startsWith('$')) {
+    const segments = [];
+    const matcher = /\.([^.[\]]+)|\[(\d+|"(?:[^"\\]|\\.)*")\]/g;
+    for (const match of path.matchAll(matcher)) {
+      if (match[1] != null) segments.push(match[1]);
+      else if (match[2]?.startsWith('"')) {
+        try { segments.push(JSON.parse(match[2])); }
+        catch { segments.push(match[2].slice(1, -1)); }
+      } else segments.push(match[2]);
+    }
+    return segments.length ? `/${segments.map(pointerSegment).join('/')}` : '/';
+  }
+  return `/${path.split('.').map(pointerSegment).join('/')}`;
+}
+
+function setNotice(element, kind, html) {
+  element.className = `notice ${kind}`;
+  element.innerHTML = html;
+}
+
+function optionMarkup(values, selected) {
+  return values.map((value) => `<option value="${escapeHtml(value)}"${value === selected ? ' selected' : ''}>${escapeHtml(value)}</option>`).join('');
+}
+
+function seatRoleDescription(lens) {
+  const descriptions = {
+    product: 'Reviews user value, requirements, and product impact.',
+    architecture: 'Reviews system boundaries, component ownership, and technical structure.',
+    quality: 'Reviews correctness, test coverage, and release risk.',
+    implementation: 'Reviews implementation feasibility, maintainability, and delivery detail.',
+    security: 'Reviews security boundaries, misuse risk, and protective controls.',
+  };
+  return descriptions[lens] ?? `Reviews the change through the configured ${lens || 'unspecified'} lens.`;
+}
+
+function defaultDefinition(contract) {
+  const lenses = contract.vocabularies.seatLens;
+  const preferredLenses = ['product', 'architecture', 'quality'].filter((lens) => lenses.includes(lens));
+  const selectedLenses = (preferredLenses.length ? preferredLenses : lenses).slice(0, Math.min(3, contract.limits.seatsPerDefinition.max));
+  const reviewerNames = {
+    product: 'Product reviewer',
+    architecture: 'Architecture reviewer',
+    quality: 'Quality reviewer',
+  };
+  while (selectedLenses.length < contract.limits.seatsPerDefinition.min) {
+    selectedLenses.push(lenses[selectedLenses.length % lenses.length]);
+  }
+  const seats = selectedLenses.map((lens, index) => ({
+    id: `${lens || 'seat'}-${index + 1}`,
+    displayName: reviewerNames[lens] ?? (lens ? `${lens[0].toUpperCase()}${lens.slice(1)} reviewer` : `Engineering reviewer ${index + 1}`),
+    lens,
+  }));
+  const agreementValues = contract.vocabularies.agreementPolicy;
+  const agreement = agreementValues.includes('simpleMajority') ? 'simpleMajority' : agreementValues[0];
+  const roundLimits = contract.limits.roundsPerStage;
+  const timeoutLimits = contract.limits.seatTimeoutSeconds;
+  const timeoutMax = timeoutLimits.hardMax ?? timeoutLimits.max;
+  return {
+    schema: contract.wireSchema,
+    id: 'delivery-council-draft',
+    version: 1,
+    name: 'Delivery review engineering team',
+    seats,
+    policies: {
+      'delivery-review': {
+        roster: seats.map((seat) => seat.id),
+        agreement,
+        maxRounds: roundLimits.max,
+        timeoutSeconds: Math.min(300, timeoutMax),
+        dissentRule: contract.vocabularies.dissentRule[0],
+      },
+    },
+  };
+}
+
+function configureContractControls() {
+  const { limits } = state.contract;
+  const idInputs = document.querySelectorAll('[data-root-field="id"]');
+  idInputs.forEach((input) => {
+    input.pattern = limits.safeId.pattern;
+    input.maxLength = limits.safeId.utf8Bytes.max;
+  });
+  const nameInput = document.querySelector('[data-root-field="name"]');
+  nameInput.maxLength = limits.nonEmptyNameUtf8Bytes.max;
+  els.nameLimit.textContent = `1–${limits.nonEmptyNameUtf8Bytes.max} UTF-8 bytes`;
+  els.idLimit.textContent = `pattern · max ${limits.safeId.utf8Bytes.max} bytes`;
+  els.seatBound.textContent = `${limits.seatsPerDefinition.min}–${limits.seatsPerDefinition.max} ordered seats`;
+  els.policyBound.textContent = `${limits.policiesPerDefinition.min}–${limits.policiesPerDefinition.max} policies`;
+  document.querySelectorAll('[data-root-field]').forEach((input) => { input.disabled = false; });
+  document.querySelector('[data-root-field="schema"]').readOnly = true;
+}
+
+function renderIdentity() {
+  for (const [field, value] of Object.entries(state.definition)) {
+    const input = document.querySelector(`[data-root-field="${field}"]`);
+    if (input) input.value = value;
+  }
+}
+
+function renderSeats() {
+  const { limits, vocabularies } = state.contract;
+  if (!state.definition.seats.length) {
+    els.seatList.innerHTML = '<div class="empty-state">At least one seat is required by the contract.</div>';
+  } else {
+    els.seatList.innerHTML = state.definition.seats.map((seat, index) => `
+      <article class="editor-card seat-card" data-seat-index="${index}">
+        <div class="editor-card-head">
+          <span class="index">${index + 1}</span>
+          <h3>${escapeHtml(seat.displayName || 'Unnamed seat')}</h3>
+          <span class="summary path">/seats/${index}</span>
+          <div class="actions"><button class="btn ghost small" type="button" data-action="remove-seat" data-index="${index}"${state.definition.seats.length <= limits.seatsPerDefinition.min ? ' disabled' : ''}>Remove</button></div>
+        </div>
+        <p class="seat-role"><strong>Role</strong> — ${escapeHtml(seatRoleDescription(seat.lens))}</p>
+        <div class="editor-card-body grid">
+          <div class="field">
+            <label for="seat-${index}-name">Display name <span class="field-meta">max ${limits.nonEmptyNameUtf8Bytes.max} bytes</span></label>
+            <input id="seat-${index}-name" data-seat-field="displayName" data-index="${index}" value="${escapeHtml(seat.displayName)}" maxlength="${limits.nonEmptyNameUtf8Bytes.max}" autocomplete="off">
+            <span class="micro">Names can be playful — the role and lens are the contract.</span>
+            <span class="micro path">/seats/${index}/displayName</span>
+          </div>
+          <div class="field">
+            <label for="seat-${index}-id">Seat ID <span class="field-meta">SafeId</span></label>
+            <input id="seat-${index}-id" data-seat-field="id" data-index="${index}" value="${escapeHtml(seat.id)}" maxlength="${limits.safeId.utf8Bytes.max}" spellcheck="false" autocomplete="off">
+            <span class="micro path">/seats/${index}/id</span>
+          </div>
+          <div class="field">
+            <label for="seat-${index}-lens">Lens <span class="field-meta">contract vocabulary</span></label>
+            <select id="seat-${index}-lens" data-seat-field="lens" data-index="${index}">${optionMarkup(vocabularies.seatLens, seat.lens)}</select>
+            <span class="micro path">/seats/${index}/lens</span>
+          </div>
+        </div>
+      </article>`).join('');
+  }
+  els.addSeat.disabled = state.definition.seats.length >= limits.seatsPerDefinition.max;
+  els.definitionCount.textContent = `${state.definition.seats.length} seats · ${Object.keys(state.definition.policies).length} policies`;
+}
+
+function renderPolicies() {
+  const { limits, vocabularies } = state.contract;
+  const entries = Object.entries(state.definition.policies);
+  if (!entries.length) {
+    els.policyList.innerHTML = '<div class="empty-state">At least one policy is required by the contract.</div>';
+  } else {
+    els.policyList.innerHTML = entries.map(([policyId, policy], index) => `
+      <article class="editor-card policy-card" data-policy-id="${escapeHtml(policyId)}">
+        <div class="editor-card-head">
+          <span class="index">${index + 1}</span>
+          <h3>${escapeHtml(policyId || 'Unnamed policy')}</h3>
+          <span class="summary" data-policy-summary>${escapeHtml(policy.agreement)} · ${policy.roster.length} seats</span>
+          <div class="actions"><button class="btn ghost small" type="button" data-action="remove-policy" data-policy-id="${escapeHtml(policyId)}"${entries.length <= limits.policiesPerDefinition.min ? ' disabled' : ''}>Remove</button></div>
+        </div>
+        <div class="editor-card-body grid">
+          <div class="field">
+            <label for="policy-${index}-id">Policy ID <span class="field-meta">map key</span></label>
+            <input id="policy-${index}-id" data-policy-id-field value="${escapeHtml(policyId)}" data-original-policy-id="${escapeHtml(policyId)}" maxlength="${limits.safeId.utf8Bytes.max}" spellcheck="false" autocomplete="off">
+            <span class="micro path">/policies/${escapeHtml(pointerSegment(policyId))}</span>
+          </div>
+          <div class="field">
+            <label for="policy-${index}-agreement">Agreement</label>
+            <select id="policy-${index}-agreement" data-policy-field="agreement" data-policy-id="${escapeHtml(policyId)}">${optionMarkup(vocabularies.agreementPolicy, policy.agreement)}</select>
+            <span class="micro path">/policies/${escapeHtml(pointerSegment(policyId))}/agreement</span>
+          </div>
+          <div class="field">
+            <label for="policy-${index}-rounds">Maximum rounds</label>
+            <input id="policy-${index}-rounds" data-policy-field="maxRounds" data-policy-id="${escapeHtml(policyId)}" type="number" min="${limits.roundsPerStage.min}" max="${limits.roundsPerStage.max}" step="1" value="${escapeHtml(policy.maxRounds)}">
+            <span class="micro path">/policies/${escapeHtml(pointerSegment(policyId))}/maxRounds · ${limits.roundsPerStage.min}–${limits.roundsPerStage.max}</span>
+          </div>
+          <div class="field">
+            <label for="policy-${index}-timeout">Seat timeout</label>
+            <input id="policy-${index}-timeout" data-policy-field="timeoutSeconds" data-policy-id="${escapeHtml(policyId)}" type="number" min="${limits.seatTimeoutSeconds.min}" max="${limits.seatTimeoutSeconds.hardMax ?? limits.seatTimeoutSeconds.max}" step="1" value="${escapeHtml(policy.timeoutSeconds)}">
+            <span class="micro path">/policies/${escapeHtml(pointerSegment(policyId))}/timeoutSeconds · seconds</span>
+          </div>
+          <div class="field roster-field">
+            <span class="label">Ordered roster <span class="field-meta">select in definition-seat order · ${limits.seatsPerPolicyRoster.min}–${limits.seatsPerPolicyRoster.max}</span></span>
+            <div class="roster">${state.definition.seats.length ? state.definition.seats.map((seat, seatIndex) => `
+              <label class="seat-check"><input type="checkbox" data-roster-seat="${escapeHtml(seat.id)}" data-definition-seat-index="${seatIndex}" data-policy-id="${escapeHtml(policyId)}"${policy.roster.includes(seat.id) ? ' checked' : ''}><span>${escapeHtml(seat.displayName || seat.id)} · ${escapeHtml(seat.id)}</span></label>`).join('') : '<span class="micro">Add a seat before building a roster.</span>'}</div>
+            <span class="micro path">/policies/${escapeHtml(pointerSegment(policyId))}/roster</span>
+          </div>
+          <div class="field full">
+            <label for="policy-${index}-dissent">Dissent rule <span class="field-meta">v1 frozen vocabulary</span></label>
+            <select id="policy-${index}-dissent" data-policy-field="dissentRule" data-policy-id="${escapeHtml(policyId)}">${optionMarkup(vocabularies.dissentRule, policy.dissentRule)}</select>
+            <span class="micro path">/policies/${escapeHtml(pointerSegment(policyId))}/dissentRule</span>
+          </div>
+        </div>
+      </article>`).join('');
+  }
+  els.addPolicy.disabled = entries.length >= limits.policiesPerDefinition.max;
+  els.definitionCount.textContent = `${state.definition.seats.length} seats · ${entries.length} policies`;
+  renderPreviewInputs();
+}
+
+function syncJsonPreview() {
+  els.jsonPreview.textContent = state.definition ? JSON.stringify(state.definition, null, 2) : '{}';
+}
+
+function normalizeFindings(result) {
+  if (result == null || result === true) return [];
+  if (result === false) return [{ code: 'council.definition.invalid', path: '/', message: 'The validator rejected this definition.' }];
+  let raw = [];
+  if (Array.isArray(result)) raw = result;
+  else if (Array.isArray(result.findings)) raw = result.findings;
+  else if (Array.isArray(result.errors)) raw = result.errors;
+  else if (result.valid === true || result.ok === true || result.admission === 'VALID') return [];
+  else if (result.error) raw = [result.error];
+  else if (result.valid === false || result.ok === false) raw = [result];
+  return raw.map((finding) => {
+    if (typeof finding === 'string') return { code: 'council.definition.invalid', path: '/', message: finding };
+    return {
+      code: finding.code ?? finding.errorCode ?? finding.kind ?? 'council.definition.invalid',
+      path: asPointer(finding.path ?? finding.pointer ?? '/'),
+      message: finding.message ?? finding.detail ?? finding.reason ?? 'The definition does not satisfy the Council contract.',
+    };
+  });
+}
+
+function admissionFromValidation(result) {
+  if (result && typeof result === 'object' && 'admission' in result) {
+    return result.admission === 'VALID' ? 'VALID' : 'INVALID';
+  }
+  if (result === true || result?.valid === true || result?.ok === true) return 'VALID';
+  return 'INVALID';
+}
+
+function isDefinitionAdmitted() {
+  return state.validationAdmission === 'VALID' && state.findings.length === 0;
+}
+
+function setPreviewControlsEnabled(enabled) {
+  const hasPolicies = Object.keys(state.definition?.policies ?? {}).length > 0;
+  els.previewPolicy.disabled = !enabled || !hasPolicies;
+  els.verdictList.querySelectorAll('select').forEach((select) => { select.disabled = !enabled; });
+}
+
+function invalidateDefinitionAdmission() {
+  state.validationAdmission = 'PENDING';
+  void renderPreviewResult();
+}
+
+function renderFindings(findings) {
+  state.findings = findings;
+  const ready = state.validatorReady && state.contract;
+  const valid = ready && isDefinitionAdmitted();
+  els.exportButton.disabled = !valid;
+  els.findings.className = `findings ${ready ? (valid ? 'valid' : 'invalid') : ''}`;
+  if (!ready) {
+    els.findings.innerHTML = '<div class="finding-summary"><i></i><span>Live validation is waiting for the validator.</span></div>';
+    els.validationPill.className = 'status-pill';
+    els.validationPill.innerHTML = '<i></i><span>validation unavailable</span>';
+    return;
+  }
+  if (valid) {
+    els.findings.innerHTML = '<div class="finding-summary"><i></i><span>Valid CouncilDefinition · no findings</span></div>';
+    els.validationPill.className = 'status-pill ok';
+    els.validationPill.innerHTML = '<i></i><span>valid fixture</span>';
+    return;
+  }
+  els.findings.innerHTML = `
+    <div class="finding-summary"><i></i><span>${findings.length} validation finding${findings.length === 1 ? '' : 's'}</span></div>
+    <ol class="finding-list">${findings.map((finding) => `
+      <li class="finding"><span class="code">${escapeHtml(finding.code)}</span><span class="path">${escapeHtml(finding.path)}</span><span class="message">${escapeHtml(finding.message)}</span></li>`).join('')}</ol>`;
+  els.validationPill.className = 'status-pill bad';
+  els.validationPill.innerHTML = `<i></i><span>${findings.length} finding${findings.length === 1 ? '' : 's'}</span>`;
+}
+
+async function runValidation() {
+  syncJsonPreview();
+  const run = ++state.validationRun;
+  state.validationAdmission = 'PENDING';
+  void renderPreviewResult();
+  if (!state.validatorReady || !state.validator || !state.contract) {
+    state.validationAdmission = 'UNAVAILABLE';
+    renderFindings([]);
+    await renderPreviewResult();
+    return;
+  }
+  try {
+    const result = await state.validator.validateDefinition(state.validatorContext, state.definition);
+    if (run !== state.validationRun) return;
+    const findings = normalizeFindings(result);
+    state.validationAdmission = admissionFromValidation(result) === 'VALID' && findings.length === 0 ? 'VALID' : 'INVALID';
+    renderFindings(findings);
+  } catch (error) {
+    if (run !== state.validationRun) return;
+    state.validationAdmission = 'INVALID';
+    renderFindings([{ code: 'validator.exception', path: '/', message: error?.message || String(error) }]);
+  }
+  await renderPreviewResult();
+}
+
+function reconcileRosters(previousId, nextId) {
+  for (const policy of Object.values(state.definition.policies)) {
+    policy.roster = policy.roster.map((id) => id === previousId ? nextId : id);
+  }
+}
+
+function refreshSeatPresentation(index) {
+  const seat = state.definition.seats[index];
+  if (!seat) return;
+  const card = els.seatList.querySelector(`[data-seat-index="${index}"]`);
+  const heading = card?.querySelector('h3');
+  const role = card?.querySelector('.seat-role');
+  if (heading) heading.textContent = seat.displayName || 'Unnamed seat';
+  if (role) role.innerHTML = `<strong>Role</strong> — ${escapeHtml(seatRoleDescription(seat.lens))}`;
+  els.policyList.querySelectorAll(`[data-definition-seat-index="${index}"]`).forEach((input) => {
+    input.dataset.rosterSeat = seat.id;
+    const label = input.closest('.seat-check')?.querySelector('span');
+    if (label) label.textContent = `${seat.displayName || seat.id} · ${seat.id}`;
+  });
+  renderPreviewInputs();
+}
+
+function refreshPolicySummary(policyId) {
+  const policy = state.definition.policies[policyId];
+  const card = els.policyList.querySelector(`.policy-card[data-policy-id="${CSS.escape(policyId)}"]`);
+  const summary = card?.querySelector('[data-policy-summary]');
+  if (policy && summary) summary.textContent = `${policy.agreement} · ${policy.roster.length} seats`;
+}
+
+function addSeat() {
+  const max = state.contract.limits.seatsPerDefinition.max;
+  if (state.definition.seats.length >= max) return;
+  invalidateDefinitionAdmission();
+  const index = state.definition.seats.length + 1;
+  const used = new Set(state.definition.seats.map((seat) => seat.id));
+  let id = `seat-${index}`;
+  let suffix = index;
+  while (used.has(id)) id = `seat-${++suffix}`;
+  state.definition.seats.push({ id, displayName: `Seat ${index}`, lens: state.contract.vocabularies.seatLens[0] });
+  renderSeats();
+  renderPolicies();
+  runValidation();
+}
+
+function removeSeat(index) {
+  const min = state.contract.limits.seatsPerDefinition.min;
+  if (state.definition.seats.length <= min) return;
+  invalidateDefinitionAdmission();
+  const [removed] = state.definition.seats.splice(index, 1);
+  for (const policy of Object.values(state.definition.policies)) {
+    policy.roster = policy.roster.filter((id) => id !== removed.id);
+  }
+  renderSeats();
+  renderPolicies();
+  runValidation();
+}
+
+function addPolicy() {
+  const max = state.contract.limits.policiesPerDefinition.max;
+  if (Object.keys(state.definition.policies).length >= max) return;
+  invalidateDefinitionAdmission();
+  let index = Object.keys(state.definition.policies).length + 1;
+  let id = `review-${index}`;
+  while (state.definition.policies[id]) id = `review-${++index}`;
+  const limits = state.contract.limits;
+  state.definition.policies[id] = {
+    roster: state.definition.seats.slice(0, limits.seatsPerPolicyRoster.max).map((seat) => seat.id),
+    agreement: state.contract.vocabularies.agreementPolicy[0],
+    maxRounds: limits.roundsPerStage.min,
+    timeoutSeconds: Math.min(300, limits.seatTimeoutSeconds.hardMax ?? limits.seatTimeoutSeconds.max),
+    dissentRule: state.contract.vocabularies.dissentRule[0],
+  };
+  state.activePolicyId = id;
+  renderPolicies();
+  runValidation();
+}
+
+function removePolicy(policyId) {
+  const min = state.contract.limits.policiesPerDefinition.min;
+  if (Object.keys(state.definition.policies).length <= min) return;
+  invalidateDefinitionAdmission();
+  delete state.definition.policies[policyId];
+  state.activePolicyId = Object.keys(state.definition.policies)[0] ?? '';
+  renderPolicies();
+  runValidation();
+}
+
+function renamePolicy(previousId, nextId) {
+  if (previousId === nextId) return;
+  invalidateDefinitionAdmission();
+  const policy = state.definition.policies[previousId];
+  if (!policy || state.definition.policies[nextId]) {
+    renderPolicies();
+    runValidation();
+    return;
+  }
+  const replacement = {};
+  for (const [key, value] of Object.entries(state.definition.policies)) {
+    replacement[key === previousId ? nextId : key] = value;
+  }
+  state.definition.policies = replacement;
+  if (state.activePolicyId === previousId) state.activePolicyId = nextId;
+  renderPolicies();
+  runValidation();
+}
+
+function renderPreviewInputs() {
+  if (!state.contract || !state.definition) return;
+  const policyIds = Object.keys(state.definition.policies);
+  if (!policyIds.includes(state.activePolicyId)) state.activePolicyId = policyIds[0] ?? '';
+  els.previewPolicy.innerHTML = optionMarkup(policyIds, state.activePolicyId);
+  const policy = state.definition.policies[state.activePolicyId];
+  if (!policy) {
+    els.previewPolicyPath.textContent = '/policies';
+    els.verdictList.innerHTML = '<div class="empty-state">Add a policy before previewing a decision.</div>';
+    els.agreementCopy.textContent = 'Waiting for a selected policy.';
+    void renderPreviewResult();
+    return;
+  }
+  els.previewPolicyPath.textContent = `/policies/${pointerSegment(state.activePolicyId)}`;
+  els.agreementCopy.textContent = `${policy.agreement} over the full ${policy.roster.length}-seat roster denominator.`;
+  for (const seatId of policy.roster) {
+    if (!state.previewVerdicts.has(seatId)) state.previewVerdicts.set(seatId, 'approve');
+  }
+  const seats = new Map(state.definition.seats.map((seat) => [seat.id, seat]));
+  els.verdictList.innerHTML = policy.roster.length ? policy.roster.map((seatId, index) => {
+    const seat = seats.get(seatId);
+    const label = seat?.displayName ?? 'Unresolved seat';
+    const lens = seat?.lens ?? 'unknown';
+    return `<div class="verdict-row">
+      <div class="seat-name"><span class="lens-dot">${escapeHtml(lens.slice(0, 1))}</span><span><strong>${escapeHtml(label)}</strong><span>${escapeHtml(seatId)} · ${escapeHtml(lens)}</span></span></div>
+      <select aria-label="Verdict for ${escapeHtml(label)}" data-preview-seat="${escapeHtml(seatId)}" data-roster-index="${index}">${optionMarkup(state.contract.vocabularies.seatVerdict, state.previewVerdicts.get(seatId))}</select>
+    </div>`;
+  }).join('') : '<div class="empty-state">This policy roster is empty; validation must resolve it before preview.</div>';
+  void renderPreviewResult();
+}
+
+function normalizePreviewResult(result) {
+  if (typeof result === 'string') return { decision: result, dissent: [] };
+  if (!result || typeof result !== 'object') return { decision: 'unavailable', dissent: [] };
+  return {
+    decision: result.decision ?? result.result ?? result.outcome ?? 'unavailable',
+    dissent: Array.isArray(result.dissent) ? result.dissent : [],
+  };
+}
+
+async function renderPreviewResult() {
+  const previewRun = ++state.previewRun;
+  const policy = state.definition?.policies?.[state.activePolicyId];
+  const verdicts = policy?.roster.map((seatId) => ({ seatId, verdict: state.previewVerdicts.get(seatId) ?? 'approve' })) ?? [];
+  const approveCount = verdicts.filter((entry) => entry.verdict === 'approve').length;
+  const changeCount = verdicts.filter((entry) => entry.verdict === 'changesRequested').length;
+  const admitted = isDefinitionAdmitted();
+  const canReduce = admitted && Boolean(policy) && state.validatorReady && Boolean(state.validator);
+  setPreviewControlsEnabled(canReduce);
+  if (!admitted) {
+    els.approveCount.textContent = '—';
+    els.changeCount.textContent = '—';
+    els.rosterCount.textContent = '—';
+    const detail = state.validationAdmission === 'UNAVAILABLE'
+      ? 'validator unavailable — agreement reduction not run'
+      : state.validationAdmission === 'PENDING'
+        ? 'validation pending — agreement reduction not run'
+        : 'definition invalid — agreement reduction not run';
+    els.previewResult.innerHTML = `<span class="result-kicker">preview blocked</span><div class="decision">—</div><p class="result-detail">${detail}</p>`;
+    return;
+  }
+  els.approveCount.textContent = policy ? approveCount : '—';
+  els.changeCount.textContent = policy ? changeCount : '—';
+  els.rosterCount.textContent = policy ? verdicts.length : '—';
+  if (!policy || !state.validatorReady || !state.validator) {
+    els.previewResult.innerHTML = '<span class="result-kicker">preview unavailable</span><div class="decision">—</div><p class="result-detail">A policy and the validator module are required. No local approximation is substituted.</p>';
+    return;
+  }
+  try {
+    const request = {
+      definition: state.definition,
+      policyId: state.activePolicyId,
+      agreement: policy.agreement,
+      roster: [...policy.roster],
+      verdicts,
+    };
+    const reducer = state.validator.reduceRoundPreview;
+    let raw;
+    if (reducer.length >= 3) raw = await reducer(state.definition, state.activePolicyId, verdicts, state.contract);
+    else if (reducer.length === 2) raw = await reducer(policy, verdicts);
+    else raw = await reducer(request);
+    if (previewRun !== state.previewRun || !isDefinitionAdmitted()) return;
+    const result = normalizePreviewResult(raw);
+    const detail = `${approveCount} of ${verdicts.length} roster seats approve under ${policy.agreement}. Dissent evidence and round progression are outside this preview.`;
+    els.previewResult.innerHTML = `<span class="result-kicker">reduced decision</span><div class="decision ${escapeHtml(result.decision)}">${escapeHtml(result.decision)}</div><p class="result-detail">${escapeHtml(detail)}</p>`;
+  } catch (error) {
+    if (previewRun !== state.previewRun || !isDefinitionAdmitted()) return;
+    els.previewResult.innerHTML = `<span class="result-kicker">reducer finding</span><div class="decision">—</div><p class="result-detail">${escapeHtml(error?.message || String(error))}</p>`;
+  }
+}
+
+function exportDefinition() {
+  if (els.exportButton.disabled || !state.definition) return;
+  const json = `${JSON.stringify(state.definition, null, 2)}\n`;
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  const safeName = state.definition.id.replace(/[^A-Za-z0-9._-]/g, '-') || 'council-definition';
+  anchor.href = url;
+  anchor.download = `${safeName}.json`;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+function bindEvents() {
+  document.querySelectorAll('[data-tab]').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('[data-tab]').forEach((candidate) => candidate.setAttribute('aria-selected', String(candidate === tab)));
+      document.querySelector('#definition-pane').hidden = tab.dataset.tab !== 'definition';
+      document.querySelector('#preview-pane').hidden = tab.dataset.tab !== 'preview';
+      if (tab.dataset.tab === 'preview') renderPreviewInputs();
+    });
+  });
+  els.identityFields.addEventListener('input', (event) => {
+    const field = event.target.dataset.rootField;
+    if (!field || !state.definition) return;
+    invalidateDefinitionAdmission();
+    state.definition[field] = field === 'version' ? Number(event.target.value) : event.target.value;
+    runValidation();
+  });
+  els.seatList.addEventListener('input', (event) => {
+    const field = event.target.dataset.seatField;
+    if (!field) return;
+    const index = Number(event.target.dataset.index);
+    const seat = state.definition.seats[index];
+    const previousId = seat.id;
+    invalidateDefinitionAdmission();
+    seat[field] = event.target.value;
+    if (field === 'id') reconcileRosters(previousId, seat.id);
+    refreshSeatPresentation(index);
+    syncJsonPreview();
+    runValidation();
+  });
+  els.seatList.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-action="remove-seat"]');
+    if (button) removeSeat(Number(button.dataset.index));
+  });
+  els.policyList.addEventListener('input', (event) => {
+    const field = event.target.dataset.policyField;
+    const policyId = event.target.dataset.policyId;
+    if (!field || !policyId) return;
+    const value = ['maxRounds', 'timeoutSeconds'].includes(field) ? Number(event.target.value) : event.target.value;
+    invalidateDefinitionAdmission();
+    state.definition.policies[policyId][field] = value;
+    refreshPolicySummary(policyId);
+    if (field === 'agreement') renderPreviewInputs();
+    runValidation();
+  });
+  els.policyList.addEventListener('change', (event) => {
+    if (event.target.matches('[data-policy-id-field]')) {
+      renamePolicy(event.target.dataset.originalPolicyId, event.target.value);
+      return;
+    }
+    if (event.target.matches('[data-roster-seat]')) {
+      const policyId = event.target.dataset.policyId;
+      const selected = [...els.policyList.querySelectorAll(`[data-roster-seat][data-policy-id="${CSS.escape(policyId)}"]`)]
+        .filter((input) => input.checked)
+        .map((input) => input.dataset.rosterSeat);
+      invalidateDefinitionAdmission();
+      state.definition.policies[policyId].roster = selected;
+      refreshPolicySummary(policyId);
+      renderPreviewInputs();
+      runValidation();
+    }
+  });
+  els.policyList.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-action="remove-policy"]');
+    if (button) removePolicy(button.dataset.policyId);
+  });
+  els.addSeat.addEventListener('click', addSeat);
+  els.addPolicy.addEventListener('click', addPolicy);
+  els.previewPolicy.addEventListener('change', () => {
+    state.activePolicyId = els.previewPolicy.value;
+    renderPreviewInputs();
+  });
+  els.verdictList.addEventListener('change', (event) => {
+    if (!event.target.matches('[data-preview-seat]')) return;
+    state.previewVerdicts.set(event.target.dataset.previewSeat, event.target.value);
+    renderPreviewResult();
+  });
+  els.exportButton.addEventListener('click', exportDefinition);
+}
+
+async function loadContract() {
+  try {
+    const response = await fetch(CONTRACT_URL, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const contract = await response.json();
+    const required = [
+      contract.wireSchema,
+      contract.limits?.safeId,
+      contract.limits?.seatsPerDefinition,
+      contract.limits?.policiesPerDefinition,
+      contract.limits?.seatsPerPolicyRoster,
+      contract.limits?.roundsPerStage,
+      contract.limits?.seatTimeoutSeconds,
+      contract.vocabularies?.seatLens,
+      contract.vocabularies?.seatVerdict,
+      contract.vocabularies?.agreementPolicy,
+      contract.vocabularies?.dissentRule,
+    ];
+    if (required.some((value) => value == null)) throw new Error('required Council v1 limits or vocabularies are absent');
+    state.contract = contract;
+    if (state.validator) {
+      state.validatorContext = state.validator.loadContract(contract);
+      state.validatorReady = true;
+    }
+    state.definition = defaultDefinition(contract);
+    state.activePolicyId = Object.keys(state.definition.policies)[0];
+    configureContractControls();
+    renderIdentity();
+    renderSeats();
+    renderPolicies();
+    syncJsonPreview();
+    setNotice(els.contractStatus, 'success', 'Contract fixture loaded · the named wire schema, limits, and vocabularies are applied; draft version bounds remain hard-coded.');
+    await runValidation();
+  } catch (error) {
+    state.validationAdmission = 'UNAVAILABLE';
+    state.validationRun += 1;
+    setNotice(els.contractStatus, 'error', `Contract fixture not yet present — controls remain locked until <code>demo/fixtures/contract/council-v1.contract.json</code> is available (${escapeHtml(error?.message || String(error))}).`);
+    els.validationPill.className = 'status-pill bad';
+    els.validationPill.innerHTML = '<i></i><span>contract unavailable</span>';
+    await renderPreviewResult();
+  }
+}
+
+async function loadValidator() {
+  try {
+    const module = await import(VALIDATOR_URL);
+    if (typeof module.loadContract !== 'function' || typeof module.validateDefinition !== 'function' || typeof module.reduceRoundPreview !== 'function') {
+      throw new Error('expected loadContract(), validateDefinition(), and reduceRoundPreview() exports');
+    }
+    state.validator = module;
+    if (state.contract) {
+      state.validatorContext = module.loadContract(state.contract);
+      state.validatorReady = true;
+    }
+    setNotice(els.validatorStatus, 'success', 'Validator ready · live findings and the limited agreement reducer use <code>assets/validator.js</code>.');
+    await runValidation();
+  } catch (error) {
+    state.validatorReady = false;
+    state.validationAdmission = 'UNAVAILABLE';
+    state.validationRun += 1;
+    setNotice(els.validatorStatus, 'error', `Validator not yet present — authoring controls remain available, but live validation, preview, and export are paused (${escapeHtml(error?.message || String(error))}).`);
+    renderFindings([]);
+    await renderPreviewResult();
+  }
+}
+
+bindEvents();
+await Promise.all([loadContract(), loadValidator()]);
+</script>
+</body>
+</html>

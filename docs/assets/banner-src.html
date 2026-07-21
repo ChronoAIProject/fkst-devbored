@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:'Space Grotesk';src:url('../../demo/fonts/space-grotesk-latin-700.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Inter';src:url('../../demo/fonts/inter-latin.woff2') format('woff2')}
+:root{--bg:oklch(16% .011 250);--raise:oklch(19.5% .012 250);--line:oklch(28% .012 250);--ink:oklch(93% .006 250);--dim:oklch(72% .01 250);--faint:oklch(56% .012 250);--amber:oklch(78% .12 75);--green:oklch(72% .14 155)}
+*{margin:0;box-sizing:border-box}
+body{width:1280px;height:400px;background:var(--bg);font-family:Inter,system-ui;color:var(--ink);display:flex;align-items:center;overflow:hidden;position:relative}
+.grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;opacity:.14}
+.wrap{position:relative;padding:0 84px;display:flex;align-items:center;gap:56px;width:100%}
+.knode{width:120px;height:120px;flex:none;border:1.5px solid var(--line);border-radius:26px;background:var(--raise);display:grid;place-items:center;position:relative}
+.knode svg{width:64px;height:64px}
+.txt h1{font-family:'Space Grotesk';font-size:58px;letter-spacing:-.02em;line-height:1.02}
+.txt h1 span{color:var(--amber)}
+.txt p{margin-top:14px;font-size:17px;color:var(--dim);max-width:470px;line-height:1.5}
+.chips{margin-top:20px;display:flex;gap:10px}
+.chip{font-size:12px;padding:5px 12px;border:1px solid var(--line);border-radius:999px;color:var(--faint);background:var(--raise)}
+.chip.g{color:var(--green);border-color:color-mix(in oklab,var(--green) 35%,var(--line))}
+.marks{position:absolute;right:64px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;opacity:.85}
+.mk{font-family:ui-monospace,monospace;font-size:12.5px;color:var(--faint);padding:8px 14px;border:1px dashed var(--line);border-radius:9px;background:var(--raise)}
+.mk b{color:var(--amber);font-weight:600}
+</style></head><body>
+<div class="grid"></div>
+<div class="wrap">
+  <div class="knode"><svg viewBox="0 0 64 64" fill="none"><circle cx="14" cy="32" r="6" fill="oklch(78% .12 75)"/><circle cx="50" cy="12" r="5" stroke="oklch(72% .01 250)" stroke-width="2"/><circle cx="50" cy="32" r="5" stroke="oklch(72% .14 155)" stroke-width="2"/><circle cx="50" cy="52" r="5" stroke="oklch(72% .01 250)" stroke-width="2"/><path d="M20 32 L45 13 M20 32 L45 32 M20 32 L45 51" stroke="oklch(46% .012 250)" stroke-width="2"/></svg></div>
+  <div class="txt">
+    <h1>FKST <span>Devbored</span></h1>
+    <p>A lean harness for Codex dev loops — GitHub-durable, human-auditable, easy to reshape into your own workflow.</p>
+    <div class="chips"><span class="chip g">markers = fact</span><span class="chip">labels = hints</span><span class="chip">unknown ≠ zero</span></div>
+  </div>
+  <div class="marks">
+    <div class="mk"><b>state:v1</b> thinking → ready → implementing</div>
+    <div class="mk"><b>result:v1</b> decision=approve · 5 seats</div>
+    <div class="mk"><b>council</b> your judgment, in the loop</div>
+  </div>
+</div>
+</body></html>
