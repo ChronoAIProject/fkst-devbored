@@ -54,11 +54,34 @@ the public sandbox repo
 See [`demo/README.md`](demo/README.md) for the honest-claims list and the
 5-beat walkthrough.
 
+### Install & run (for judges: no build, no dependencies)
+
+**Requirements:** Python 3, Node.js ≥ 20, any modern browser.
+**Supported platforms:** developed and verified on **macOS**; Linux is
+expected to work identically (static HTML + stdlib-only Node/Python). On any
+platform without a local `fkst-substrate` build, the optional Engine screen
+honestly reports *unknown/unavailable* — it never crashes or fabricates data.
+
 ```bash
-python3 -m http.server 8471 -d demo --bind 127.0.0.1   # static demo
+git clone https://github.com/ChronoAIProject/fkst-devbored
+cd fkst-devbored
+python3 -m http.server 8471 -d demo --bind 127.0.0.1   # the console
 node local-bff/server.mjs                               # optional: engine snapshot (:8472)
 # open http://127.0.0.1:8471/
 ```
+
+### Test it
+
+```bash
+node demo/tools/selfcheck.mjs                  # contract self-check → expect 26/26, 14/14, 15/15 PASS
+node --test demo/assets/markers-parity.test.mjs # engine-comparator parity → expect pass 1, fail 0
+```
+
+Then walk the 5-beat demo script in [`demo/README.md`](demo/README.md):
+board → #111 evidence chain → who decided → council sandbox (author a
+definition, watch validation, export) → self-test — and, if the BFF is
+running, the Engine snapshot screen. In-browser, the Self-test page must
+show **"PASS · all 55 cases matched."**
 
 | Screen | |
 |---|---|
