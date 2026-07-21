@@ -46,3 +46,11 @@ zero.
 - The server never opens the observe socket or `delivery.redb` directly, performs
   no GitHub/network calls, and has no write target outside the durable root under
   `/tmp`.
+
+## Note for reviewers without a substrate build
+
+The allowlisted engine binary path is machine-specific. If `fkst-framework`
+is not present at that path, the BFF stays up and the Engine screen honestly
+reports **unknown / observe_failed** (HTTP 502 envelope) — it never crashes
+and never fabricates data. Building `fkst-substrate` locally and updating the
+one allowlist path in `server.mjs` enables the real snapshot read.
