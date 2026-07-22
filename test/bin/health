@@ -10,4 +10,9 @@ if (auditPath) {
     { encoding: 'utf8' },
   )
 }
+const exitOverride = process.env.FKST_HEALTH_TRIPWIRE_EXIT
+if (exitOverride) {
+  process.stderr.write(process.env.FKST_HEALTH_TRIPWIRE_STDERR ?? 'error: health command failed\n')
+  process.exit(Number(exitOverride))
+}
 process.stdout.write(process.env.FKST_HEALTH_TRIPWIRE_VERDICT ?? 'HEALTHY\n')

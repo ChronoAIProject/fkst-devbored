@@ -16,6 +16,13 @@ if (!argv.includes('--json') || !argv.includes('--durable-root')) {
   process.stderr.write(`Observe must use --durable-root and --json: ${JSON.stringify(argv)}\n`)
   process.exit(89)
 }
+if (process.env.FKST_OBSERVE_TRIPWIRE_STARTUP_ERROR) {
+  const rootIndex = argv.indexOf('--durable-root') + 1
+  process.stderr.write(
+    `[framework] startup error: open existing durable delivery database \`${argv[rootIndex]}/delivery.redb\`: I/O error: No such file or directory (os error 2)\n`,
+  )
+  process.exit(2)
+}
 const fixture = process.env.FKST_OBSERVE_TRIPWIRE_FIXTURE
 if (!fixture) {
   process.stderr.write('FKST_OBSERVE_TRIPWIRE_FIXTURE is required.\n')

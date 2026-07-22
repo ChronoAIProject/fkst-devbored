@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -147,6 +147,11 @@ describe('S-preflight deterministic live-read preflight', () => {
     const healthRecords = await auditRecords(healthAudit)
     assert.equal(healthRecords.length, 1)
     assert.deepEqual(healthRecords[0].argv, ['health'])
+
+    assert.ok(
+      !JSON.stringify(report).includes(FIXTURE_DURABLE_ROOT),
+      'the configured durable root (and its derived database path) must not appear in the report',
+    )
   })
 
   test('an incomplete observe pair FAILs without invoking the binary', async () => {
@@ -184,6 +189,153 @@ describe('S-preflight deterministic live-read preflight', () => {
     })
     assert.equal(checkFor(mismatchedRoot.report, 'observe').status, 'UNKNOWN')
     assert.equal(checkFor(mismatchedRoot.report, 'observe').reason, 'observe_failed')
+  })
+
+  test('a configured pair with an absent durable root is UNAVAILABLE(durable_root_missing)', async () => {
+    const missingRoot = join(scratch, 'missing-durable-root')
+    const { code, report } = await runPreflight({
+      FKST_GH_BIN: FAKE_GH,
+      FKST_OBSERVE_BIN: FAKE_OBSERVE,
+      FKST_DURABLE_ROOT: missingRoot,
+      FKST_OBSERVE_TRIPWIRE_STARTUP_ERROR: '1',
+    })
+    assert.equal(code, 0, 'a missing durable root is a valid read-only posture, not FAIL')
+    const observe = checkFor(report, 'observe')
+    assert.equal(observe.status, 'UNAVAILABLE')
+    assert.equal(observe.reason, 'durable_root_missing')
+    assert.equal(existsSync(missingRoot), false, 'the preflight must not initialize the root')
+  })
+
+  test('an existing root without delivery.redb is UNAVAILABLE(observe_database_missing)', async () => {
+    const emptyRoot = join(scratch, 'empty-durable-root')
+    await mkdir(emptyRoot, { recursive: true })
+    const { code, report } = await runPreflight({
+      FKST_GH_BIN: FAKE_GH,
+      FKST_OBSERVE_BIN: FAKE_OBSERVE,
+      FKST_DURABLE_ROOT: emptyRoot,
+      FKST_OBSERVE_TRIPWIRE_STARTUP_ERROR: '1',
+    })
+    assert.equal(code, 0)
+    const observe = checkFor(report, 'observe')
+    assert.equal(observe.status, 'UNAVAILABLE')
+    assert.equal(observe.reason, 'observe_database_missing')
+    assert.equal(existsSync(join(emptyRoot, 'delivery.redb')), false, 'no database may be created')
+  })
+
+  test('a plain file configured as the durable root is FAIL(durable_root_invalid), not missing', async () => {
+    const fileRoot = join(scratch, 'file-as-root')
+    await writeFile(fileRoot, 'not a directory\n', 'utf8')
+    const { code, report } = await runPreflight({
+      FKST_GH_BIN: FAKE_GH,
+      FKST_OBSERVE_BIN: FAKE_OBSERVE,
+      FKST_DURABLE_ROOT: fileRoot,
+      FKST_OBSERVE_TRIPWIRE_STARTUP_ERROR: '1',
+    })
+    assert.equal(code, 1, 'a malformed root shape is a configuration failure')
+    const observe = checkFor(report, 'observe')
+    assert.equal(observe.status, 'FAIL')
+    assert.equal(observe.reason, 'durable_root_invalid')
+  })
+
+  test('an existing delivery.redb leaves an exit-2 engine failure UNKNOWN, never missing', async () => {
+    const populatedRoot = join(scratch, 'populated-durable-root')
+    await mkdir(populatedRoot, { recursive: true })
+    await writeFile(join(populatedRoot, 'delivery.redb'), 'stand-in database bytes', 'utf8')
+    const { report } = await runPreflight({
+      FKST_GH_BIN: FAKE_GH,
+      FKST_OBSERVE_BIN: FAKE_OBSERVE,
+      FKST_DURABLE_ROOT: populatedRoot,
+      FKST_OBSERVE_TRIPWIRE_STARTUP_ERROR: '1',
+    })
+    const observe = checkFor(report, 'observe')
+    assert.equal(observe.status, 'UNKNOWN')
+    assert.equal(observe.reason, 'observe_failed')
+  })
+
+  test('health failure with the devloop signature over an absent root is UNAVAILABLE(durable_root_missing)', async () => {
+    const missingRoot = join(scratch, 'missing-health-root')
+    const stderrLine =
+      'error: fkst-framework observe --json failed; [framework] startup error: open existing durable delivery database\n'
+    const { code, report } = await runPreflight({
+      FKST_GH_BIN: FAKE_GH,
+      FKST_OBSERVE_BIN: FAKE_OBSERVE,
+      FKST_OBSERVE_TRIPWIRE_STARTUP_ERROR: '1',
+      FKST_DURABLE_ROOT: missingRoot,
+      FKST_HEALTH_SCRIPT: FAKE_HEALTH,
+      FKST_HEALTH_TRIPWIRE_EXIT: '1',
+      FKST_HEALTH_TRIPWIRE_STDERR: stderrLine,
+    })
+    assert.equal(code, 0, 'missing durable state must not be reported as FAIL')
+    const health = checkFor(report, 'health')
+    assert.equal(health.status, 'UNAVAILABLE')
+    assert.equal(health.reason, 'durable_root_missing')
+    const verdictStep = health.steps.find((step) => step.id === 'health_verdict_read')
+    assert.equal(verdictStep?.evidence.exit_code, 1)
+    assert.equal(verdictStep?.evidence.failure_signature, 'public_devloop_observe_read_failed')
+    assert.equal(existsSync(missingRoot), false, 'the preflight must not initialize the root')
+  })
+
+  test('an exit-126 permission failure is UNKNOWN even when the durable root is absent', async () => {
+    const { code, report } = await runPreflight({
+      FKST_GH_BIN: FAKE_GH,
+      FKST_OBSERVE_BIN: FAKE_OBSERVE,
+      FKST_OBSERVE_TRIPWIRE_STARTUP_ERROR: '1',
+      FKST_DURABLE_ROOT: join(scratch, 'missing-permission-root'),
+      FKST_HEALTH_SCRIPT: FAKE_HEALTH,
+      FKST_HEALTH_TRIPWIRE_EXIT: '126',
+      FKST_HEALTH_TRIPWIRE_STDERR: 'run.sh: Permission denied\n',
+    })
+    assert.equal(code, 0)
+    const health = checkFor(report, 'health')
+    assert.equal(health.status, 'UNKNOWN')
+    assert.equal(health.reason, 'health_command_failed')
+    const verdictStep = health.steps.find((step) => step.id === 'health_verdict_read')
+    assert.equal(verdictStep?.evidence.exit_code, 126)
+    assert.equal(verdictStep?.evidence.failure_signature, null)
+  })
+
+  test('secret-shaped health stderr never appears anywhere in the preflight report', async () => {
+    const missingRoot = join(scratch, 'missing-secret-root')
+    // Built at runtime so the repository scrub never sees secret-shaped source.
+    const fakeToken = ['ghp', 'FAKEtoken0FAKEtoken0FAKE'].join('_')
+    const credentialUrl = 'https://' + 'oauth-user:hunter2pass@' + 'github.example/private.git'
+    const homePath = '/Us' + 'ers/some-developer/secret-project/run.sh'
+    const hostileStderr =
+      ['Authorization', `Bearer ${fakeToken}`].join(': ') +
+      `\nfetch ${credentialUrl} failed\nat ${homePath}\n` +
+      'error: fkst-framework observe --json failed; [framework] startup error: open existing durable delivery database\n'
+    const { report } = await runPreflight({
+      FKST_GH_BIN: FAKE_GH,
+      FKST_OBSERVE_BIN: FAKE_OBSERVE,
+      FKST_OBSERVE_TRIPWIRE_STARTUP_ERROR: '1',
+      FKST_DURABLE_ROOT: missingRoot,
+      FKST_HEALTH_SCRIPT: FAKE_HEALTH,
+      FKST_HEALTH_TRIPWIRE_EXIT: '1',
+      FKST_HEALTH_TRIPWIRE_STDERR: hostileStderr,
+    })
+    const serialized = JSON.stringify(report)
+    for (const needle of [fakeToken, credentialUrl, homePath, 'hunter2pass', 'some-developer']) {
+      assert.ok(!serialized.includes(needle), `preflight report leaked: ${needle.slice(0, 12)}…`)
+    }
+    assert.ok(!serialized.includes(missingRoot), 'the configured root path must not be projected')
+    const health = checkFor(report, 'health')
+    assert.equal(health.status, 'UNAVAILABLE')
+    assert.equal(health.reason, 'durable_root_missing')
+  })
+
+  test('an unclassifiable health failure stays UNKNOWN and keeps its exit evidence', async () => {
+    const { code, report } = await runPreflight({
+      FKST_GH_BIN: FAKE_GH,
+      FKST_HEALTH_SCRIPT: FAKE_HEALTH,
+      FKST_HEALTH_TRIPWIRE_EXIT: '3',
+    })
+    assert.equal(code, 0)
+    const health = checkFor(report, 'health')
+    assert.equal(health.status, 'UNKNOWN')
+    assert.equal(health.reason, 'health_command_failed')
+    const verdictStep = health.steps.find((step) => step.id === 'health_verdict_read')
+    assert.equal(verdictStep?.evidence.exit_code, 3)
+    assert.equal(verdictStep?.evidence.failure_signature, null)
   })
 
   test('an unrecognized health verdict is FAIL, never PASS', async () => {

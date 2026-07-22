@@ -7,15 +7,19 @@ interface ExecFailureShape extends Error {
   signal?: NodeJS.Signals;
 }
 
+const STDERR_EXCERPT_LIMIT = 2_048;
+
 export class CommandExecutionError extends Error {
   readonly exitCode: number | null;
   readonly timedOut: boolean;
+  readonly stderrExcerpt: string;
 
-  constructor(exitCode: number | null, timedOut: boolean) {
+  constructor(exitCode: number | null, timedOut: boolean, stderrExcerpt = "") {
     super(timedOut ? "command timed out" : "command failed");
     this.name = "CommandExecutionError";
     this.exitCode = exitCode;
     this.timedOut = timedOut;
+    this.stderrExcerpt = stderrExcerpt.slice(0, STDERR_EXCERPT_LIMIT);
   }
 }
 
@@ -38,7 +42,13 @@ export class NativeFileRunner implements FileRunner {
             const failure = error as ExecFailureShape;
             const exitCode = typeof failure.code === "number" ? failure.code : null;
             const timedOut = failure.killed === true && failure.signal === "SIGKILL";
-            reject(new CommandExecutionError(exitCode, timedOut));
+            reject(
+              new CommandExecutionError(
+                exitCode,
+                timedOut,
+                typeof stderr === "string" ? stderr : "",
+              ),
+            );
             return;
           }
           resolve({ stdout, stderr });

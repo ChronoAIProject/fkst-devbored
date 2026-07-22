@@ -1,3 +1,5 @@
+import { stat } from "node:fs/promises";
+import { join } from "node:path";
 import { CommandExecutionError } from "./exec-file.ts";
 import type { FileRunner, JsonValue } from "./types.ts";
 
@@ -11,6 +13,57 @@ type UnknownRecord = Record<string, unknown>;
 export interface ObserveConfig {
   binary: string;
   durableRoot: string;
+}
+
+export type PathKind = "directory" | "file" | "other" | "missing" | "inaccessible";
+export type PathProbe = (path: string) => Promise<PathKind>;
+
+export async function defaultPathProbe(path: string): Promise<PathKind> {
+  try {
+    const info = await stat(path);
+    if (info.isDirectory()) return "directory";
+    if (info.isFile()) return "file";
+    return "other";
+  } catch (error) {
+    // Only ENOENT proves absence. EACCES/EPERM/ENOTDIR/any other I/O error
+    // means the probe could not see the path, which must never be reported
+    // as missing durable state.
+    return (error as NodeJS.ErrnoException).code === "ENOENT" ? "missing" : "inaccessible";
+  }
+}
+
+export type DurableStateReason =
+  | "durable_root_missing"
+  | "observe_database_missing"
+  | "durable_root_invalid"
+  | "observe_database_invalid";
+
+export const MISSING_DURABLE_REASONS: ReadonlySet<string> = new Set([
+  "durable_root_missing",
+  "observe_database_missing",
+]);
+export const INVALID_DURABLE_REASONS: ReadonlySet<string> = new Set([
+  "durable_root_invalid",
+  "observe_database_invalid",
+]);
+
+// The engine reports one identical exit-2 startup failure whether the root
+// directory or only the database file inside it is absent, so the distinction
+// must come from these probes. They stat path shapes only: nothing is created,
+// and the database contents are never read. An inaccessible path or a database
+// file that does exist yields null — the failure stays unclassified.
+export async function classifyMissingDurableState(
+  durableRoot: string,
+  probe: PathProbe,
+): Promise<DurableStateReason | null> {
+  const root = await probe(durableRoot);
+  if (root === "missing") return "durable_root_missing";
+  if (root === "file" || root === "other") return "durable_root_invalid";
+  if (root !== "directory") return null;
+  const database = await probe(join(durableRoot, "delivery.redb"));
+  if (database === "missing") return "observe_database_missing";
+  if (database === "directory" || database === "other") return "observe_database_invalid";
+  return null;
 }
 
 function isRecord(value: unknown): value is UnknownRecord {
@@ -82,6 +135,10 @@ export function validateObserveLedger(value: unknown, expectedDurableRoot: strin
   requireCondition(isNonNegativeInteger(value.generated_at_ms), "generated_at_ms must be non-negative");
   requireCondition(isRecord(value.source), "source must be an object");
   requireCondition(value.source.durable_root === expectedDurableRoot, "durable_root is not allowlisted");
+  requireCondition(
+    value.source.database === join(expectedDurableRoot, "delivery.redb"),
+    "database path is not the configured delivery database",
+  );
   requireCondition(Array.isArray(value.queues), "queues must be an array");
   requireCondition(Array.isArray(value.deliveries), "deliveries must be an array");
   requireCondition(Array.isArray(value.dead_letters), "dead_letters must be an array");
@@ -122,7 +179,9 @@ function projectLedger(ledger: UnknownRecord, acquiredAtMs: number): JsonValue {
     snapshot_age_ms: Math.max(0, acquiredAtMs - generatedAtMs),
     source: {
       durable_root: "[configured-local-root]",
-      database: typeof source.database === "string" ? source.database : null,
+      // Validated above to be exactly the configured root's delivery.redb;
+      // projected only as a sentinel so no local path reaches the snapshot.
+      database: "[configured-local-database]",
       read_semantics: typeof source.read_semantics === "string" ? source.read_semantics : null,
       history_semantics:
         typeof source.history_semantics === "string" ? source.history_semantics : null,
@@ -139,6 +198,7 @@ export async function acquireObserveRuntime(
   runner: FileRunner,
   config: ObserveConfig,
   now: () => number = Date.now,
+  pathExists: PathProbe = defaultPathProbe,
 ): Promise<JsonValue> {
   try {
     const result = await runner.run(
@@ -150,7 +210,12 @@ export async function acquireObserveRuntime(
     return projectLedger(ledger, now());
   } catch (error) {
     if (error instanceof CommandExecutionError && error.exitCode === 2) {
-      return unavailableRuntime("observe_database_missing", "unavailable");
+      const reason = await classifyMissingDurableState(config.durableRoot, pathExists);
+      if (reason !== null && MISSING_DURABLE_REASONS.has(reason)) {
+        return unavailableRuntime(reason, "unavailable");
+      }
+      if (reason !== null) return unavailableRuntime(reason, "unknown");
+      return unavailableRuntime("observe_failed", "unknown");
     }
     if (error instanceof SyntaxError) {
       return unavailableRuntime("observe_invalid_json", "unknown");

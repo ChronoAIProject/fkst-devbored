@@ -6,7 +6,7 @@ This is a local demo candidate, not a claim of production hardening. Its meaning
 
 - The BFF binds exactly `127.0.0.1`; there is no host flag that widens it.
 - `gh`, `fkst-framework`, and the health runner are invoked with `execFile` and explicit argv arrays. No business input is assembled into a shell command.
-- Observe accepts only the configured binary and durable root, calls the CLI, validates schema/casing/absence invariants, and redacts the configured local root in its projection.
+- Observe accepts only the configured binary and durable root, calls the CLI, validates schema/casing/absence invariants, accepts `source.database` only when it equals exactly the configured root's `delivery.redb`, and redacts both the configured local root and that derived database path to sentinels in its projection.
 - The console never opens `delivery.redb` and never accesses `/tmp/fkst-observe-*.sock`.
 - The server sets no permissive CORS headers and rejects unexpected Host, Origin, query strings, methods, and routes.
 - SSE has bounded clients and heartbeat behavior. HTTP headers, request time, connections, and request bodies are bounded.

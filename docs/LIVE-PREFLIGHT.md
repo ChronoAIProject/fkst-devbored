@@ -30,6 +30,27 @@ Each integration reports one of:
 | `UNKNOWN` | The command ran but its failure cannot be classified further. |
 | `UNAVAILABLE` | Not configured, or the configured binary/database is absent. Missing is never reported as `PASS`. |
 
+When a real binary and durable root are configured but the durable state has
+never been initialized, observe and health report specific `UNAVAILABLE`
+reasons instead of an opaque `UNKNOWN`: `durable_root_missing` (the configured
+`FKST_DURABLE_ROOT` path does not exist — only `ENOENT` counts as absent) or
+`observe_database_missing` (the directory exists but `delivery.redb` does
+not). The engine emits one identical exit-2 failure for both cases, so the
+distinction comes from typed read-only `stat` probes; nothing is created and
+the database contents are never read. A malformed shape (a plain file as the
+root, or a directory named `delivery.redb`) is `FAIL` with
+`durable_root_invalid`/`observe_database_invalid`, and an inaccessible path
+(permission or I/O error) stays `UNKNOWN` — never "missing".
+
+Health narrows a failure to a durable-state reason only when the exit code and
+stderr match the pinned public devloop's documented missing-database signature
+*and* the probe confirms the absence; an unrelated nonzero exit (for example a
+permission error) stays `UNKNOWN (health_command_failed)`. Failure evidence is
+structured and allowlisted — the exit code and the validated signature name
+(`public_devloop_observe_read_failed`) — and raw stderr is never projected
+into the report or the BFF snapshot. See `docs/DURABLE-ROOT-LIFECYCLE.md` for
+the state-changing, human-gated initialization lifecycle.
+
 The process exits `1` only when at least one integration is `FAIL`;
 unconfigured (`UNAVAILABLE`) integrations exit `0` because that is a valid
 read-only posture.

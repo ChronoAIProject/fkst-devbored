@@ -155,9 +155,11 @@ async function checkObserve(runner: FileRunner): Promise<Check> {
     return done("PASS", null);
   }
   const reason = typeof projected.reason === "string" ? projected.reason : "observe_failed";
-  const status: Status = reason === "observe_database_missing"
+  const status: Status = reason === "durable_root_missing" || reason === "observe_database_missing"
     ? "UNAVAILABLE"
-    : reason === "observe_invalid_json"
+    : reason === "observe_invalid_json" ||
+        reason === "durable_root_invalid" ||
+        reason === "observe_database_invalid"
       ? "FAIL"
       : "UNKNOWN";
   steps.push(step("observe_snapshot_read", status, reason, {}));
@@ -180,18 +182,28 @@ async function checkHealth(runner: FileRunner): Promise<Check> {
     return done("UNAVAILABLE", "health_script_unavailable");
   }
 
-  const health = await acquireHealth(runner, script);
+  const health = await acquireHealth(runner, script, {
+    durableRoot: envValue("FKST_DURABLE_ROOT"),
+  });
   const projected = isRecord(health) ? health : {};
   if (projected.availability === "available") {
     steps.push(step("health_verdict_read", "PASS", null, { verdict: projected.verdict ?? null }));
     return done("PASS", null);
   }
   const reason = typeof projected.reason === "string" ? projected.reason : "health_command_failed";
-  const status: Status = reason === "unrecognized_health_verdict" ? "FAIL" : "UNKNOWN";
+  const status: Status = reason === "unrecognized_health_verdict"
+    ? "FAIL"
+    : reason === "durable_root_missing" || reason === "observe_database_missing"
+      ? "UNAVAILABLE"
+      : "UNKNOWN";
   const firstLine = typeof projected.raw === "string"
     ? projected.raw.split(/\r?\n/u, 1)[0] ?? null
     : null;
-  steps.push(step("health_verdict_read", status, reason, { first_output_line: firstLine }));
+  steps.push(step("health_verdict_read", status, reason, {
+    first_output_line: firstLine,
+    exit_code: projected.exit_code ?? null,
+    failure_signature: projected.failure_signature ?? null,
+  }));
   return done(status, reason);
 }
 

@@ -1,6 +1,14 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { acquireObserveRuntime, unconfiguredRuntime } from "./observe.ts";
+import { CommandExecutionError } from "./exec-file.ts";
+import {
+  acquireObserveRuntime,
+  classifyMissingDurableState,
+  defaultPathProbe,
+  MISSING_DURABLE_REASONS,
+  unconfiguredRuntime,
+  type PathProbe,
+} from "./observe.ts";
 import { GhAdapter } from "./gh-adapter.ts";
 import {
   acquireGithubProjection,
@@ -65,7 +73,26 @@ function unconfiguredHealth(): JsonValue {
   };
 }
 
-export async function acquireHealth(runner: FileRunner, script: string | null): Promise<JsonValue> {
+export interface HealthProbeContext {
+  durableRoot?: string | null;
+  pathExists?: PathProbe;
+}
+
+// The pinned public devloop's board renderer reports a failed engine read with
+// exactly this stderr shape (scripts/board.py `fetch_observe` wrapping the
+// engine's startup error). Only this validated signature, combined with a
+// read-only probe confirming the durable state is actually absent, may narrow
+// a health failure to a durable-state reason. The matched raw stderr is never
+// projected; only the signature name is.
+const DEVLOOP_OBSERVE_FAILURE_SIGNATURE =
+  /^error: fkst-framework observe --json failed;[^\n]*open existing durable delivery database/mu;
+const DEVLOOP_OBSERVE_FAILURE_SIGNATURE_NAME = "public_devloop_observe_read_failed";
+
+export async function acquireHealth(
+  runner: FileRunner,
+  script: string | null,
+  context: HealthProbeContext = {},
+): Promise<JsonValue> {
   if (script === null) return unconfiguredHealth();
   try {
     const result = await runner.run(script, ["health"], HEALTH_LIMITS);
@@ -86,13 +113,37 @@ export async function acquireHealth(runner: FileRunner, script: string | null): 
       raw: result.stdout,
       exit_code_semantics: "zero does not distinguish healthy from anomaly verdicts",
     };
-  } catch {
+  } catch (error) {
+    const exitCode = error instanceof CommandExecutionError ? error.exitCode : null;
+    const signatureMatched =
+      error instanceof CommandExecutionError &&
+      DEVLOOP_OBSERVE_FAILURE_SIGNATURE.test(error.stderrExcerpt);
+    const durableRoot = context.durableRoot ?? null;
+    if (durableRoot !== null && exitCode === 1 && signatureMatched) {
+      const reason = await classifyMissingDurableState(
+        durableRoot,
+        context.pathExists ?? defaultPathProbe,
+      );
+      if (reason !== null && MISSING_DURABLE_REASONS.has(reason)) {
+        return {
+          availability: "unavailable",
+          artifact: "scripts/run.sh health stdout",
+          verdict: null,
+          raw: null,
+          reason,
+          exit_code: exitCode,
+          failure_signature: DEVLOOP_OBSERVE_FAILURE_SIGNATURE_NAME,
+        };
+      }
+    }
     return {
       availability: "unknown",
       artifact: "scripts/run.sh health stdout",
       verdict: null,
       raw: null,
       reason: "health_command_failed",
+      exit_code: exitCode,
+      failure_signature: signatureMatched ? DEVLOOP_OBSERVE_FAILURE_SIGNATURE_NAME : null,
     };
   }
 }
@@ -121,7 +172,9 @@ export class LocalSnapshotProvider implements SnapshotProvider {
       this.config.observe === null
         ? Promise.resolve(unconfiguredRuntime())
         : acquireObserveRuntime(this.runner, this.config.observe, () => capturedAt.getTime()),
-      acquireHealth(this.runner, this.config.healthScript),
+      acquireHealth(this.runner, this.config.healthScript, {
+        durableRoot: this.config.observe?.durableRoot ?? null,
+      }),
       acquireGithubProjection(this.github, this.config.sandboxRepo, this.config.botLogin),
     ]);
 
