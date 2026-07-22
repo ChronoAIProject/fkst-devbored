@@ -177,9 +177,9 @@ Rollback: omit health configuration; GitHub Workflow read remains independently 
 
 ### E8 — Council source decision and acquisition
 
-Owner: main PM with a fresh Codex GPT-5.6 Sol reconciliation before implementation.
+Owner: main PM. The required fresh Codex GPT-5.6 Sol reconciliation completed with `SOL_COUNCIL_DECISION=PASS`; [`docs/COUNCIL-AUTHORITY.md`](../docs/COUNCIL-AUTHORITY.md) is the binding implementation decision.
 
-Context: no live Council module/source currently exists. A source/protocol decision changes system authority and must not be improvised by a parallel implementation agent.
+Context: no live Council module/source currently exists. Trusted GitHub producer records are canonical, substrate is corroborating delivery evidence only, and the console remains a read-only projection. Producer schema/deployment and real marker emission stay human-gated.
 
 Acceptance criteria:
 
