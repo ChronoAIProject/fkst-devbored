@@ -1,4 +1,53 @@
-# FKST Console — recorded UI prototype and read-only live development path
+# FKST Devbored
+
+![FKST Devbored — a lean harness for Codex dev loops](docs/assets/banner.png)
+
+**The loop is all the rage.** Engineers at Anthropic and OpenAI now describe
+their day job as building the loop that builds the code. But most loop
+architectures are still too basic for complex development work — the
+interesting problems live in the *harness* around the loop, not the model
+inside it. Inspired by OpenAI's
+[Symphony](https://openai.com/index/open-source-codex-orchestration-symphony/)
+and the broader
+[harness-engineering](https://openai.com/index/harness-engineering/)
+conversation, we built this: **an easy way for developers to use Codex to
+experiment with their own dev workflows, in a loop.**
+
+Three design choices keep it approachable:
+
+- **Lean, editable architecture.** Small pieces you can actually read and
+  reshape — not a framework you configure from the outside.
+- **GitHub is the durable layer.** Issues, comments, and labels hold the
+  loop's business state — trivially readable and auditable by humans, hosted
+  where your code already lives.
+- **The front end is an approachable web layer.** The original submission
+  used static pages and vanilla JavaScript with no build step. The current
+  recorded console uses React, Vite, and TypeScript while preserving the same
+  inspectable browser surface and the earlier static materials in the repo.
+
+## Why a harness at all
+
+Harness engineering is about making the loop work **the way you want**.
+Something that runs 24/7 without staying aligned to your own judgment isn't
+autonomy — it's loop vibing.
+
+This architecture goes after three concrete problems in agentic coding:
+
+1. **Context management.** Split work into smaller issues and keep process
+   state in the durable layer (GitHub issues + trusted marker comments). No
+   single context window has to carry the whole project.
+2. **Verifiable judgment.** Every decision leaves durable evidence, so you
+   can check the agent's reasoning against your own — and reformulate your
+   loops and flows when you disagree. The console's rule set is exactly this:
+   *markers are facts, labels are hints, unknown is never zero.*
+3. **Provider independence.** [`fkst-substrate`](https://github.com/ChronoAIProject/fkst-substrate)
+   is a durable loop engine that operates independently of any model
+   provider. Together with the public devloop in
+   [`fkst-packages`](https://github.com/ChronoAIProject/fkst-packages), it is
+   one of exactly two primary FKST dependencies; Workflow and Council remain
+   the application's mechanisms for work and decision evidence.
+
+## Current implementation status
 
 > **Honest scope:** `http://127.0.0.1:4173` is an interactive viewer for committed, sanitized fixture data. It starts no BFF and makes no connection to GitHub, Council, `fkst-substrate`, or the public devloop. Separately, the local development topology has served a real populated GitHub snapshot through its BFF and Vite `/api` proxy. A deterministic Chrome/CDP test also proves the browser-rendered Vite+BFF topology with a controlled fake GitHub projection. That browser test is not real-GitHub DOM evidence or full end-to-end proof: live Council acquisition, a successful public-devloop health run, and a deployed substrate durable root remain unavailable.
 
