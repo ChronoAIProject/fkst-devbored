@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>devbored — Board · by signal</title>
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/banner.js" defer></script>
+<style>
+body{min-width:320px}
+.app{grid-template-columns:236px minmax(0,1fr)}
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.board-head{padding:11px 20px 12px;border-bottom:1px solid var(--line);flex:none;align-items:center}
+.board-head .page-lede{max-width:none;margin-top:3px;font-size:11.5px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filters{display:flex;align-items:center;height:42px;padding:0 20px;border-bottom:1px solid var(--line);flex:none;gap:8px;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.fchip{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:24px;padding:0 8px;border:1px solid var(--line-2);border-radius:12px;background:var(--raise);color:var(--dim);font:500 12px/1 var(--sans);white-space:nowrap}
+button.fchip:disabled{cursor:not-allowed;opacity:.68}
+.group-tabs{display:flex;gap:2px;background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:2px;white-space:nowrap}
+.group-tabs button{height:20px;padding:0 9px;border:0;border-radius:4px;background:transparent;color:var(--faint);font:500 11.5px/1 var(--sans)}
+.group-tabs button[aria-pressed="true"]{background:var(--raise-2);color:var(--fg)}
+.group-tabs button:disabled{cursor:not-allowed;color:var(--ghost)}
+.filters .right{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--faint);font-size:11.5px;white-space:nowrap}
+
+.board-status{margin:14px 20px 0;padding:11px 13px;border:1px dashed var(--line-2);border-radius:8px;background:color-mix(in oklab,var(--raise) 60%,transparent);color:var(--faint);font-size:11.5px;flex:none}
+.board-status.error{color:var(--red);border-color:color-mix(in oklab,var(--red) 42%,var(--line));background:color-mix(in oklab,var(--red) 6%,transparent)}
+.board-status[hidden]{display:none}
+.board{display:flex;overflow-x:auto;flex:1;min-height:0;padding:14px 12px 20px;scrollbar-color:var(--line-2) transparent}
+.col{width:280px;flex:none;padding:0 7px;min-width:0}
+.col.compact{width:70px}
+.col.open-col{width:278px}
+.col.ambiguous-col{width:282px}
+.cap{width:250px;flex:none;padding:0 7px;min-width:0}
+.colhd{display:flex;align-items:center;gap:6px;height:30px;padding:0 5px;font-size:12px;font-weight:500;white-space:nowrap}
+.colhd .n{color:var(--faint);font-weight:400;font-variant-numeric:tabular-nums}
+.compact .colhd{gap:4px;padding-inline:3px;font-size:11.5px}
+.rule{height:2px;border-radius:2px;margin:2px 5px 0;background:var(--line-2)}
+.rule.review{background:color-mix(in oklab,var(--gold) 52%,transparent)}
+.rule.ship{background:color-mix(in oklab,var(--red) 44%,transparent)}
+.rule.ambiguous{background:color-mix(in oklab,var(--red) 44%,transparent)}
+.rule.completion{background:color-mix(in oklab,var(--green) 44%,transparent)}
+.cards{display:flex;flex-direction:column;gap:7px;padding-top:8px}
+.empty{color:var(--faint);font-size:11px;padding:13px 6px;border:1px dashed color-mix(in oklab,var(--line-2) 70%,transparent);border-radius:8px;text-align:center}
+.compact .empty{height:116px;padding:12px 3px;display:flex;align-items:center;justify-content:center;line-height:1.45}
+.card{display:block;background:var(--raise);border:1px solid color-mix(in oklab,var(--line) 80%,transparent);border-radius:8px;padding:9px 11px 10px;min-width:0;transition:background .12s,border-color .12s}
+.card:hover{background:var(--raise-2);border-color:var(--line-2)}
+.card .top{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.issue-glyph{width:13px;height:13px;border:1.4px solid var(--faint);border-radius:50%;position:relative;flex:none}
+.issue-glyph::after{content:"";position:absolute;left:3px;right:3px;top:5px;height:1px;background:currentColor;opacity:.68}
+.card .id{color:var(--faint);font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums}
+.card .ext{margin-left:auto;color:var(--faint);font-family:var(--mono);font-size:8px;line-height:1;letter-spacing:.045em;text-transform:uppercase}
+.card h3{font-weight:500;font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
+.card .bot{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lbl{display:inline-flex;align-items:center;gap:5px;min-height:19px;padding:2px 7px;border:1px solid var(--line);border-radius:10px;color:var(--faint);font-size:10px;font-weight:500;white-space:nowrap}
+.lbl i{width:6px;height:6px;border-radius:50%;background:var(--faint)}
+.lbl.red{color:var(--red);border-color:color-mix(in oklab,var(--red) 38%,var(--line))}
+.lbl.red i{background:var(--red)}
+.lbl.green{color:var(--green);border-color:color-mix(in oklab,var(--green) 38%,var(--line))}
+.lbl.green i{background:var(--green)}
+.lbl.hint{border-style:dashed}
+.card .rt{margin-left:auto;display:flex;align-items:center;gap:9px}
+.ag{color:var(--faint);font-size:11px;font-variant-numeric:tabular-nums}
+.claimant{width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border:1px dashed var(--line-2);border-radius:50%;color:var(--dim);background:color-mix(in oklab,var(--raise-2) 60%,transparent);font:650 8px/1 var(--sans);letter-spacing:-.02em;flex:none}
+.comment-count{display:inline-flex;align-items:center;gap:4px;color:var(--faint);font-size:10.5px;font-variant-numeric:tabular-nums}
+.comment-count svg{width:12px;height:12px}
+.hero{border-style:dashed;border-color:color-mix(in oklab,var(--green) 34%,var(--line));background:color-mix(in oklab,var(--green) 4%,var(--raise))}
+.hero .issue-glyph{border-color:var(--green);color:var(--green)}
+.marker-fact{display:flex;align-items:center;gap:6px;margin:0 0 8px;color:var(--faint);font-size:10.5px}
+.marker-fact::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--faint);flex:none}
+.marker-fact b{color:var(--dim);font-weight:600}
+.cap-note{margin-top:2px;color:var(--faint);font-size:10.5px;line-height:1.55;padding:9px 5px 0}
+.foot{padding:10px 20px 16px;color:var(--faint);font-size:11px;flex:none;line-height:1.7;border-top:1px solid var(--line)}
+.foot b{color:var(--faint);font-weight:500}
+.foot code{color:var(--faint)}
+
+@media(max-width:780px){
+  body{height:auto;min-height:100%}
+  .app{display:flex;flex-direction:column}
+  .side{border-right:0;border-bottom:1px solid var(--line);padding:8px;display:grid;grid-template-columns:repeat(5,minmax(max-content,1fr));gap:3px;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+  .side .ws,.side .shead,.side .subnav,.side .sfoot{display:none}
+  .side .sitem{justify-content:center;min-width:max-content;padding:0 9px;font-size:11.5px;white-space:nowrap;overflow:visible;text-overflow:clip}
+  .side .sitem svg{display:none}
+  .main{min-height:calc(100vh - 138px)}
+  .board-head{padding:10px 14px 11px}
+  .filters{padding:0 14px}
+  .filters .right{display:none}
+  .board-status{margin:12px 14px 0}
+  .board{display:flex;flex-direction:column;overflow:visible;padding:10px 7px 20px}
+  .col,.col.open-col,.col.ambiguous-col,.col.compact,.cap{width:100%;padding:0 7px}
+  .compact .colhd{padding-inline:5px;font-size:12px}
+  .compact .cards{display:none}
+  .colhd{margin-top:5px}
+  .cards{padding-bottom:3px}
+  .foot{padding:11px 14px 18px}
+}
+@media(max-width:430px){
+  .fchip{font-size:11px}
+  .group-tabs button{font-size:11px;padding-inline:7px}
+}
+@media(prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
+</head>
+<body data-snapshot="snapshot 2026-07-20">
+<noscript><div class="noscript-panel">The recorded fixture board did not run because JavaScript is disabled. Serve <code>demo/</code> over HTTP and enable JavaScript to load the local issue fixtures; no live data is substituted.</div></noscript>
+<div class="app">
+  <nav class="side" aria-label="Demo screens">
+    <div class="ws">
+      <span class="logo">F<span class="kk">K<i class="knode"></i></span>ST</span>
+      <svg class="chev" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <a class="pen" href="index.html" title="Demo catalog"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a>
+    </div>
+    <a class="sitem on" href="board.html" aria-current="page"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="2.5" width="5" height="11" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2.5" width="5" height="7" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>Board</a>
+    <a class="sitem" href="debate.html">Who decided</a>
+    <a class="sitem" href="council.html">Council sandbox</a>
+    <a class="sitem" href="selftest.html">Self-test</a>
+    <a class="sitem" href="runtime.html">Engine (live)</a>
+    <div class="sfoot"><i class="dot n"></i>DRY-RUN · fixture snapshot</div>
+  </nav>
+
+  <main class="main">
+    <nav class="crumbbar" aria-label="Breadcrumb">
+      <span>fkst-packages-testing</span><span aria-hidden="true">›</span><strong>Board</strong><span aria-hidden="true">·</span><span>by signal</span>
+    </nav>
+    <header class="page-header board-head">
+      <div class="page-header__copy">
+        <h1 class="page-title">Board · the loop</h1>
+        <p class="page-lede">Accepted marker state stays separate from lossy state-label hints and completion evidence.</p>
+      </div>
+    </header>
+    <div class="filters" aria-label="Board filters and grouping">
+      <button class="fchip" type="button" disabled title="not recorded in this demo">+ Filter</button>
+      <div class="group-tabs" aria-label="Group board by">
+        <button type="button" disabled title="not recorded in this demo">Status</button>
+        <button type="button" disabled title="not recorded in this demo">Swimlanes</button>
+        <button type="button" disabled title="not recorded in this demo">Claims</button>
+        <button type="button" aria-pressed="true">Signals</button>
+      </div>
+      <span class="fchip" id="captured-count">Loading captured goals…</span>
+      <div class="right">the loop: Design → Build → Review → Ship · completion evidence is separate</div>
+    </div>
+
+    <div class="board-status" id="board-status" role="status">Loading <code>issues-open.json</code> + <code>issue-111.json</code>…</div>
+    <div class="board" id="board" aria-label="Issue signal board">
+      <section class="col compact" data-stage="design">
+        <div class="colhd">Design<span class="n" data-count="design">—</span></div>
+        <div class="rule"></div>
+        <div class="cards"><div class="empty">no marker facts</div></div>
+      </section>
+
+      <section class="col open-col" data-signal="implementing-label">
+        <div class="colhd">Build label hint<span class="n" data-count="build-hints">—</span></div>
+        <div class="rule"></div>
+        <div class="cards" id="build-hints"></div>
+      </section>
+
+      <section class="col ambiguous-col" data-signal="ambiguous-label">
+        <div class="colhd">Ambiguous label hints<span class="n" data-count="ambiguous-hints">—</span></div>
+        <div class="rule ambiguous"></div>
+        <div class="cards" id="ambiguous-hints"></div>
+      </section>
+
+      <section class="col compact" data-stage="review">
+        <div class="colhd">Review<span class="n" data-count="review">—</span></div>
+        <div class="rule review"></div>
+        <div class="cards"><div class="empty">no marker facts</div></div>
+      </section>
+
+      <section class="col compact" data-stage="ship">
+        <div class="colhd">Ship<span class="n" data-count="ship">—</span></div>
+        <div class="rule ship"></div>
+        <div class="cards"><div class="empty">no marker facts</div></div>
+      </section>
+
+      <section class="cap" data-signal="completion-hint">
+        <div class="colhd">Completion evidence (hint)<span class="n" data-count="completion-hints">—</span></div>
+        <div class="rule completion"></div>
+        <div class="cards" id="completion-hints"></div>
+      </section>
+    </div>
+    <div class="foot">
+      <b>Signal authority.</b> #111’s accepted <code>state:v1</code> fact comes only from the shared context-aware reader. Its <code>fkst-dev:merged</code> label and merge-confirmation prose are completion evidence hints, not an authoritative stage.
+      Open issues are positioned only as <b>label hints</b>: <code>fkst-dev:blocked</code> is lossy and can mean <em>blocked</em> or <em>closed-unmerged</em>, so those issues stay outside the stage columns. Unreachable fixture reads remain <em>unknown</em>, never 0.
+    </div>
+  </main>
+</div>
+
+<script type="module">
+(() => {
+  "use strict";
+
+  const FIXTURES = ["fixtures/issues-open.json", "fixtures/issue-111.json", "fixtures/trust-policy.json"];
+  const ROUTE = Object.freeze({repo: "ChronoAIProject/fkst-packages-testing", issueNumber: 111});
+  const MARKER_CONTEXT = Object.freeze({
+    ...ROUTE,
+    expectedProposal: `github-devloop/issue/${ROUTE.repo}/${ROUTE.issueNumber}`
+  });
+  const RECOGNIZED_STATE_LABELS = new Set([
+    "fkst-dev:thinking",
+    "fkst-dev:ready",
+    "fkst-dev:implementing",
+    "fkst-dev:blocked",
+    "fkst-dev:merged"
+  ]);
+
+  const byId = id => document.getElementById(id);
+  const setCount = (name, count) => {
+    const node = document.querySelector(`[data-count="${name}"]`);
+    if (node) node.textContent = String(count);
+  };
+  const labelsOf = issue => Array.isArray(issue.labels) ? issue.labels.map(label => String(label && label.name || "")) : [];
+  const formatDate = value => {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : new Intl.DateTimeFormat("en-GB", {day: "numeric", month: "short", timeZone: "UTC"}).format(date);
+  };
+
+  function stateLabelHint(issue) {
+    const stateLabels = [...new Set(labelsOf(issue).filter(label => RECOGNIZED_STATE_LABELS.has(label)))];
+    if (stateLabels.length === 0) return {kind: "none", text: "no state-label hint"};
+    if (stateLabels.length > 1) return {kind: "ambiguous", text: "ambiguous state labels"};
+    return {kind: "single", label: stateLabels[0], text: stateLabels[0]};
+  }
+
+  function claimant(issue) {
+    const assignees = Array.isArray(issue.assignees) ? issue.assignees.filter(Boolean) : [];
+    if (!assignees.length) return {initials: "–", title: "No claimant recorded"};
+    const person = assignees[0];
+    const name = String(person.name || person.login || "").trim();
+    const parts = name.split(/[\s._-]+/).filter(Boolean);
+    const initials = parts.length > 1
+      ? `${parts[0][0]}${parts.at(-1)[0]}`
+      : parts[0]?.slice(0, 2) || "–";
+    return {initials: initials.toUpperCase(), title: `Claimant: ${name}`};
+  }
+
+  function makeClaimantChip(issue) {
+    const claim = claimant(issue);
+    const chip = document.createElement("span");
+    chip.className = "claimant";
+    chip.title = claim.title;
+    chip.setAttribute("aria-label", claim.title);
+    chip.textContent = claim.initials;
+    return chip;
+  }
+
+  function selectSharedState(issue, trustPolicy, markerModule) {
+    if (typeof markerModule?.selectCurrentState !== "function") {
+      return {fact: null, status: "unknown", failedPredicate: "selectCurrentState export unavailable"};
+    }
+    try {
+      const result = markerModule.selectCurrentState(issue?.comments, trustPolicy, MARKER_CONTEXT);
+      const knownStatus = result && ["ok", "unknown", "ambiguous"].includes(result.status);
+      if (!knownStatus || !("fact" in result)) {
+        return {fact: null, status: "unknown", failedPredicate: "shared reader result envelope unavailable"};
+      }
+      if (result.status === "ok" && (!result.fact || typeof result.fact.state !== "string")) {
+        return {fact: null, status: "unknown", failedPredicate: "shared reader returned no state fact"};
+      }
+      return result;
+    } catch (error) {
+      return {fact: null, status: "unknown", failedPredicate: error instanceof Error ? error.message : "shared reader failed"};
+    }
+  }
+
+  function makeIssueCard(issue, tone = "") {
+    const link = document.createElement("article");
+    link.className = "card";
+    link.dataset.src = "fixture";
+    link.dataset.authority = "label-hint";
+
+    const top = document.createElement("div");
+    top.className = "top";
+    const glyph = document.createElement("span");
+    glyph.className = "issue-glyph";
+    glyph.setAttribute("aria-hidden", "true");
+    const id = document.createElement("span");
+    id.className = "id";
+    id.textContent = `#${issue.number}`;
+    const ext = document.createElement("span");
+    ext.className = "ext";
+    ext.setAttribute("aria-hidden", "true");
+    ext.textContent = "fixture";
+    top.append(glyph, id, ext);
+
+    const title = document.createElement("h3");
+    title.textContent = issue.title;
+    const bot = document.createElement("div");
+    bot.className = "bot";
+    const badge = document.createElement("span");
+    badge.className = `lbl hint${tone ? ` ${tone}` : ""}`;
+    const dot = document.createElement("i");
+    dot.setAttribute("aria-hidden", "true");
+    badge.append(dot, document.createTextNode(`label hint · ${stateLabelHint(issue).text}`));
+    const right = document.createElement("span");
+    right.className = "rt";
+    right.append(makeClaimantChip(issue));
+    const formattedDate = formatDate(issue.updatedAt);
+    if (formattedDate) {
+      const age = document.createElement("span");
+      age.className = "ag";
+      age.textContent = formattedDate;
+      right.append(age);
+    }
+    bot.append(badge, right);
+    link.append(top, title, bot);
+    return link;
+  }
+
+  function makeCompletionCard(issue, stateResult) {
+    const link = document.createElement("a");
+    link.className = "card hero";
+    link.href = "evidence.html";
+    link.title = "Open the #111 evidence chain";
+    link.dataset.src = "fixture";
+    link.dataset.authority = "label-hint";
+
+    const top = document.createElement("div");
+    top.className = "top";
+    const glyph = document.createElement("span");
+    glyph.className = "issue-glyph";
+    glyph.setAttribute("aria-hidden", "true");
+    const id = document.createElement("span");
+    id.className = "id";
+    id.textContent = `#${issue.number}`;
+    const ext = document.createElement("span");
+    ext.className = "ext";
+    ext.setAttribute("aria-hidden", "true");
+    ext.textContent = "fixture";
+    top.append(glyph, id, ext);
+
+    const title = document.createElement("h3");
+    title.textContent = issue.title;
+    const marker = document.createElement("div");
+    marker.className = "marker-fact";
+    marker.dataset.authority = "trusted-state-marker";
+    const accepted = stateResult.status === "ok" && stateResult.fact;
+    marker.append(document.createTextNode(accepted ? "accepted state fact · " : "authoritative state · "));
+    const state = document.createElement("b");
+    state.textContent = accepted ? stateResult.fact.state : stateResult.status;
+    marker.append(state);
+    const bot = document.createElement("div");
+    bot.className = "bot";
+    const badge = document.createElement("span");
+    badge.className = "lbl green hint";
+    const dot = document.createElement("i");
+    dot.setAttribute("aria-hidden", "true");
+    badge.append(dot, document.createTextNode(`label hint · ${stateLabelHint(issue).text}`));
+    const right = document.createElement("span");
+    right.className = "rt";
+    right.append(makeClaimantChip(issue));
+    const comments = Array.isArray(issue.comments) ? issue.comments : [];
+    const commentCount = document.createElement("span");
+    commentCount.className = "comment-count";
+    commentCount.setAttribute("aria-label", `${comments.length} recorded comments`);
+    commentCount.innerHTML = `<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3.5h10v7H7l-3.5 2.3V10.5H3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg><span>${comments.length}</span>`;
+    right.append(commentCount);
+    bot.append(badge, right);
+    link.append(top, title, marker, bot);
+    return link;
+  }
+
+  function showEmpty(container, message) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = message;
+    container.append(empty);
+  }
+
+  function recordLayout() {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const root = document.documentElement;
+      root.dataset.scrollWidth = String(root.scrollWidth);
+      root.dataset.viewportWidth = String(root.clientWidth);
+      root.dataset.layoutFit = String(root.scrollWidth <= root.clientWidth);
+    }));
+  }
+
+  function render(openIssues, completionIssue, trustPolicy, markerModule) {
+    if (!Array.isArray(openIssues) || !completionIssue || typeof completionIssue !== "object") {
+      throw new Error("Fixture shape did not contain the recorded open issues and #111.");
+    }
+
+    const implementing = [];
+    const ambiguous = [];
+    for (const issue of openIssues) {
+      const hint = stateLabelHint(issue);
+      if (hint.kind === "single" && hint.label === "fkst-dev:implementing") implementing.push(issue);
+      else ambiguous.push(issue);
+    }
+
+    const buildContainer = byId("build-hints");
+    const ambiguousContainer = byId("ambiguous-hints");
+    implementing.forEach(issue => buildContainer.append(makeIssueCard(issue)));
+    ambiguous.forEach(issue => ambiguousContainer.append(makeIssueCard(issue, "red")));
+    if (!implementing.length) showEmpty(buildContainer, "no implementing label hints");
+    if (!ambiguous.length) showEmpty(ambiguousContainer, "no ambiguous label hints");
+
+    const stateResult = selectSharedState(completionIssue, trustPolicy, markerModule);
+    const completionContainer = byId("completion-hints");
+    completionContainer.append(makeCompletionCard(completionIssue, stateResult));
+    const note = document.createElement("div");
+    note.className = "cap-note";
+    note.dataset.src = "fixture";
+    note.textContent = "The completion carrier is a dashed label hint. Open #111 for its shared-reader state fact and separate prose evidence.";
+    completionContainer.append(note);
+
+    setCount("design", 0);
+    setCount("build-hints", implementing.length);
+    setCount("ambiguous-hints", ambiguous.length);
+    setCount("review", 0);
+    setCount("ship", 0);
+    setCount("completion-hints", completionIssue ? 1 : 0);
+    const total = openIssues.length + (completionIssue ? 1 : 0);
+    byId("captured-count").textContent = `${total} captured goals`;
+    byId("board").dataset.src = "fixture";
+    byId("board").dataset.fixtureRows = String(total);
+    byId("board").dataset.currentState111 = stateResult.status === "ok" && stateResult.fact ? stateResult.fact.state : stateResult.status;
+    const status = byId("board-status");
+    if (stateResult.status === "ok" && stateResult.fact) {
+      status.hidden = true;
+    } else {
+      status.classList.add("error");
+      const reason = stateResult.failedPredicate ? ` — ${stateResult.failedPredicate}` : "";
+      status.textContent = `#111 authoritative marker state is ${stateResult.status}${reason}. Label-only cards remain available.`;
+    }
+    recordLayout();
+  }
+
+  const markerModulePromise = import("./assets/markers.js").catch(error => ({loadError: error}));
+  Promise.all([...FIXTURES.map(path => fetch(path).then(response => {
+    if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+    return response.json();
+  })), markerModulePromise]).then(([openIssues, completionIssue, trustPolicy, markerModule]) => {
+    if (markerModule.loadError) markerModule = {};
+    render(openIssues, completionIssue, trustPolicy, markerModule);
+  }).catch(error => {
+    const status = byId("board-status");
+    status.classList.add("error");
+    status.textContent = `Fixture source unavailable — board state is unknown (${error.message}).`;
+    byId("captured-count").textContent = "Captured goals unknown";
+    document.querySelectorAll("[data-count]").forEach(node => { node.textContent = "?"; });
+    recordLayout();
+  });
+
+  window.addEventListener("resize", recordLayout, {passive: true});
+})();
+</script>
+</body>
+</html>

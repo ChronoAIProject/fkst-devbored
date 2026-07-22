@@ -1,0 +1,222 @@
+{
+  "schema": "fkst.wave-dispatch/v1",
+  "wave": "R1-initial-roots",
+  "recorded_at": "2026-07-20T23:51:40Z",
+  "recorded_at_local": "2026-07-21T07:51:40+08:00",
+  "pm_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+  "integration_base_commit": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+  "g007_evidence": "G-007-pm-gate.json",
+  "state": "INTEGRATED",
+  "route_contract": {
+    "implementer": {
+      "provider": "codex",
+      "model": "gpt-5.6-sol",
+      "thinking": "xhigh",
+      "heca_mode": "full-access"
+    },
+    "advisor": {
+      "provider": "claude",
+      "model": "claude-fable-5",
+      "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+      "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+      "authority": "advisory_only"
+    },
+    "reviewer": {
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "fresh_session_per_initial_or_rework_review": true,
+      "repository_authorship": false
+    }
+  },
+  "tasks": [
+    {
+      "id": "R-001",
+      "branch": "codex/v2-r001-substrate-manifest",
+      "worktree_id": "019f81f1-cecc-7a63-993d-11c3fc3afc57",
+      "owner_agent_id": "019f81f4-78d4-71c1-9b2a-4d34a3e4bfb6",
+      "owner_provider_session_id": "019f81f4-7ad9-70e0-8734-4a11f03b68bf",
+      "exclusive_paths": [
+        "contracts/step0/substrate/**",
+        "evidence/step0/R-001/**"
+      ]
+    },
+    {
+      "id": "R-004",
+      "branch": "codex/v2-r004-devloop-manifest",
+      "worktree_id": "019f81f1-e2d3-7521-a484-0027f93f6460",
+      "owner_agent_id": "019f81f4-7d5f-71a1-8f5a-9a4a83476a7d",
+      "owner_provider_session_id": "019f81f4-7e04-75f2-ba3e-dc65693dbe1f",
+      "exclusive_paths": [
+        "contracts/step0/devloop/**",
+        "evidence/step0/R-004/**"
+      ]
+    },
+    {
+      "id": "R-007",
+      "branch": "codex/v2-r007-workflow-semantics",
+      "worktree_id": "019f81f1-e3b9-7451-8c81-768852ad899e",
+      "owner_agent_id": "019f81f4-80b0-7112-a958-d522f477c046",
+      "owner_provider_session_id": "019f81f4-8152-7ca1-a4f4-43a537c9051e",
+      "exclusive_paths": [
+        "contracts/specs/workflow/**",
+        "evidence/step0/R-007/**"
+      ]
+    },
+    {
+      "id": "R-009",
+      "branch": "codex/v2-r009-council-semantics",
+      "worktree_id": "019f81f1-e4cb-76b0-846d-3771cd7fdbe6",
+      "owner_agent_id": "019f81f4-836d-79d1-bfd3-f28837968826",
+      "owner_provider_session_id": "019f81f4-841c-7391-a738-d0974214b372",
+      "exclusive_paths": [
+        "contracts/specs/council/**",
+        "evidence/step0/R-009/**"
+      ]
+    },
+    {
+      "id": "R-012",
+      "branch": "codex/v2-r012-github-context",
+      "worktree_id": "019f81f1-e595-7af3-a19a-25992fea6783",
+      "owner_agent_id": "019f81f4-8623-76d1-91e3-9a037922966a",
+      "owner_provider_session_id": "019f81f4-86c5-7a30-8837-b585d0dd144c",
+      "exclusive_paths": [
+        "contracts/specs/contexts/github/**",
+        "evidence/step0/R-012/**"
+      ]
+    },
+    {
+      "id": "R-013",
+      "branch": "codex/v2-r013-codex-preflight",
+      "worktree_id": "019f81f1-e666-7ec1-bb3d-4ce94024a065",
+      "owner_agent_id": "019f81f4-88eb-71e2-bf8b-0af3b224856b",
+      "owner_provider_session_id": "019f81f4-89a0-7b93-8851-ef5aa8e9fa7b",
+      "exclusive_paths": [
+        "contracts/specs/contexts/codex/**",
+        "evidence/step0/R-013/**"
+      ]
+    }
+  ],
+  "global_forbidden_paths": [
+    "contracts/pubspec*",
+    "contracts/lib/**",
+    "contracts/test/**",
+    "docs/spec/**",
+    "plans/**",
+    ".github/**",
+    "product UI or application runtime files",
+    "substrate dependency repository files",
+    "packages dependency repository files",
+    "shared parent README/index/.gitignore files under contracts/step0, contracts/specs, or evidence/step0"
+  ],
+  "declared_integration_order": [
+    "R-001",
+    "R-004",
+    "R-007",
+    "R-009",
+    "R-012",
+    "R-013"
+  ],
+  "integration_branch": "codex/full-app-v2-00-readiness",
+  "integration_worktree_id": "019f81f7-9d7c-7a23-a205-e66284a3a01c",
+  "integration_worktree_path": "[redacted-home]/Library/Application Support/heca/worktrees/80693732/full-app-v2-00-readiness",
+  "collision_gate": "Run the proven G-006 sorted changed-path intersection guard across all six accepted commits before integration.",
+  "setup_history": [
+    {
+      "result": "failed_without_repository_change",
+      "attempt": "six concurrent worktree-create calls",
+      "error": "Heca daemon file-descriptor exhaustion and one reset connection",
+      "disposition": "restart daemon; serialize worktree creation; preserve parallel implementation"
+    },
+    {
+      "result": "pass",
+      "attempt": "six serial worktree-create calls",
+      "daemon_pid": 91304,
+      "verified_base": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+      "all_worktrees_clean": true
+    },
+    {
+      "result": "failed_without_agent_creation",
+      "attempt": "agent create with both worktree_id and display name",
+      "error": "Heca nightly rejects --name with --worktree-id",
+      "disposition": "create each agent with worktree_id, then update display name"
+    },
+    {
+      "result": "pass",
+      "attempt": "serial agent creation followed by name updates",
+      "parallel_agents_running": 6
+    }
+  ],
+  "fable_advisory": {
+    "verdict": "CHANGES_REQUIRED",
+    "scope": "packet-level corrections; no re-architecture required",
+    "pm_dispositions": [
+      {
+        "finding": "R-007 and R-009 require Fable-reviewed semantics.",
+        "disposition": "accepted; each semantic model receives a standing-Fable advisory and PM disposition before Opus/PM acceptance"
+      },
+      {
+        "finding": "R-001 must not build or mutate substrate merely to manufacture a binary-to-source tie.",
+        "disposition": "accepted; record existing binaries and self-test evidence, fail closed on an unprovable build tie, and name the R-052 closure path"
+      },
+      {
+        "finding": "Top-level task evidence could be confused with R-043 evidence-contract ownership.",
+        "disposition": "accepted; evidence/step0/<task> is task artifact space only, while evidence schemas remain under contracts/specs and shared parent files are forbidden"
+      },
+      {
+        "finding": "This wave has no executable consumer for behavioral fixtures.",
+        "disposition": "accepted; fixtures are declarative JSON plus expected outcome, jq/schema checks prove syntax/shape only, and every behavioral claim names its downstream executable task"
+      },
+      {
+        "finding": "The Workflow-to-Council seam could drift between parallel owners.",
+        "disposition": "accepted; Workflow carries only {councilId,policyId}, Council carries no stage routing, and referential/digest behavior belongs solely to R-011"
+      },
+      {
+        "finding": "G-007 PM acceptance must precede dispatch.",
+        "disposition": "already satisfied by G-007-pm-gate.json and PASS rows in 08-READINESS.md"
+      },
+      {
+        "finding": "Integration order and collision guard must be declared.",
+        "disposition": "accepted and frozen in this dispatch record"
+      },
+      {
+        "finding": "Full-access outer posture needs explicit compensating controls.",
+        "disposition": "accepted; use G-007 posture, exact paths, trailers, clean pre/post review state, diff audit, fresh Opus, and PM gate; never treat this as RDY-20 evidence"
+      },
+      {
+        "finding": "R-004 must preserve the missing visibility fact and use a deterministic export-digest recipe.",
+        "disposition": "accepted; record the omission as a gap for R-041/R-005 and freeze the exact recipe without changing devloop"
+      },
+      {
+        "finding": "R-013 is large and needs a pre-agreed internal split seam.",
+        "disposition": "accepted; keep one task but separate identity/auth preflight from worker argv/effective-policy declarations and invoke plan mutation rather than improvisation if it stalls"
+      }
+    ]
+  },
+  "integration_outcome": {
+    "evidence": "R1-integration.json",
+    "collision_gate": "PASS",
+    "pairwise_intersections_checked": 15,
+    "collisions": [],
+    "aggregate_content_head": "01b4f4dfb09db1e9afa34090252b6a633cb0c741",
+    "integrated_state_head": "cc46dd029a699d55151c22a4259e52b7c6684c7a",
+    "tasks_integrated": [
+      "R-001",
+      "R-004",
+      "R-007",
+      "R-009",
+      "R-012",
+      "R-013"
+    ],
+    "product_coding_authorized": false,
+    "next_gate": "Continue dependency-ready Step-0 tasks; R-039 still gates product/UI coding."
+  },
+  "post_wave_governance_addendum": "task-state-contract.v1.json",
+  "post_wave_authority_commit": "92e7aa72ebbd579e993f5f8e45e6e9636afc9f03",
+  "post_wave_authority_receipt": "R1-authority-freeze.json",
+  "limitations": [
+    "This record authorizes only the six named Step-0 tasks.",
+    "Declarative contracts are not executable capability proof.",
+    "No product or UI coding is authorized before R-039 passes.",
+    "No dependency modification is authorized by this wave."
+  ]
+}

@@ -13,14 +13,14 @@ Workflow and Council remain the application's product mechanisms and authority. 
 
 The current maximum truthful live claim is:
 
-> An authenticated, read-only BFF served a real populated snapshot containing five open issues and one open pull request from `ChronoAIProject/fkst-packages`, and the Vite `/api` proxy returned that snapshot to the app origin. Browser-rendered live UI, Council acquisition, Workflow execution, devloop health, substrate observation, and a full end-to-end run have not yet been demonstrated.
+> An authenticated, read-only BFF served a real populated snapshot containing five open issues and one open pull request from `ChronoAIProject/fkst-packages`, and the Vite `/api` proxy returned that snapshot to the app origin. A separate deterministic Chrome/CDP test proves the controlled fake-backed Vite+BFF browser topology. Real-GitHub-backed browser rendering, Council acquisition, Workflow execution, successful devloop health, substrate observation, and a full end-to-end run have not yet been demonstrated.
 
 No real mutation is authorized by this plan. The guarded issue-admission route stays disabled unless a human separately approves the exact sandbox repository and single write attempt.
 
 ## Verified baseline
 
-- Candidate branch: `codex/build-week-mvp`.
-- Published checkpoint before this recovery: `9ee162bcd88a784690248cf79a2cb38309baddc6`.
+- Direct integration target: `main`, preserving the unrelated prior lineage through an unrelated-history merge.
+- Published 07:44 recovery checkpoint: `562a675750deecf54da747daf0f6242aaaac2754`.
 - Fixture path: `pnpm demo` on `127.0.0.1:4173`; verified and intentionally disconnected from live services.
 - Populated read source: `ChronoAIProject/fkst-packages`, trusted marker author `ElonSG`.
 - Read-only BFF probe on a non-conflicting port returned `posture=read-only`, `write.available=false`, five issues, one PR, and complete trusted-marker filtering.
@@ -29,7 +29,7 @@ No real mutation is authorized by this plan. The guarded issue-admission route s
 - Runtime returned `observe_not_configured`.
 - Devloop health returned `health_not_configured` in that BFF run.
 - A direct public-devloop health attempt found the pinned substrate source but returned unavailable because no `delivery.redb` durable root exists.
-- Browser DOM capture failed in the local Chrome renderer; proxy success is not browser E2E proof.
+- Two real-GitHub browser attempts failed and remain failure evidence. A later controlled fake-backed Chrome/CDP run passed the browser-topology contract; it is not real-GitHub or browser E2E proof.
 - The unrelated process already occupying port 8472 and pre-existing untracked files in the packages checkout are outside this plan and must not be modified.
 
 ## Dependency graph and parallel waves
@@ -67,7 +67,7 @@ Rollback: reject or revert the focused stream commit; never weaken a guard to ma
 
 ### E1 — Configurable one-command live startup
 
-Owner paths: `scripts/dev.mjs`, root scripts/config documentation, and focused tests.
+Owner paths: `scripts/dev.mjs`, root scripts/config documentation, and focused tests. **Status: complete and contract-tested.**
 
 Context: the current launcher removes `FKST_CONSOLE_PORT` and hard-codes BFF port 8472, so it cannot avoid an existing local service.
 
@@ -85,14 +85,14 @@ Rollback: revert only the launcher/config commit; manual two-terminal startup re
 
 ### E2 — Read-only live preflight
 
-Owner paths: one focused script/CLI entry, tests, and operator documentation.
+Owner paths: one focused script/CLI entry, tests, and operator documentation. **Status: partially complete.** GitHub actor/projection, substrate-observe, and public-health source probes are implemented; BFF-configuration and Council-source checks are not represented and remain acceptance work.
 
 Acceptance criteria:
 
-- A single read-only command reports GitHub auth/repository/marker access, BFF configuration, substrate binary/durable-root readiness, public-devloop health readiness, and Council-source readiness.
+- A single command ultimately reports GitHub auth/repository/marker access, BFF configuration, substrate binary/durable-root readiness, public-devloop health readiness, and Council-source readiness. The current report contains only `github`, `observe`, and `health`.
 - It uses the application's real adapters or exact commands rather than an invented second implementation.
 - Expected unavailable sources are structured and non-zero only when they prevent the requested live profile.
-- Output contains no credentials and performs no writes, service starts, durable-root initialization, or repository mutation.
+- Output contains no credentials and performs no GitHub/FKST product mutation, service start, durable-root initialization, or repository mutation. A configured public health script may retain its documented bootstrap/build/cache side effects.
 - Tests use local fakes; one real run can be recorded separately as evidence.
 
 Verification: focused unit/black-box tests, `pnpm preflight:live -- --help`, a read-only real run, and repository scrub.
@@ -117,7 +117,7 @@ Rollback: retain synthetic contracts and report live acquisition unavailable.
 
 ### E4 — Browser-rendered live UI proof
 
-Owner paths: app integration/browser tests and minimal fixes required by the live path.
+Owner paths: app integration/browser tests and minimal fixes required by the live path. **Status: partial.** Controlled fake-backed browser topology is contract-tested; the separate real read-only GitHub browser evidence run has not passed.
 
 Acceptance criteria:
 
@@ -133,7 +133,7 @@ Rollback: keep E3's proxy-level claim and document browser proof as blocked.
 
 ### E5 — Durable-root lifecycle and human gate
 
-Owner: substrate/operator stream. This is an external-state prerequisite, not permission to initialize or mutate a durable root.
+Owner: substrate/operator stream. **Status: partial.** Lifecycle/human gating and precise missing/invalid/inaccessible classifications are implemented and tested. No initialization was authorized; stopped-engine and successful real-observe acceptance remain unproved. This is an external-state prerequisite, not permission to initialize or mutate a durable root.
 
 Acceptance criteria:
 
@@ -148,7 +148,7 @@ Rollback: remove disposable artifacts using the substrate's supported lifecycle 
 
 ### E6 — Live substrate Runtime observation
 
-Depends on E5.
+Depends on E5. **Status: blocked on a human-approved initialized disposable root; no live Runtime evidence exists.**
 
 Acceptance criteria:
 
@@ -162,7 +162,7 @@ Rollback: remove Runtime configuration and return to explicit unavailable state.
 
 ### E7 — Public-devloop health and Workflow observation
 
-Owner: devloop adapter/operator stream.
+Owner: devloop adapter/operator stream. **Status: partial.** Fake contracts and real missing-state failure evidence exist; no successful public health result against an approved initialized root exists.
 
 Acceptance criteria:
 
@@ -177,7 +177,7 @@ Rollback: omit health configuration; GitHub Workflow read remains independently 
 
 ### E8 — Council source decision and acquisition
 
-Owner: main PM. The required fresh Codex GPT-5.6 Sol reconciliation completed with `SOL_COUNCIL_DECISION=PASS`; [`docs/COUNCIL-AUTHORITY.md`](../docs/COUNCIL-AUTHORITY.md) is the binding implementation decision.
+Owner: main PM. **Architecture decision complete; acquisition incomplete.** The required fresh Codex GPT-5.6 Sol reconciliation completed with `SOL_COUNCIL_DECISION=PASS`; [`docs/COUNCIL-AUTHORITY.md`](../docs/COUNCIL-AUTHORITY.md) is the binding implementation decision. No `github-markers` Council adapter, live producer record, complete seat roster, or real dissent evidence has been implemented or demonstrated.
 
 Context: no live Council module/source currently exists. Trusted GitHub producer records are canonical, substrate is corroborating delivery evidence only, and the console remains a read-only projection. Producer schema/deployment and real marker emission stay human-gated.
 
@@ -194,7 +194,7 @@ Rollback: keep recorded Council fixtures and explicit live-unavailable state.
 
 ### E9 — One-run local E2E and release checkpoint
 
-Depends on E1–E8; a read-only rehearsal can precede any separately approved write.
+Depends on E1–E8. **Status: not met.** A read-only rehearsal can precede any separately approved write.
 
 Acceptance criteria:
 
@@ -207,14 +207,14 @@ Acceptance criteria:
 
 Rollback: preserve the last green candidate branch and publish blockers instead of rewriting the claim.
 
-## Deadline checkpoint for 07:45–08:00 SGT
+## Historical deadline checkpoint for 07:45–08:00 SGT
 
-At 07:45 every active implementation stream stops exploration and returns one of:
+At 07:45 the active implementation streams stopped exploration and returned one of:
 
 - a focused commit plus exact passing/failing tests and limitations; or
 - `BLOCKED` with reproducible evidence and no speculative partial patch.
 
-The main PM then reviews diffs and tests, cherry-picks only accepted commits, updates truth documentation, runs `pnpm check` and `git diff --check`, and pushes by 08:00 only if the integrated tree is green. If the configurable-startup patch is not green by 07:55, the checkpoint contains only verified evidence/documentation rather than an unsafe launcher change. Work after 08:00 starts from that remote checkpoint in new focused streams.
+The main PM reviewed the first-wave diffs and tests, integrated only accepted commits, updated truth documentation, and published the green `562a675750deecf54da747daf0f6242aaaac2754` checkpoint at 07:44 SGT. Post-08:00 recovery work started from that remote checkpoint in new focused streams; later integration never rewrites the historical checkpoint.
 
 ## Plan mutation protocol
 

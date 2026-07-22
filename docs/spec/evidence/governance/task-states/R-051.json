@@ -1,0 +1,126 @@
+{
+  "schema": "fkst.task-state/v1",
+  "task_id": "R-051",
+  "state": "INTEGRATED",
+  "repository": "substrate",
+  "integration_base_commit": "1e03c4f91d7cc9e42dff1dc180623912ea889f65",
+  "dependencies": ["R-001", "R-013"],
+  "exclusive_paths": ["crates/fkst-framework/src/sdk_codex.rs", "crates/fkst-framework/src/mlua_init.rs", "crates/fkst-framework/src/config_registry.rs", "crates/fkst-framework/src/self_test.rs", "crates/fkst-framework/tests/sdk_codex.rs", "SPEC.md", "README.md", "docs/package-repo-contract.md", "docs/architecture.md"],
+  "owner_agent_id": "019f8265-8d4a-79b3-89c6-51aec81dcb10",
+  "owner_provider": "codex",
+  "owner_model": "gpt-5.6-sol",
+  "owner_provider_session": "019f8265-8df2-7ee0-9256-e2dbdb84034b",
+  "owner_worktree_id": "019f8264-5a30-77d0-a1d8-8882b2185939",
+  "owner_worktree_path": "[redacted-home]/Library/Application Support/heca/worktrees/b5e1b194/r051-safe-managed-codex",
+  "owner_branch": "feat/safe-managed-codex-invocation",
+  "review_cycle": 1,
+  "transition_history": ["PROPOSED", "READY", "IN_DEVELOPMENT", "DEV_VERIFIED", "OPUS_REVIEW", "OPUS_APPROVED", "PM_REVIEW", "ACCEPTED", "INTEGRATED"],
+  "plan_mutations": [
+    {
+      "id": "R2-R051-CLIPPY-BASELINE-1",
+      "state": "SUPERSEDED",
+      "recorded_at_utc": "2026-07-21T02:54:42Z",
+      "evidence": "../R2-r051-clippy-gate-mutation.json",
+      "effect": "Replace the impossible absolute-green all-target clippy interpretation with the locked zero-new-diagnostic differential while keeping every non-clippy gate absolute green.",
+      "owner_notified": true,
+      "superseded_by": "R2-R051-CLIPPY-BASELINE-2",
+      "superseded_at_utc": "2026-07-21T04:22:54Z"
+    },
+    {
+      "id": "R2-R051-CLIPPY-BASELINE-2",
+      "state": "ACCEPTED",
+      "recorded_at_utc": "2026-07-21T04:22:54Z",
+      "evidence": "../R2-r051-clippy-gate-mutation-v2.json",
+      "canonicalizer": "../R2-r051-clippy-fingerprints.jq",
+      "effect": "Replace the scheduling-sensitive v1 fingerprint anchor with two locked Cargo --keep-going runs per base/final side and a digest-pinned byte canonicalizer; retain every v1 boundary, differential rule, and absolute-green non-clippy gate.",
+      "owner_notified": true,
+      "owner_notified_at_utc": "2026-07-21T04:25:31Z",
+      "owner_notification_source_commit": "ee9afae"
+    }
+  ],
+  "submissions": [
+    {
+      "review_cycle": 1,
+      "commit": "e38358a0552c4133414836bf52df6593908fe547",
+      "parent": "1e03c4f91d7cc9e42dff1dc180623912ea889f65",
+      "result": "DEV_VERIFIED",
+      "submitted_at_utc": "2026-07-21T02:56:00Z",
+      "artifacts": [
+        "README.md",
+        "SPEC.md",
+        "crates/fkst-framework/src/sdk_codex.rs",
+        "crates/fkst-framework/tests/sdk_codex.rs",
+        "docs/architecture.md",
+        "docs/package-repo-contract.md"
+      ],
+      "checks": [
+        "cargo fmt -p fkst-framework -- --check: PASS",
+        "cargo test -p fkst-framework --test sdk_codex --locked: PASS (145/145)",
+        "cargo test -p fkst-framework --locked: PASS",
+        "bash scripts/verify.sh: PASS (exit 0; conformance 7/7; Lua 10/10)",
+        "clippy v2 canonical protocol: base/final each two runs, canonical SHA-256 3288d73619aea821118069484194941edd5f83484a0baa2297be633f1c89fbd3, zero new/removed/changed fingerprints",
+        "exact six-path scope, five provenance trailers, git diff --check, and clean worktrees: PASS"
+      ],
+      "owner_metadata": {
+        "agent_id": "019f8265-8d4a-79b3-89c6-51aec81dcb10",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "provider_session_id": "019f8265-8df2-7ee0-9256-e2dbdb84034b"
+      },
+      "limitations": [
+        "Managed runtime behavior was tested with disposable fake executables; no real Codex, credential, network, or external effect was invoked.",
+        "The all-target clippy command remains exit 101 because of the pinned pre-existing baseline; the accepted v2 protocol proves an identical non-owned multiset and no owned increase or new fingerprint."
+      ]
+    }
+  ],
+  "advisories": [],
+  "reviews": [
+    {
+      "review_cycle": 1,
+      "agent_id": "019f8311-6f44-70e3-ae6e-70f79b34eaf2",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "32064d31-e404-4189-abbd-b368edad7deb",
+      "heca_gateway_session_id": "019f8311-6f51-74e0-a3b5-29643076c364",
+      "verdict": "APPROVE",
+      "reviewed_at_utc": "2026-07-21T05:48:24Z",
+      "reviewed_head": "e38358a0552c4133414836bf52df6593908fe547",
+      "authority": "independent_review",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "Fresh Opus read the complete one-commit six-path diff and independently reproduced the pinned clippy v2 protocol, fmt, 145 managed-Codex tests, full framework tests, scripts/verify.sh, exact trailers/scope, deterministic receipts, ambient and credential denial, unmanaged byte compatibility, and clean base/final repositories.",
+      "limitations": [
+        "The review used fake executables and performed no live Codex, network, credential, or external-effect invocation.",
+        "The unchanged pre-existing clippy baseline remains red and is not represented as absolute green."
+      ]
+    }
+  ],
+  "pm_decisions": [
+    {
+      "review_cycle": 1,
+      "decision": "ACCEPTED",
+      "decided_at_utc": "2026-07-21T05:53:51Z",
+      "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+      "pm_provider": "codex",
+      "pm_model": "gpt-5.6-sol",
+      "pm_provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+      "accepted_artifact_commit": "e38358a0552c4133414836bf52df6593908fe547",
+      "accepted_source_head": "e38358a0552c4133414836bf52df6593908fe547",
+      "basis": "The same-owner final commit satisfies the accepted clippy-v2 mutation, every absolute-green gate passed, fresh independent Opus approved after reproducing the risk-critical protocol, and the exact local substrate/dev fast-forward preserved a clean repository.",
+      "residual_gates": [
+        "AP-05 still requires R-046/R-048/R-056/R-054/R-057/R-058/R-052 containment, topology, lifetime, final-build, and hostile proof.",
+        "R-029 must execute the sanitized installed personal-account path before any runtime claim.",
+        "This acceptance grants no app runtime, live effect, release, or submission tier."
+      ]
+    }
+  ],
+  "integration": {
+    "integrated_at_utc": "2026-07-21T05:53:51Z",
+    "integration_branch": "dev",
+    "integration_method": "fast-forward",
+    "integration_commit": "e38358a0552c4133414836bf52df6593908fe547",
+    "aggregate_head_after_integration": "e38358a0552c4133414836bf52df6593908fe547",
+    "repository_clean_after_integration": true,
+    "external_push_or_release": false
+  }
+}

@@ -1,0 +1,425 @@
+{
+  "schema": "fkst.accelerated-package-map/v1",
+  "status": "active",
+  "requirement_registry": "plans/parallel-engineering-task-map.md",
+  "requirement_count": 211,
+  "package_count": 35,
+  "current_authorization_tier": "T0_FOUNDATION",
+  "primary_dependencies": ["fkst-substrate", "public-devloop"],
+  "app_authority": ["Workflow", "Council"],
+  "reference_only": ["devbored", "github-devloop*", "consensus", "github-proxy"],
+  "human_gates": [
+    {
+      "id": "HG-01",
+      "title": "Fixture UI",
+      "depends_on": ["AP-01", "AP-02", "AP-03"],
+      "requested_tier": "T1_FIXTURE_UI",
+      "decisions": ["APPROVE_T1_FIXTURE_UI", "RETURN", "RESCOPE"],
+      "required_v1_artifacts": ["R-041", "R-051"],
+      "unlocks": ["AP-10", "AP-11", "AP-12", "AP-13", "AP-14", "AP-23", "AP-24", "AP-25", "AP-26"],
+      "hard_ceiling": "Fixture/fake-backed Flutter and pure layers only; no process, filesystem, database, credential, network, runtime, or external effect."
+    },
+    {
+      "id": "HG-02",
+      "title": "Contained local DRY runtime",
+      "depends_on": ["AP-09"],
+      "requested_tier": "T2_LOCAL_DRY",
+      "decisions": ["APPROVE_T2_LOCAL_DRY", "RETURN", "RESCOPE"],
+      "unlocks": ["AP-15", "AP-16", "AP-17", "AP-18", "AP-19", "AP-20", "AP-21", "AP-22"],
+      "hard_ceiling": "Contained local and DRY behavior only; no remote mutation, merge, release, or submission."
+    },
+    {
+      "id": "HG-03",
+      "title": "One controlled LIVE canary",
+      "depends_on": ["AP-27", "AP-30", "AP-31"],
+      "requested_tier": "T3_CONTROLLED_LIVE",
+      "decisions": ["APPROVE_T3_CONTROLLED_LIVE", "RETURN", "RESCOPE"],
+      "unlocks": ["AP-32"],
+      "hard_ceiling": "One exact sandbox target/effect envelope, one use by default, expiry required, and hold-only merge posture unless separately admitted."
+    },
+    {
+      "id": "HG-04",
+      "title": "Release candidate",
+      "depends_on": ["AP-32"],
+      "requested_tier": "T4_RELEASE_CANDIDATE",
+      "decisions": ["APPROVE_T4_RELEASE_CANDIDATE", "RETURN", "RESCOPE"],
+      "unlocks": ["AP-33", "AP-34"],
+      "hard_ceiling": "System audit, packaging, authorized signing/notarization, and demo evidence; no tag, upload, or submission."
+    },
+    {
+      "id": "HG-05",
+      "title": "Hackathon submission",
+      "depends_on": ["AP-34"],
+      "requested_tier": "T5_SUBMISSION",
+      "decisions": ["APPROVE_T5_SUBMISSION", "RETURN", "RESCOPE"],
+      "unlocks": [],
+      "hard_ceiling": "Only the exact candidate artifact and claims bound by the human receipt may be tagged or submitted."
+    }
+  ],
+  "packages": [
+    {
+      "id": "AP-00",
+      "title": "Governance bootstrap",
+      "requirements": ["G-001", "G-002", "G-003", "G-004", "G-005", "G-006", "G-007"],
+      "depends_on": [],
+      "tier": "T0_FOUNDATION",
+      "lane": "fkst-devbored/governance-bootstrap",
+      "exclusive_paths": ["docs/spec/evidence/governance/G-*", "docs/spec/evidence/governance/task-state-contract.v1.json"],
+      "acceptance": "Sol route, fresh Opus, Fable scope, same-owner rework, worktree isolation, and PM coordination are proven; no product artifact."
+    },
+    {
+      "id": "AP-01",
+      "title": "Dependency provenance and import boundary",
+      "requirements": ["R-001", "R-002", "R-003", "R-004", "R-006"],
+      "depends_on": ["AP-00"],
+      "tier": "T0_FOUNDATION",
+      "lane": "fkst-devbored/contracts-dependency-inventory",
+      "exclusive_paths": ["contracts/compatibility/dependency-*", "docs/spec/evidence/readiness/dependency-*"],
+      "acceptance": "Exact substrate and public-devloop commits, binaries, exports, closure, observe/host facts, licenses, and graph/import allowlist are reproducible; reference packages remain absent."
+    },
+    {
+      "id": "AP-02",
+      "title": "Workflow and Council executable contract kernel",
+      "requirements": ["R-007", "R-008", "R-009", "R-010", "R-011", "R-059"],
+      "depends_on": ["AP-00"],
+      "tier": "T0_FOUNDATION",
+      "lane": "fkst-devbored/contracts-workflow-council",
+      "exclusive_paths": ["contracts/workflow/**", "contracts/council/**", "test/contract-kernel/**"],
+      "acceptance": "Dart/Lua canonical bytes and digests agree; Workflow and Council stay app-owned; assignments, bounds, hostile cases, evidence fields, and worktree-portable fixtures pass. R-059 intentionally remains outside the RUN family."
+    },
+    {
+      "id": "AP-03",
+      "title": "Context, authority, effects, and managed-clone contracts",
+      "requirements": ["R-012", "R-013", "R-014", "R-015", "R-016", "R-017", "R-018", "R-044", "R-049"],
+      "depends_on": ["AP-01", "AP-02"],
+      "tier": "T0_FOUNDATION",
+      "lane": "fkst-devbored/contracts-context-effects",
+      "exclusive_paths": ["contracts/context/**", "contracts/effects/**", "contracts/managed-clone/**"],
+      "acceptance": "Dual GitHub auth, sanitized personal Codex use, label-only claim, public-devloop maps, Council boundary, DRY/LIVE matrix, and non-user-checkout clone rules are exact; no reference authority."
+    },
+    {
+      "id": "AP-04",
+      "title": "Public-devloop required and optional seams",
+      "requirements": ["R-041", "R-045", "R-055", "R-005", "R-042", "R-053"],
+      "depends_on": ["AP-03"],
+      "tier": "T0_FOUNDATION",
+      "lane": "packages/devloop-serial-lineage+fkst-devbored-pin",
+      "exclusive_paths": ["packages:libraries/devloop/**", "fkst-devbored:contracts/compatibility/public-devloop-*"],
+      "acceptance": "Visibility, immutable evidence, and restart/replay public APIs land and pin with exact receipts; merge is either a tested public seam or explicitly hold-only; no app-local substitute."
+    },
+    {
+      "id": "AP-05",
+      "title": "Substrate containment, Codex, topology, and lifetime",
+      "requirements": ["R-046", "R-048", "R-051", "R-056", "R-054", "R-057", "R-058", "R-052"],
+      "depends_on": ["AP-03"],
+      "tier": "T0_FOUNDATION",
+      "lane": "substrate/secure-host-serial-lineage+fkst-devbored-fixtures",
+      "exclusive_paths": ["substrate:crates/fkst-framework/src/sdk_codex.rs", "substrate:crates/fkst-framework/tests/sdk_codex.rs", "fkst-devbored:contracts/containment/**"],
+      "acceptance": "Six-root confinement, managed-Git broker, content-only Codex grant, safe personal-account invocation, root topology, outer-job zero-survivor receipts, final build SHA, and hostile probes pass."
+    },
+    {
+      "id": "AP-06",
+      "title": "Compatibility disposition and app-loop manifest",
+      "requirements": ["R-043", "R-047", "R-050", "R-019", "R-020"],
+      "depends_on": ["AP-02", "AP-04", "AP-05"],
+      "tier": "T0_FOUNDATION",
+      "lane": "fkst-devbored/contracts-shared-serial",
+      "exclusive_paths": ["contracts/compatibility/manifest.*", "loop-package/fkst.toml"],
+      "acceptance": "Compatibility/family/config/filesystem/lifetime/evidence schemas and restart disposition integrate once; the app-loop manifest contains only substrate, public devloop, and declared closure."
+    },
+    {
+      "id": "AP-07",
+      "title": "Minimal proof package, consumers, evidence, and lints",
+      "requirements": ["R-021", "R-022", "R-023", "R-024", "R-026", "R-027", "R-028"],
+      "depends_on": ["AP-06"],
+      "tier": "T0_FOUNDATION",
+      "lane": "fkst-devbored/loop-package-proof",
+      "exclusive_paths": ["loop-package/src/proof/**", "loop-package/test/proof/**", "test/loop-package-proof/**"],
+      "acceptance": "The minimal no-product package loads Workflow/Council, emits bound receipts/evidence, publishes safely, passes cross-language parity, and rejects every prohibited graph/import."
+    },
+    {
+      "id": "AP-08",
+      "title": "Executable host and effect seam probes",
+      "requirements": ["R-025", "R-029", "R-030", "R-031", "R-032", "R-033", "R-034"],
+      "depends_on": ["AP-07"],
+      "tier": "T0_FOUNDATION",
+      "lane": "fkst-devbored/acceptance-step0-probes",
+      "exclusive_paths": ["test/step0-probes/**", "docs/spec/evidence/readiness/step0-probes-*"],
+      "acceptance": "Direct host, sanitized actors, intake, Council/Codex, managed clone/Git/PR, review/restart/evidence, containment, and the full DRY/LIVE effect matrix pass with typed receipts."
+    },
+    {
+      "id": "AP-09",
+      "title": "Step-0 integrated proof and independent readiness audit",
+      "requirements": ["R-035", "R-036", "R-037", "R-038", "R-039"],
+      "depends_on": ["AP-08"],
+      "tier": "T0_FOUNDATION",
+      "lane": "fkst-devbored/readiness-governance-serial",
+      "exclusive_paths": ["docs/spec/08-READINESS.md", "docs/spec/evidence/readiness/step0-dossier-*"],
+      "acceptance": "Read-only-root proof is green; the dossier is complete; Fable architecture advice is dispositioned; fresh Opus has no unresolved P0/P1; R-039 truthfully closes Step 0 without itself granting a human tier."
+    },
+    {
+      "id": "AP-10",
+      "title": "Fixture-only Flutter shell and layer architecture",
+      "requirements": ["U-001", "U-023", "U-002", "U-003", "U-004", "U-005", "U-006"],
+      "depends_on": ["HG-01"],
+      "tier": "T1_FIXTURE_UI",
+      "lane": "fkst-devbored/flutter-shell",
+      "exclusive_paths": ["app/lib/foundation/**", "app/lib/app_shell/**", "app/test/architecture/**"],
+      "acceptance": "Desktop scaffold, presentation/application/domain/infrastructure lint, theme, navigation, complete state primitives, provenance UI, and accessibility harness pass with fixtures only and no process/filesystem/network effect."
+    },
+    {
+      "id": "AP-11",
+      "title": "Setup, Doctor, Runtime, recovery, and Settings galleries",
+      "requirements": ["U-007", "U-012", "U-013", "U-010", "U-021", "U-022"],
+      "depends_on": ["AP-10"],
+      "tier": "T1_FIXTURE_UI",
+      "lane": "fkst-devbored/presentation-system-galleries",
+      "exclusive_paths": ["app/lib/features/system_gallery/**", "app/test/features/system_gallery/**"],
+      "acceptance": "Fixture galleries cover every acquisition, mutation, lifecycle, and recovery state with accessible responsive controls and no adapter import or live effect."
+    },
+    {
+      "id": "AP-12",
+      "title": "Workflow and Council galleries",
+      "requirements": ["U-008", "U-014", "U-015", "U-016"],
+      "depends_on": ["AP-10"],
+      "tier": "T1_FIXTURE_UI",
+      "lane": "fkst-devbored/presentation-contract-galleries",
+      "exclusive_paths": ["app/lib/features/workflow_gallery/**", "app/lib/features/council_gallery/**"],
+      "acceptance": "Catalog, Workflow authoring, Council authoring, and Council-run fixtures render only frozen supported fields, evidence, bounds, assignments, and terminal states."
+    },
+    {
+      "id": "AP-13",
+      "title": "Work, Overview, Fleet galleries and fixture router",
+      "requirements": ["U-009", "U-017", "U-018", "U-019", "U-020", "U-011"],
+      "depends_on": ["AP-11", "AP-12"],
+      "tier": "T1_FIXTURE_UI",
+      "lane": "fkst-devbored/presentation-work-galleries+fixture-router",
+      "exclusive_paths": ["app/lib/features/work_gallery/**", "app/lib/fixture_router/**"],
+      "acceptance": "List, board, detail, overview, and fleet state galleries pass; U-011 alone integrates fixture routes and goldens with no production wiring."
+    },
+    {
+      "id": "AP-14",
+      "title": "Domain ports and application primitives",
+      "requirements": ["D-001", "D-002", "D-003", "D-004", "D-005", "D-006", "D-007", "D-008", "B-001"],
+      "depends_on": ["AP-10"],
+      "tier": "T1_FIXTURE_UI",
+      "lane": "fkst-devbored/domain+application-primitives",
+      "exclusive_paths": ["app/lib/domain/**", "app/lib/application/primitives/**"],
+      "acceptance": "All eight port families and typed result, command, cancellation, and freshness primitives are immutable, exhaustive, dependency-free, and tested with fakes."
+    },
+    {
+      "id": "AP-15",
+      "title": "Process, path, tool, and actor infrastructure",
+      "requirements": ["C-001", "C-002", "C-003", "C-004", "C-007", "C-016", "C-017", "C-018", "C-009"],
+      "depends_on": ["AP-09", "AP-14", "HG-02"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/infrastructure-process-doctor",
+      "exclusive_paths": ["app/lib/infrastructure/process/**", "app/lib/infrastructure/doctor/**"],
+      "acceptance": "Canonical paths, bounded argv execution, redaction, typed Doctor registry, separate GitHub actors, git, and sanitized Codex checks pass without global account switching or secret retention."
+    },
+    {
+      "id": "AP-16",
+      "title": "Persistence, audit, CAS, and recovery infrastructure",
+      "requirements": ["C-005", "C-012", "C-013", "C-014", "C-011", "C-006", "C-010"],
+      "depends_on": ["AP-15"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/infrastructure-storage",
+      "exclusive_paths": ["app/lib/infrastructure/storage/**", "app/test/infrastructure/storage/**"],
+      "acceptance": "Isolated SQLite, cache, connection/preferences, staged drafts, append-only audit, backup-first recovery, and generic CAS services pass migration, corruption, and conflict tests."
+    },
+    {
+      "id": "AP-17",
+      "title": "Dependency admission and source adapters",
+      "requirements": ["C-020", "C-008", "A-001", "A-011", "A-012", "A-013", "A-014", "A-015", "A-002", "A-003", "A-016"],
+      "depends_on": ["AP-06", "AP-15"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/infrastructure-source-adapters",
+      "exclusive_paths": ["app/lib/infrastructure/admission/**", "app/lib/infrastructure/sources/**"],
+      "acceptance": "Compatibility admission and dependency Doctor checks bind exact manifests; substrate, bounded GitHub reads, git facts, and managed-tree adapters conform to ports with no reference imports."
+    },
+    {
+      "id": "AP-18",
+      "title": "Trusted evidence projections and atomic snapshots",
+      "requirements": ["A-004", "A-005", "A-006", "A-007", "A-008", "A-009", "A-010"],
+      "depends_on": ["AP-09", "AP-16", "AP-17"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/infrastructure-projections",
+      "exclusive_paths": ["app/lib/infrastructure/evidence/**", "app/lib/infrastructure/projections/**"],
+      "acceptance": "Trusted evidence parsing, pure Workflow/Council/runtime projections, fair acquisition, isolated rate budgets, and atomic snapshot generations preserve truth, qualification, staleness, and completeness."
+    },
+    {
+      "id": "AP-19",
+      "title": "Production Workflow and Council orchestration",
+      "requirements": ["L-001", "L-002", "L-004"],
+      "depends_on": ["AP-09", "HG-02"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/loop-package-workflow-council",
+      "exclusive_paths": ["loop-package/src/workflow/**", "loop-package/src/council/**"],
+      "acceptance": "Bounded app-owned Workflow and deterministic Council/review evidence execute through public devloop and substrate only; no copied loop or consensus authority."
+    },
+    {
+      "id": "AP-20",
+      "title": "Managed implementation-to-PR runtime",
+      "requirements": ["L-003", "L-012", "L-013", "L-014", "L-015"],
+      "depends_on": ["AP-09", "HG-02"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/loop-package-implementation",
+      "exclusive_paths": ["loop-package/src/implementation/**", "loop-package/test/implementation/**"],
+      "acceptance": "Public worktree, Git, and PR seams plus substrate Codex invocation form a receipted, idempotent implementation-to-PR module under frozen grants; T2 tests use local/no-remote-effect fakes."
+    },
+    {
+      "id": "AP-21",
+      "title": "Review, exact-head gate, terminal, and loop graph",
+      "requirements": ["L-016", "L-017", "L-019", "L-011"],
+      "depends_on": ["AP-19", "AP-20"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/loop-package-review-terminal-serial",
+      "exclusive_paths": ["loop-package/src/review/**", "loop-package/src/terminal/**", "loop-package/src/entrypoint.*"],
+      "acceptance": "Review, gate, and terminal runtime is exhaustive; merge exists only if R-053 admitted; L-011 alone integrates the manifest, entrypoint, and event graph."
+    },
+    {
+      "id": "AP-22",
+      "title": "Direct host, config receipts, lifecycle, and recovery",
+      "requirements": ["A-017", "A-018", "C-019", "C-021", "C-022", "L-005", "L-020", "L-006", "L-007", "L-008", "L-009", "L-010"],
+      "depends_on": ["AP-08", "AP-16", "AP-17", "AP-21"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/runtime-host-lifecycle",
+      "exclusive_paths": ["app/lib/infrastructure/runtime/**", "host/**", "test/runtime-host/**"],
+      "acceptance": "Direct/runtime receipts, catalog, containment and outer launcher, host composition, immutable snapshot, lifecycle, effect guard, reconciliation, replay, and headless integration pass zero-survivor and no-escape tests."
+    },
+    {
+      "id": "AP-23",
+      "title": "Application use cases",
+      "requirements": ["B-002", "B-003", "B-004", "B-005", "B-006", "B-007", "B-008", "B-009"],
+      "depends_on": ["AP-14"],
+      "tier": "T1_FIXTURE_UI",
+      "lane": "fkst-devbored/application-use-cases",
+      "exclusive_paths": ["app/lib/application/use_cases/**", "app/test/application/**"],
+      "acceptance": "Setup, definitions, work, runtime, guarded write, fleet/recovery/settings, Council evidence, and overview behavior pass exhaustive port-fake tests with no infrastructure import."
+    },
+    {
+      "id": "AP-24",
+      "title": "Readiness, onboarding, Runtime, and Settings UI",
+      "requirements": ["P-001", "P-002", "P-010", "P-013"],
+      "depends_on": ["AP-13", "AP-23"],
+      "tier": "T1_FIXTURE_UI",
+      "lane": "fkst-devbored/presentation-system",
+      "exclusive_paths": ["app/lib/features/setup/**", "app/lib/features/runtime/**", "app/lib/features/settings/**"],
+      "acceptance": "Fake-backed ViewModels and views cover Doctor/setup/runtime/settings states, remediation, launch review, cleanupFailed, and accessible controls through application use cases only."
+    },
+    {
+      "id": "AP-25",
+      "title": "Workflow and Council product UI",
+      "requirements": ["P-003", "P-014", "P-004", "P-005", "P-006"],
+      "depends_on": ["AP-13", "AP-23"],
+      "tier": "T1_FIXTURE_UI",
+      "lane": "fkst-devbored/presentation-workflow-council",
+      "exclusive_paths": ["app/lib/features/workflows/**", "app/lib/features/councils/**"],
+      "acceptance": "Catalog, detail, authoring, activation, Council definition, and Council evidence UI expose exactly the frozen contracts and states, with no prompt/model/score inventions."
+    },
+    {
+      "id": "AP-26",
+      "title": "Work and Overview product UI",
+      "requirements": ["P-007", "P-008", "P-009", "P-011"],
+      "depends_on": ["AP-13", "AP-23", "AP-24", "AP-25"],
+      "tier": "T1_FIXTURE_UI",
+      "lane": "fkst-devbored/presentation-work-overview",
+      "exclusive_paths": ["app/lib/features/work/**", "app/lib/features/overview/**"],
+      "acceptance": "Canonical list, board, detail, and overview membership/evidence remain qualified, actionable, fresh, and consistent; no decorative or inferred KPI."
+    },
+    {
+      "id": "AP-27",
+      "title": "Guarded human writes, audit, and diagnostics",
+      "requirements": ["W-001", "W-002", "W-003", "W-004", "W-005", "F-003"],
+      "depends_on": ["AP-22", "AP-23"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/human-effects-diagnostics",
+      "exclusive_paths": ["app/lib/features/human_effects/**", "app/lib/features/diagnostics/**"],
+      "acceptance": "Narrow issue/comment/reconcile effects require explicit guards and confirmation, ambiguity never auto-retries, bodies/secrets are not retained, and redacted audit/export is complete; T2 exercises only default-deny and no-remote-effect paths."
+    },
+    {
+      "id": "AP-28",
+      "title": "Fleet, recovery, data hardening, and full-suite CI",
+      "requirements": ["F-001", "F-002", "F-004", "F-005", "E-006", "E-007"],
+      "depends_on": ["AP-16", "AP-18", "AP-22", "AP-24", "AP-26", "AP-27"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/fleet-resilience",
+      "exclusive_paths": ["app/lib/features/fleet/**", "app/lib/features/recovery/**", "test/e2e/source-data/**", ".github/workflows/full-product.yml"],
+      "acceptance": "Five connections isolate failures/rate state; fleet/recovery UI is typed and accessible; source/data hostile cases pass visible resource and privacy budgets. This package is mandatory for full-product and any unrescoped full-app submission claim."
+    },
+    {
+      "id": "AP-29",
+      "title": "Hackathon composition and core CI",
+      "requirements": ["P-012", "I-001", "I-002", "I-003"],
+      "depends_on": ["AP-18", "AP-22", "AP-24", "AP-25", "AP-26", "AP-27", "AP-28"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/composition+core-ci-serial",
+      "exclusive_paths": ["app/lib/composition_root/**", "app/lib/router/**", ".github/workflows/core.yml", ".github/workflows/adapters-runtime.yml"],
+      "acceptance": "One production router/composition root binds every admitted port without locator or fake; core, adapter/runtime, product UI, write, fleet, security, and performance CI are deterministic. A narrower deadline slice requires an explicit human RESCOPE and separate claim set."
+    },
+    {
+      "id": "AP-30",
+      "title": "Deterministic DRY vertical slice",
+      "requirements": ["E-001", "E-002"],
+      "depends_on": ["AP-29"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/e2e-dry",
+      "exclusive_paths": ["test/e2e/dry/**", "docs/spec/evidence/e2e/dry-*"],
+      "acceptance": "The full fixture loop and admitted DRY evidence flow pass across every shipped Hackathon view with remote effects disabled and zero unexpected mutation."
+    },
+    {
+      "id": "AP-31",
+      "title": "Adversarial lifecycle, auth/effect, and UX drills",
+      "requirements": ["E-004", "E-005", "E-008"],
+      "depends_on": ["AP-27", "AP-28", "AP-29"],
+      "tier": "T2_LOCAL_DRY",
+      "lane": "fkst-devbored/e2e-hostile-core",
+      "exclusive_paths": ["test/e2e/lifecycle/**", "test/e2e/auth-effects/**", "test/e2e/accessibility-performance/**"],
+      "acceptance": "Lifetime, authentication/write/effect, accessibility, responsive, and performance drills pass in isolated fixtures; AP-28 source/fleet/data/recovery evidence is integrated; no live target is touched."
+    },
+    {
+      "id": "AP-32",
+      "title": "Allowlisted controlled-live sandbox matrix",
+      "requirements": ["E-003"],
+      "depends_on": ["AP-27", "AP-30", "AP-31", "HG-03"],
+      "tier": "T3_CONTROLLED_LIVE",
+      "lane": "fkst-devbored/e2e-live-serialized",
+      "exclusive_paths": ["test/e2e/live/**", "docs/spec/evidence/e2e/live-*"],
+      "acceptance": "Only human-approved exact repositories, issues, actors, branches, and effects run happy/hostile LIVE cases; ambiguity holds; merge remains absent unless admitted and explicitly authorized; every effect has provenance and a receipt."
+    },
+    {
+      "id": "AP-33",
+      "title": "System dossier, Fable advice, Opus audit, and acceptance",
+      "requirements": ["E-009", "E-010", "E-011", "E-012"],
+      "depends_on": ["AP-32", "HG-04"],
+      "tier": "T4_RELEASE_CANDIDATE",
+      "lane": "fkst-devbored/system-acceptance-governance",
+      "exclusive_paths": ["docs/spec/evidence/system/**", "docs/spec/07-TRACEABILITY.md"],
+      "acceptance": "The submission-scope evidence dossier links every claimed requirement; Fable advice is dispositioned; fresh Opus has no unresolved P0/P1; E-012 records mechanical system acceptance without widening the human tier."
+    },
+    {
+      "id": "AP-34",
+      "title": "macOS packaging, notarization, release audit, and decision",
+      "requirements": ["X-001", "X-002", "X-003", "X-004", "X-005", "X-006", "X-007", "X-008", "X-009"],
+      "depends_on": ["AP-33"],
+      "tier": "T4_RELEASE_CANDIDATE",
+      "lane": "fkst-devbored/release-serial",
+      "exclusive_paths": ["packaging/**", "docs/release/**", "docs/spec/evidence/release/**"],
+      "acceptance": "The artifact builds from a Finder-clean environment, is signed/notarized/stapled when distributed, has licenses/SBOM/install/recovery docs, passes final security/lifecycle scan, Fable advice, fresh Opus audit, and an exact claim-to-evidence check; HG-05 alone authorizes submission."
+    }
+  ],
+  "completion_sets": {
+    "full_product_and_unrescoped_submission": ["AP-00", "AP-01", "AP-02", "AP-03", "HG-01", "AP-04", "AP-05", "AP-06", "AP-07", "AP-08", "AP-09", "HG-02", "AP-10", "AP-11", "AP-12", "AP-13", "AP-14", "AP-15", "AP-16", "AP-17", "AP-18", "AP-19", "AP-20", "AP-21", "AP-22", "AP-23", "AP-24", "AP-25", "AP-26", "AP-27", "AP-28", "AP-29", "AP-30", "AP-31", "HG-03", "AP-32", "HG-04", "AP-33", "AP-34", "HG-05"]
+  },
+  "deadline_submission_slice": {
+    "status": "PROPOSED_REQUIRES_HUMAN_RESCOPE",
+    "authorization": false,
+    "claim_ceiling": "A truthful working Workflow/Council fixture demonstration only; never the complete runtime-connected full-app/v2 product.",
+    "rule": "The PM may prepare a dossier, but no package dependency or requirement is silently removed. A human RESCOPE receipt must name the exact included requirements, omitted claims, artifact, demo, and remaining full-product backlog before a narrower submission path is dispatched or represented as complete."
+  },
+  "coverage_claim": {
+    "missing_requirement_count": 0,
+    "duplicate_primary_owner_count": 0,
+    "validation_command": "node tool/verify_accelerated_plan.mjs"
+  }
+}

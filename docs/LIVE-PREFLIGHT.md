@@ -1,7 +1,7 @@
 # Live-read preflight
 
-`pnpm preflight:live` reports whether a real live read can start, without
-performing any write. It uses the same environment variables `.env.example`
+`pnpm preflight:live` reports source readiness without making a GitHub
+mutation, starting an engine, or initializing durable state. It uses the same environment variables `.env.example`
 documents for `pnpm start`, and it reuses the reviewed server adapters verbatim
 rather than re-deriving command lines. The default/configured `gh` binary is
 always checked for read-only authentication; repository, observe, and health
@@ -55,6 +55,13 @@ The process exits `1` only when at least one integration is `FAIL`;
 unconfigured (`UNAVAILABLE`) integrations exit `0` because that is a valid
 read-only posture.
 
+`live_read_possible=true` means at least one of the three implemented source
+probes (`github`, `observe`, or `health`) passed. `all_integrations_ready=true`
+means all three implemented source probes passed. Neither field establishes a
+running BFF, browser readiness, live Council acquisition, or end-to-end
+application readiness. BFF-configuration and Council-source checks remain
+unfinished E2 acceptance work.
+
 ## Output
 
 The default mode prints a human summary followed by a single
@@ -62,10 +69,17 @@ The default mode prints a human summary followed by a single
 pretty-printed `fkst.console.live-preflight.v1` report, use either
 `pnpm --silent preflight:live -- --json` or
 `./scripts/run.sh preflight --json`; plain pnpm lifecycle output otherwise
-precedes the command's stdout. No secrets, tokens, or shell invocations are
-involved: every probe is a direct `execFile` with `shell: false`, and
-configuration comes exclusively from the environment.
+precedes the command's stdout. Every probe is launched with `execFile` and
+`shell: false`; however, the configured health executable may itself be a
+shell script with external filesystem side effects. The public devloop's
+`scripts/run.sh health` entry path may bootstrap/cache a binary, run a
+freshness build, and update its successful board-read TTL cache. Pin `BIN`,
+export `FKST_NO_AUTOBUILD=1`, and review
+[`DURABLE-ROOT-LIFECYCLE.md`](DURABLE-ROOT-LIFECYCLE.md). No credential values
+or raw health stderr are emitted by the preflight projection.
 
 `test/live-preflight.test.mjs` exercises the command against the audited
-tripwire fakes in `test/bin/`, asserting the exact read argv, the absence of
-any mutation, and that missing or malformed dependencies never report `PASS`.
+tripwire fakes in `test/bin/`, asserting the exact read argv, no GitHub or
+engine mutation, no durable-root creation, secret/path non-disclosure, and
+that missing or malformed dependencies never report `PASS`. These tests do
+not prove that an arbitrary configured health script is filesystem-side-effect-free.

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>devboard — views</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:oklch(16% .011 250); --raise:oklch(20% .012 250); --raise-2:oklch(23% .013 250);
+  --line:oklch(26% .012 250); --line-2:oklch(33% .013 250);
+  --fg:oklch(97% .005 240); --dim:oklch(72% .014 245); --faint:oklch(58% .014 245); --ghost:oklch(46% .012 245);
+  --amber:oklch(81% .15 80); --green:oklch(74% .13 158); --red:oklch(67% .18 18); --gold:oklch(80% .10 85);
+  --blue:oklch(70% .10 250); --violet:oklch(70% .10 300); --teal:oklch(74% .09 195); --rose:oklch(72% .11 350);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:400 13px/1.5 "Inter",sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+a{color:inherit;text-decoration:none}
+svg{display:block;flex:none}
+.wrap{max-width:1120px;margin:0 auto;padding:44px 28px 60px}
+.hd{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+.logo{font:700 20px/1 "Space Grotesk";position:relative}
+.kk{position:relative}
+.knode{position:absolute;left:.04em;top:.36em;width:.205em;height:.205em;border-radius:50%;background:var(--amber);box-shadow:0 0 0 .05em var(--bg)}
+.hd .t{font-size:15px;font-weight:500;color:var(--dim)}
+.sub{color:var(--faint);font-size:13px;line-height:1.65;max-width:660px;margin-bottom:6px}
+.note{color:var(--ghost);font-size:12px;line-height:1.65;max-width:660px;margin-bottom:30px}
+.note b{color:var(--faint);font-weight:500}
+.sect{display:flex;align-items:center;gap:10px;margin:32px 0 12px}
+.sect h2{font-size:12.5px;font-weight:600}
+.sect .n{color:var(--ghost);font-size:11.5px}
+.sect .rule{flex:1;height:1px;background:var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:9px}
+.card{background:var(--raise);border:1px solid color-mix(in oklab,var(--line) 80%,transparent);border-radius:10px;padding:15px 16px 14px;display:block;min-width:0;transition:background .12s}
+.card:hover{background:var(--raise-2)}
+.card .ch{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.card h3{font-size:13.5px;font-weight:600}
+.card .file{margin-left:auto;color:var(--ghost);font-size:10.5px}
+.card p{color:var(--dim);font-size:12.5px;line-height:1.6;margin-bottom:10px}
+.card p em{color:var(--faint);font-style:normal}
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;height:19px;padding:0 7px;border:1px solid var(--line);border-radius:10px;color:var(--faint);font-size:10.5px;font-weight:500}
+.tag.new{color:var(--amber);border-color:color-mix(in oklab,var(--amber) 40%,var(--line))}
+.tag.live{color:var(--green);border-color:color-mix(in oklab,var(--green) 38%,var(--line))}
+.ico{width:26px;height:26px;border-radius:7px;background:var(--raise-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--faint)}
+.dead{opacity:.45}
+.dead .card{border-style:dashed}
+.kill{color:var(--red);border-color:color-mix(in oklab,var(--red) 38%,var(--line))}
+.foot{margin-top:38px;padding-top:16px;border-top:1px solid var(--line);color:var(--ghost);font-size:11.5px;line-height:1.75;max-width:720px}
+.foot b{color:var(--faint);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hd">
+    <span class="logo">F<span class="kk">K<i class="knode"></i></span>ST</span>
+    <span class="t">devboard · design views</span>
+  </div>
+  <p class="sub">Linear-shaped operator console for the autonomous devloop. Only the oklch palette and the K-node mark are carried over from the old FKST design language; everything else follows Linear's conventions — Inter 13px, icon status language, quiet chrome, near-zero borders.</p>
+  <p class="note">Same demo dataset across every view: <b>fkst-packages</b> + <b>devloop-sandbox</b> + an unreachable <b>godgpt-sdk</b> (reads <em>unknown</em>, never 0). Claims split across <b>integration-ElonSG</b>, <b>integration-mac-mini</b>, unclaimed. Posture DRY-RUN, snapshot 2m old.</p>
+
+  <div class="sect"><h2>Work views</h2><span class="n">what the loop is doing</span><span class="rule"></span></div>
+  <div class="grid">
+
+    <a class="card" href="linear-list.html">
+      <div class="ch">
+        <span class="ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+        <h3>List</h3><span class="file">linear-list.html</span>
+      </div>
+      <p>Linear's signature view. Issues and PRs grouped by state — In Review, In Progress, Todo, Thinking, Waiting on dependency, Merged — as 37px rows. Status is the icon (dashed = thinking, pie-fill = in progress, filled check = merged). Densest way to see everything.</p>
+      <div class="tags"><span class="tag">grouped rows</span><span class="tag">comment counts</span><span class="tag">claims as avatars</span></div>
+    </a>
+
+    <a class="card" href="linear-board.html">
+      <div class="ch">
+        <span class="ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="5" height="11" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2.5" width="5" height="7" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg></span>
+        <h3>Board · status</h3><span class="file">linear-board.html</span>
+      </div>
+      <p>The standard Linear board. One column per raw marker state, small cards with ID, avatar, two-line title, label pills. The default spatial read.</p>
+      <div class="tags"><span class="tag">kanban</span><span class="tag">4 grouping variants</span></div>
+    </a>
+
+    <a class="card" href="linear-board-swimlanes.html">
+      <div class="ch">
+        <span class="ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2.5 3.5h11M2.5 8h11M2.5 12.5h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="4" y="1.8" width="3" height="3.4" rx="1" fill="currentColor" opacity=".5"/><rect x="9" y="6.3" width="3" height="3.4" rx="1" fill="currentColor" opacity=".5"/></svg></span>
+        <h3>Board · swimlanes</h3><span class="file">linear-board-swimlanes.html</span>
+      </div>
+      <p>Status columns across the top, one lane per connection down the side. Every repo at once — and the unreachable one says so instead of showing an empty lane that reads as "nothing to do".</p>
+      <div class="tags"><span class="tag">multi-repo</span><span class="tag">honest unknown</span></div>
+    </a>
+
+    <a class="card" href="linear-board-claims.html">
+      <div class="ch">
+        <span class="ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.6" r="2.6" stroke="currentColor" stroke-width="1.3"/><path d="M3 13.2c.7-2.3 2.6-3.5 5-3.5s4.3 1.2 5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+        <h3>Board · claims</h3><span class="file">linear-board-claims.html</span>
+      </div>
+      <p>Grouped by who holds the lease — a column per bot identity, plus Unclaimed and you. Answers <em>who has claimed what</em> as the primary structure; you can see one device holding seven items while another idles.</p>
+      <div class="tags"><span class="tag">who claimed what</span><span class="tag">claim-mode aware</span></div>
+    </a>
+
+    <a class="card" href="linear-board-stage.html">
+      <div class="ch">
+        <span class="ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2.5 8h11M11 5l3 3-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3>Board · stages</h3><span class="file">linear-board-stage.html</span>
+      </div>
+      <p>Design → Build → Review → Ship, with Merged as an end-cap and in/out counts per column. <em>Rebuilt with full cards</em> — the earlier single-line version read as pills and was cut. Raw state stays as the card icon so stage and status never masquerade as each other.</p>
+      <div class="tags"><span class="tag new">rebuilt</span><span class="tag">stage ≠ status</span></div>
+    </a>
+
+  </div>
+
+  <div class="sect"><h2>Council</h2><span class="n">who deliberates, how, and how well</span><span class="rule"></span></div>
+  <div class="grid">
+
+    <a class="card" href="linear-council.html">
+      <div class="ch">
+        <span class="ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="3.4" r="1.15" fill="currentColor"/><circle cx="11.9" cy="6" r="1.15" fill="currentColor"/><circle cx="10.4" cy="10.9" r="1.15" fill="currentColor"/><circle cx="5.6" cy="10.9" r="1.15" fill="currentColor"/><circle cx="4.1" cy="6" r="1.15" fill="currentColor"/></svg></span>
+        <h3>Council</h3><span class="file">linear-council.html</span>
+      </div>
+      <p>Three tabs. <b>Personas</b> — define the lenses (teleology, parsimony, fidelity, natural-ownership, proportional-containment, security, meta-judge), each with a brief, model, effort, and where it sits; retired ones stay in a library. <b>Flows</b> — what happens to a piece of work: seats per step, what counts as agreement, veto seats, round budgets, and where work goes when they disagree. <b>Scores</b> — is a persona earning its seat: objected / upheld / changed-mind / caught-alone, including retired ones for comparison.</p>
+      <div class="tags"><span class="tag new">the configurator</span><span class="tag live">tabs work</span><span class="tag">personas · flows · scores</span></div>
+    </a>
+
+    <a class="card" href="linear-council-debate.html">
+      <div class="ch">
+        <span class="ico"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13.5 9.5a1.6 1.6 0 0 1-1.6 1.6H5.6L2.5 14V4.2a1.6 1.6 0 0 1 1.6-1.6h7.8a1.6 1.6 0 0 1 1.6 1.6v5.3Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg></span>
+        <h3>Council · debates</h3><span class="file">linear-council-debate.html</span>
+      </div>
+      <p>The evidence behind the scores. Pick a voice and read only what it said across rounds — the speaker filter is live. Shows the meta-judge narrowing the question, seats that <em>changed position</em> after narrowing, the security veto in review, and your human comment in the thread.</p>
+      <div class="tags"><span class="tag live">filter works</span><span class="tag">convergence trace</span></div>
+    </a>
+
+  </div>
+
+  <div class="sect dead"><h2>Superseded</h2><span class="n">first round · kept for history</span><span class="rule"></span></div>
+  <div class="grid dead">
+    <a class="card" href="variant-1-tracker.html">
+      <div class="ch"><h3>V1 Tracker</h3><span class="file">variant-1-tracker.html</span></div>
+      <p>Grouped list + peek panel, in the old FKST design language (mono eyebrows, Space Grotesk headings).</p>
+      <div class="tags"><span class="tag kill">old language</span></div>
+    </a>
+    <a class="card" href="variant-2-board.html">
+      <div class="ch"><h3>V2 Board</h3><span class="file">variant-2-board.html</span></div>
+      <p>Stage kanban with connection tabs, old design language.</p>
+      <div class="tags"><span class="tag kill">old language</span></div>
+    </a>
+    <a class="card" href="variant-3-ledger.html">
+      <div class="ch"><h3>V3 Ledger</h3><span class="file">variant-3-ledger.html</span></div>
+      <p>Mono transition ledger + permanent split pane. TUI-adjacent.</p>
+      <div class="tags"><span class="tag kill">old language</span></div>
+    </a>
+  </div>
+
+  <p class="foot">
+    <b>Rejected and removed:</b> single-line "pill" cards on the stage board.<br>
+    <b>Renamed:</b> Responsibility → <b>Council</b> — these are seats that deliberate, not a permissions matrix.<br>
+    <b>Still true everywhere:</b> markers are fact and labels are hints; the console never writes state, only human inputs (issue, comment, opt-in label); merge gates are machine facts no persona can override; unreachable sources read <em>unknown</em>, never 0.
+  </p>
+
+</div>
+</body>
+</html>

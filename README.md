@@ -1,33 +1,33 @@
 # FKST Console — recorded UI prototype and read-only live development path
 
-> **Honest scope:** `http://127.0.0.1:4173` is an interactive viewer for committed, sanitized fixture data. It starts no BFF and makes no connection to GitHub, Council, `fkst-substrate`, or the public devloop. Separately, the local read-only development topology has served a real populated GitHub snapshot through both its BFF and Vite `/api` proxy. That is API stitching evidence, not browser-rendered or full end-to-end proof: live Council, public-devloop health, and a deployed substrate durable root remain unavailable.
+> **Honest scope:** `http://127.0.0.1:4173` is an interactive viewer for committed, sanitized fixture data. It starts no BFF and makes no connection to GitHub, Council, `fkst-substrate`, or the public devloop. Separately, the local development topology has served a real populated GitHub snapshot through its BFF and Vite `/api` proxy. A deterministic Chrome/CDP test also proves the browser-rendered Vite+BFF topology with a controlled fake GitHub projection. That browser test is not real-GitHub DOM evidence or full end-to-end proof: live Council acquisition, a successful public-devloop health run, and a deployed substrate durable root remain unavailable.
 
 ## Current runnable state
 
-The simplest demonstrable artifact is a React/Vite/TypeScript fixture viewer. The repository also contains a loopback Node/TypeScript BFF, a same-origin live-development proxy, and optional local adapters; none are used by `pnpm demo`. The repository's default `main` branch is an unrelated pre-existing static project, so clone the candidate branch explicitly. The fixture viewer needs Node.js 22.6–26 and pnpm 10.17.1, but no GitHub account, credentials, BFF, `fkst-substrate`, devloop checkout, or engine deployment:
+The simplest demonstrable artifact is a React/Vite/TypeScript fixture viewer. The repository also contains a loopback Node/TypeScript BFF, a same-origin live-development proxy, optional local adapters, and the preserved earlier static/specification materials; none of the live components are used by `pnpm demo`. The fixture viewer needs Node.js 22.6–26 and pnpm 10.17.1, but no GitHub account, credentials, BFF, `fkst-substrate`, devloop checkout, or engine deployment:
 
 ```bash
-git clone --single-branch --branch codex/build-week-mvp https://github.com/ChronoAIProject/fkst-devbored.git
+git clone https://github.com/ChronoAIProject/fkst-devbored.git
 cd fkst-devbored
 corepack enable
 pnpm install --frozen-lockfile
 pnpm demo
 ```
 
-Open <http://127.0.0.1:4173>. This is the reproducible recorded-UI path, not a live integration; there is no hosted demo. The candidate source is published on the isolated [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp) branch. That branch does not replace the repository's unrelated `main` history.
+Open <http://127.0.0.1:4173>. This is the reproducible recorded-UI path, not a live integration; there is no hosted demo. The candidate lineage and the repository's earlier static/specification lineage are preserved together on `main`; neither history was force-replaced.
 
 | Area | Exact status | Evidence boundary |
 |---|---|---|
 | Recorded UI prototype | **Implemented · fixture-only · locally and CI verified** | `pnpm demo` renders 2 issues, 1 PR, 3 Council seats with a 2/3 decision and dissent, 1 queue, 1 in-flight delivery, 0 dead letters, and recorded health output. The persistent **Recorded demo data** banner and `example.invalid` links prevent live-status confusion. It calls no BFF or external service. |
-| Integrated live application | **Partially demonstrated · read-only API path · not end to end** | The BFF served a real populated GitHub snapshot and Vite's same-origin `/api` proxy returned it. The browser DOM was not successfully captured, live Council acquisition is absent, no deployed substrate durable root was available, and no real write was performed. |
-| **Workflow** | **Implemented · fixture-populated · populated live read demonstrated · contract-tested** | At the July 22 checkpoint, an authenticated read-only query of `ChronoAIProject/fkst-packages` projected 5 current open issues and 1 open PR after trusted-author filtering. Those timestamped counts are live evidence, not permanent expectations or historical truth. Browser rendering of that live snapshot remains unproved. |
+| Integrated live application | **Partially demonstrated · controlled browser topology · not end to end** | The BFF served a real populated GitHub snapshot and Vite's same-origin `/api` proxy returned it. A separate fake-backed Chrome test proves the browser leaves loading and renders the local live topology, but a real-GitHub-backed browser run has not passed. Live Council acquisition is absent, no deployed substrate durable root was available, and no real write was performed. |
+| **Workflow** | **Implemented · fixture-populated · populated live read demonstrated · contract-tested** | At the July 22 checkpoint, an authenticated read-only query of `ChronoAIProject/fkst-packages` projected 5 current open issues and 1 open PR after trusted-author filtering. Those timestamped counts are live evidence, not permanent expectations or historical truth. Browser rendering is contract-proved only against a controlled fake projection; real-GitHub DOM proof remains outstanding. |
 | **Council** | **Implemented · fixture-only · contract-tested** | The UI renders seats, outcomes, round, agreement, and recorded dissent from fixture evidence. Live Council acquisition is not implemented and reports unavailable. |
-| **Runtime** | **Implemented · fixture-populated · contract-tested** | The adapter and UI are tested with fake/local contract data. A real binary was found, but no deployed durable root existed; no real substrate ledger observation is claimed. |
+| **Runtime** | **Implemented · fixture-populated · contract-tested** | The adapter and UI are tested with fake/local contract data. A real binary was inspected; missing, invalid, and inaccessible durable state now degrade distinctly without leaking local paths. No root was initialized and no real substrate ledger observation is claimed. |
 | Local BFF and SSE | **Implemented · contract-tested** | Loopback API, same-origin development proxy, snapshot/session/health routes, SSE, degradation, and denial paths are tested. `pnpm start` is API-only; it does not serve the frontend. |
 | **New work** | **Implemented · fake-write contract-tested · no real mutation** | The sole positive write test uses a repository-local fake `gh`. Fixture and default live startup are read-only, and no real GitHub issue was created during implementation or verification. |
 | Publication and eligibility | **Candidate source published · remaining gates not verified** | The public candidate branch is supplied. No hosted demo, public video, Devpost entry, `/feedback` Session ID, or personal eligibility evidence is present. |
 
-This is an OpenAI Build Week demo candidate, not a production-complete FKST application, hosted control plane, Flutter/Dart app, Electron app, or Tauri app. Commit `9743cfe633b3415278a33fe1b3d02b7ac133a391` is the accepted implementation baseline; this branch carries the bounded quality pass over that baseline.
+This is an OpenAI Build Week demo candidate, not a production-complete FKST application, hosted control plane, Flutter/Dart app, Electron app, or Tauri app. Commit `9743cfe633b3415278a33fe1b3d02b7ac133a391` remains the accepted implementation baseline. The integrated tree adds the bounded quality pass and subsequent recovery tooling/evidence: configurable loopback startup, deterministic source preflight, a controlled browser-topology contract, explicit durable-state classification/redaction, and the Council authority decision. These additions do not constitute deployment or full end-to-end completion.
 
 ## What the product does
 
@@ -78,7 +78,7 @@ The longer operator checklist and BFF probes are in [docs/JUDGE-RUNBOOK.md](docs
 | Browser source | Committed `demo/fixtures/snapshot.v1.json`, copied into the demo build | `GET /api/v1/snapshot` plus `GET /api/v1/events` |
 | GitHub issues, PRs, markers | Sanitized recorded projection | Optional bounded `gh api graphql` read when exactly one repository and trusted bot are configured |
 | Council | Sanitized app-owned evidence projection | **Unavailable:** live acquisition is not implemented |
-| Substrate | Recorded `fkst.delivery.observe.v1` shape | Optional `fkst-framework observe --durable-root … --json`; unconfigured or failed reads remain unavailable/unknown |
+| Substrate | Recorded `fkst.delivery.observe.v1` shape | Optional `fkst-framework observe --durable-root … --json`; missing roots/databases are specifically `UNAVAILABLE`, invalid shapes are `FAIL`, and inaccessible/unclassified failures remain `UNKNOWN`. The Console never initializes the root. |
 | Devloop health | Recorded opaque output | Optional public devloop `scripts/run.sh health`; its first stdout line is the recognized verdict and the complete stdout is preserved verbatim |
 | Writes | Impossible; always read-only | Read-only by default; one issue-admission write is possible only after every guard passes |
 | Historical claim | Illustrative recorded sequence only | None; polling can miss acknowledged deliveries and repeated IDs are possible |
@@ -100,7 +100,7 @@ The following table covers every root script in `package.json`, plus the frozen 
 | `pnpm typecheck` | Run each workspace package's declared typecheck serially. |
 | `pnpm test` | Run each workspace package's tests serially. Tests use local fakes and must never make a live GitHub write. |
 | `pnpm start` | Start the loopback BFF from documented environment values; it does not serve `app/dist`. |
-| `pnpm preflight:live` | Run the read-only GitHub, substrate-observe, and public-devloop-health readiness probes and print human plus machine-readable evidence. Missing sources remain `UNAVAILABLE`; use `pnpm --silent preflight:live -- --json` for JSON-only stdout and see [`docs/LIVE-PREFLIGHT.md`](docs/LIVE-PREFLIGHT.md). |
+| `pnpm preflight:live` | Probe GitHub, substrate-observe, and configured public-devloop health readiness without a GitHub mutation, engine start, or durable-root initialization. A configured public health script may still bootstrap/build/cache as documented; use `pnpm --silent preflight:live -- --json` for JSON-only stdout and see [`docs/LIVE-PREFLIGHT.md`](docs/LIVE-PREFLIGHT.md). |
 | `pnpm smoke` | Alias `pnpm smoke:fixture`. |
 | `pnpm smoke:fixture` | Build fixture mode, preview it temporarily on `127.0.0.1:4174`, probe the schema/HTML/disclosure, and stop. |
 | `pnpm scrub` | Read-only scan of current non-ignored text and the history reachable from `HEAD` for common secrets, plus current-file identity and developer-home checks. Unrelated remote branches are outside this release-tree gate. |
@@ -108,7 +108,7 @@ The following table covers every root script in `package.json`, plus the frozen 
 
 The POSIX convenience wrapper is `./scripts/run.sh <command>`, where `<command>` is `install`, `demo`, `dev`, `build`, `typecheck`, `test`, `start`, `preflight`, `smoke`, or `scrub`.
 
-Live mode is optional. Export selected settings from [`.env.example`](.env.example) before `pnpm start` or `pnpm dev`; the project does not source `.env` or execute it as shell code. [`console.config.example.jsonc`](console.config.example.jsonc) is a reviewable mapping, not a loaded config file. A read-only substrate/health BFF launch can use direct argv:
+Live mode is optional. Export selected settings from [`.env.example`](.env.example) before `pnpm start` or `pnpm dev`; the project does not source `.env` or execute it as shell code. [`console.config.example.jsonc`](console.config.example.jsonc) is a reviewable mapping, not a loaded config file. A substrate/health BFF launch can use direct argv:
 
 ```bash
 pnpm --filter ./server start \
@@ -118,7 +118,7 @@ pnpm --filter ./server start \
   --health-script /absolute/path/to/fkst-packages/scripts/run.sh
 ```
 
-`--observe-bin` and `--durable-root` must be supplied together. Without them, runtime data is unavailable rather than zero. `pnpm start` exposes `GET /api/v1/health`, `GET /api/v1/snapshot`, `GET /api/v1/session`, and `GET /api/v1/events`; use `pnpm dev` for the integrated local UI. There is no one-command production/static live server in this cut.
+`--observe-bin` and `--durable-root` must be supplied together. Without them, runtime data is unavailable rather than zero. The Console does not initialize durable state. If the health script is the public `scripts/run.sh`, pin `BIN`, export `FKST_NO_AUTOBUILD=1`, and review its cache behavior in [docs/DURABLE-ROOT-LIFECYCLE.md](docs/DURABLE-ROOT-LIFECYCLE.md). `pnpm start` exposes `GET /api/v1/health`, `GET /api/v1/snapshot`, `GET /api/v1/session`, and `GET /api/v1/events`; use `pnpm dev` for the integrated local UI. There is no one-command production/static live server in this cut.
 
 For a read-only live GitHub projection, first authenticate `gh`, choose two unused loopback ports, and configure exactly one repository plus trusted marker author:
 
@@ -130,7 +130,7 @@ FKST_BOT_LOGIN=ElonSG \
 pnpm dev
 ```
 
-Open <http://127.0.0.1:15173>. Do not set `FKST_ENABLE_WRITES=1`; the demonstrated run was read-only. A successful `/api/v1/snapshot` response proves acquisition and proxy stitching, while the E4 gate in [`plans/LIVE-E2E-RECOVERY.md`](plans/LIVE-E2E-RECOVERY.md) still requires independent browser-rendered evidence.
+Open <http://127.0.0.1:15173>. Do not set `FKST_ENABLE_WRITES=1`; the demonstrated run was read-only. A successful `/api/v1/snapshot` response proves acquisition and proxy stitching. The controlled Chrome contract proves browser rendering with fake upstream data; the separate real-GitHub-backed browser evidence required to complete E4 remains outstanding.
 
 ## Security and the only mutation
 
@@ -158,7 +158,7 @@ Exactly two pre-existing projects are primary FKST integrations:
 
 The complete devbored product/specification and older devbored, `github-devloop*`, consensus, hosted, desktop/Flutter, and proxy materials are **reference-only provenance**. They are not additional primary integrations and are absent from this cut's shipped import/runtime graph. Node.js, pnpm, React, Vite, TypeScript, `gh`, and browsers are toolchain/runtime dependencies, not FKST product integrations.
 
-The submission period began 2026-07-13. Work attributed to it is this repository's console UI, loopback BFF, normalized snapshot contract, sanitized fixture, tests, and packaging—not the pre-existing FKST runtime or devloop. The worktree began at `9308b5a018af28049c35517946aaae113e323c20`; accepted implementation baseline `9743cfe633b3415278a33fe1b3d02b7ac133a391` added the demo candidate, and the current branch is limited to its bounded quality pass.
+The submission period began 2026-07-13. Work attributed to it is this repository's console UI, loopback BFF, normalized snapshot contract, sanitized fixture, tests, and packaging—not the pre-existing FKST runtime or devloop. The worktree began at `9308b5a018af28049c35517946aaae113e323c20`; accepted implementation baseline `9743cfe633b3415278a33fe1b3d02b7ac133a391` added the demo candidate, followed by the bounded quality and read-only recovery work listed above.
 
 Public historical [issue #111](https://github.com/ChronoAIProject/fkst-packages-testing/issues/111) and [PR #77](https://github.com/ChronoAIProject/fkst-packages-testing/pull/77) validated the issue-state and review/merge contracts. They are not one console-created end-to-end run. The sanitized fixture replaces their identifiers and content.
 
@@ -172,25 +172,26 @@ This repository's console code is Apache-2.0; see [LICENSE](LICENSE). That licen
 
 [docs/VERIFICATION.md](docs/VERIFICATION.md) records the settled local checkpoint without implying deployment or submission. Do not silently reinterpret its numbers:
 
-- **98/98 tests:** React app 13/13, loopback BFF 36/36, and black-box/integration 49/49 across 15 suites;
+- **127/127 tests:** React app 13/13, loopback BFF 51/51, and black-box/integration 63/63 across 16 suites;
 - both production and recorded-demo builds transformed 42 modules;
 - fixture smoke verified the schema, HTML mount, persistent disclosure, and loopback-only preview;
-- the final release-tree scrub examined 105 non-ignored files plus current branch history;
+- the merged release-tree scrub examined 258 non-ignored files plus reachable history;
 - read-only UX and security reviews returned their recorded PASS verdicts;
 - an authenticated GitHub read against `ChronoAIProject/fkst-packages-testing` returned a complete current-open set of zero issues and zero PRs, and a later read against `ChronoAIProject/fkst-packages` returned a populated projection of five issues and one PR, both with writes disabled;
 - no durable-root substrate observation was possible; and
 - the positive issue-creation path used only a fake local `gh`, not GitHub.
 
-The recorded local platform was macOS 26.5.2 arm64, Node.js 26.3.0, pnpm 10.17.1, and Chrome 150.0.7871.129. The package contract is Node.js 22.6–26. The published branch's [Ubuntu/Node 22 workflow](https://github.com/ChronoAIProject/fkst-devbored/actions/workflows/verify.yml?query=branch%3Acodex%2Fbuild-week-mvp) passes typecheck, all 82 tests, both builds, fixture smoke, and scrub; use its latest run as the current hosted result. Firefox, Safari, Windows, and a clean container were not verified.
+The recorded local platform was macOS 26.5.2 arm64, Node.js 26.3.0, pnpm 10.17.1, and Chrome 150.0.7871.129. The package contract is Node.js 22.6–26. The pre-merge [`562a675` checkpoint passed GitHub Actions](https://github.com/ChronoAIProject/fkst-devbored/actions/runs/29878085596) with 98 tests. Hosted verification of the 127-test merged tree must be attributed only after the workflow for its exact pushed SHA passes. Firefox, Safari, Windows, and a clean container were not verified.
 
 ## Known limitations
 
 - Fixture values are sanitized illustrative evidence, not live status, and fixture URLs intentionally do not navigate to real targets.
-- Live GitHub reads require one repository and trusted bot. A populated read and same-origin proxy response have been demonstrated, but the current counts can change and browser-rendered live proof is still outstanding.
+- Live GitHub reads require one repository and trusted bot. A populated read and same-origin proxy response have been demonstrated, but the current counts can change. Controlled fake-backed browser rendering is proved; real-GitHub-backed browser DOM evidence is still outstanding.
 - The live GitHub command is bounded and can report a transient read failure even after actor authentication succeeds; retry evidence does not erase a failed attempt, so production reliability is not claimed.
 - Live Council acquisition is unavailable. Council's populated screen is fixture-only.
 - A substrate binary existed, but no deployed durable root was available; real delivery-ledger observation is unavailable.
 - The integrated live UI is a Vite development topology. The BFF does not serve `app/dist`; there is no container or packaged one-origin production server.
+- `contracts/` is a preserved legacy Dart contract harness, not the application and not a pnpm workspace dependency. Its default `dart test` requires an external devbored fixture corpus that is absent from this repository, so it is not part of the accepted console release gate.
 - Only `state:v1`, `review-result:v1`, and `merge-ready:v1` markers are parsed. Unknown schemas are ignored.
 - There is no topology panel, database, durable console cache, authoritative timeline, or engine control surface.
 - Runtime health is opaque text; delivery observation can be unavailable while GitHub business state exists.
@@ -204,7 +205,7 @@ Source publication is complete; every other row remains external and unresolved.
 
 | Required artifact or gate | Current truth |
 |---|---|
-| Public source repository, or private repo shared with both judging addresses | **PUBLISHED** — isolated candidate branch: [`codex/build-week-mvp`](https://github.com/ChronoAIProject/fkst-devbored/tree/codex/build-week-mvp); upstream `main` is unchanged |
+| Public source repository, or private repo shared with both judging addresses | **PUBLISHED** — candidate source and preserved legacy lineage are integrated directly on `main`; the earlier `codex/build-week-mvp` checkpoint remains available |
 | Working judge-accessible hosted demo, sandbox, or test build | **NOT PUBLISHED** — only the local fixture path is documented |
 | Public YouTube video under three minutes with required audio | **NOT PUBLISHED / NOT SUPPLIED** |
 | Primary Codex `/feedback` Session ID with successful upload evidence | **NOT SUPPLIED / NOT VERIFIED** |

@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>devbored — Who decided · recorded consensus</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+body{min-width:320px}
+.app{grid-template-columns:236px minmax(0,1fr)}
+.main{display:flex;min-width:0;min-height:0}
+.history{display:flex;flex:1;flex-direction:column;min-width:0;min-height:0}
+.history>.crumbbar{display:flex;align-items:center;gap:8px;height:40px;padding:0 20px;border-bottom:1px solid var(--line);flex:none}
+.crumbbar .repo{color:var(--faint);font-family:var(--mono);font-size:11px}
+.crumbbar .sep{color:var(--ghost)}
+.crumbbar .t{min-width:0;font-weight:500;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-tag{margin-left:auto;display:inline-flex;align-items:center;gap:6px;color:var(--gold);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.history-tag i{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.headline{padding:14px 20px 15px;border-bottom:1px solid var(--line);background:color-mix(in oklab,var(--raise) 38%,var(--bg))}
+.headline .page-title{max-width:900px;font-size:19px;line-height:1.18;letter-spacing:-.02em}
+.caption{max-width:900px;color:var(--dim);font-size:11.5px;line-height:1.4;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.caption a{color:var(--gold);text-decoration:underline;text-decoration-color:color-mix(in oklab,var(--gold) 40%,transparent);text-underline-offset:3px}
+.recorded-author{margin-top:8px;color:var(--faint);font-size:10.5px}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--line);flex:none}
+.metric{padding:13px 20px;border-right:1px solid var(--line);min-width:0}
+.metric:last-child{border-right:0}
+.metric .k{display:block;color:var(--faint);font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.metric .v{display:flex;align-items:center;gap:7px;color:var(--dim);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.decision{color:var(--green)!important;font-weight:600;text-transform:capitalize}
+.decision i{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.speakers{display:flex;align-items:center;gap:6px;padding:9px 20px;border-bottom:1px solid var(--line);flex:none;flex-wrap:wrap}
+.speakers-label{color:var(--faint);font-size:11px;margin-right:2px}
+.sp{display:inline-flex;align-items:center;gap:6px;height:27px;padding:0 9px 0 6px;border:1px solid var(--line);border-radius:14px;color:var(--faint);font-size:11.5px;font-weight:500;transition:background .12s,color .12s,border-color .12s,opacity .12s}
+.sp:hover{color:var(--dim);border-color:var(--line-2)}
+.sp.on{background:var(--raise-2);color:var(--fg);border-color:var(--line-2)}
+.sp .vd{width:16px;height:16px}
+.sp.all{padding-left:10px}
+.spx{margin-left:auto;color:var(--faint);font-size:11px;font-variant-numeric:tabular-nums}
+.thread{overflow-y:auto;flex:1;padding:0 20px 34px;scrollbar-color:var(--line-2) transparent}
+.round{display:flex;align-items:center;gap:10px;padding:18px 0 10px;position:sticky;top:0;background:color-mix(in oklab,var(--bg) 94%,transparent);backdrop-filter:blur(8px);z-index:1}
+.round .rl{font-size:11px;font-weight:600;color:var(--dim);letter-spacing:.04em;text-transform:uppercase}
+.round .rr{flex:1;height:1px;background:var(--line)}
+.round .rq{color:var(--faint);font-size:11px;white-space:nowrap}
+.loading,.error{margin:22px 0;padding:16px;border:1px dashed var(--line-2);border-radius:8px;color:var(--faint);font-size:12px;line-height:1.6}
+.loading::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--faint);margin-right:8px;animation:pulse 1.2s ease-in-out infinite}
+.error{color:var(--red);border-color:color-mix(in oklab,var(--red) 45%,var(--line));background:color-mix(in oklab,var(--red) 6%,transparent)}
+@keyframes pulse{50%{opacity:.28}}
+.msg{display:grid;grid-template-columns:28px minmax(0,1fr);gap:11px;padding:13px 0;border-bottom:1px solid color-mix(in oklab,var(--line) 55%,transparent)}
+.msg[hidden]{display:none}
+.vd{width:24px;height:24px;border:1px solid var(--line-2);border-radius:50%;background:var(--raise-2);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--dim);flex:none}
+.mh{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+.who{font-weight:600;font-size:12.5px}
+.role{color:var(--faint);font-size:11px}
+.verdict{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px;border:1px solid color-mix(in oklab,var(--green) 40%,var(--line));border-radius:9px;background:color-mix(in oklab,var(--green) 10%,transparent);color:var(--green);font-size:10.5px;font-weight:600;text-transform:capitalize}
+.verdict::before{content:"✓";font-size:9px}
+.mb{max-width:940px;color:var(--dim);font-size:13px;line-height:1.62;white-space:pre-wrap}
+.mmeta{display:flex;align-items:center;gap:7px;margin-top:8px;color:var(--faint);font-size:10.5px;font-variant-numeric:tabular-nums}
+.mmeta code{font:500 10.5px/1.4 var(--mono);color:var(--faint);background:var(--raise);border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+.tally{width:270px;flex:none;border-left:1px solid var(--line);overflow-y:auto;padding:17px 16px 28px;min-width:0;background:color-mix(in oklab,var(--raise) 20%,transparent)}
+.thd{font-size:10.5px;font-weight:600;color:var(--faint);letter-spacing:.07em;text-transform:uppercase;margin:18px 0 9px}
+.thd:first-child{margin-top:0}
+.trow{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:11.5px;color:var(--dim);border-bottom:1px solid color-mix(in oklab,var(--line) 45%,transparent)}
+.trow .vd{width:17px;height:17px;font-size:7.5px}
+.trow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.trow .v{margin-left:auto;color:var(--green);font-size:10.5px;font-weight:600;flex:none;text-transform:capitalize}
+.outcome{border:1px solid color-mix(in oklab,var(--green) 28%,var(--line));border-radius:8px;background:color-mix(in oklab,var(--green) 6%,transparent);padding:11px 12px}
+.outcome strong{display:flex;align-items:center;gap:7px;color:var(--green);font-size:13px;text-transform:capitalize}
+.outcome strong::before{content:"✓";display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--green);color:var(--bg);font-size:10px}
+.outcome p{color:var(--faint);font-size:10.5px;line-height:1.55;margin-top:6px}
+.source-note{color:var(--faint);font-size:10.5px;line-height:1.6;padding-top:12px;border-top:1px solid var(--line)}
+.source-note b{color:var(--faint);font-weight:500}
+.empty-tally{color:var(--faint);font-size:11px;padding:6px 0}
+.side .sitem{justify-content:flex-start;min-width:0}
+.side .nav-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:1080px){.tally{display:none}}
+@media(max-width:780px){
+  body{height:auto;min-height:100%}.app{display:flex;flex-direction:column}.side{display:none}
+  .main,.history{min-height:calc(100vh - 72px)}.history>.crumbbar{padding:0 14px}.history-tag{display:none}.headline{padding:13px 14px 14px}.caption{font-size:11.5px;white-space:normal}.page-header__copy{min-width:0}.summary{grid-template-columns:1fr 1fr}.metric{padding:11px 14px}.metric:last-child{grid-column:1/-1;border-top:1px solid var(--line)}.speakers{padding:9px 14px}.speakers-label{width:100%}.spx{width:100%;margin:2px 0 0}.thread{padding:0 14px 28px}.round .rq{display:none}.mb{font-size:12.5px}
+}
+@media(prefers-reduced-motion:reduce){.loading::before{animation:none}}
+</style>
+<script src="assets/banner.js" defer></script>
+</head>
+<body>
+<noscript><div class="noscript-panel">The recorded consensus could not be loaded because JavaScript is disabled. Serve <code>demo/</code> over HTTP and enable JavaScript to read the local issue and trust-policy fixtures; no live consensus is substituted.</div></noscript>
+<div class="app">
+  <nav class="side" aria-label="Demo screens">
+    <div class="ws">
+      <span class="logo">F<span class="kk">K<i class="knode"></i></span>ST</span>
+      <svg class="chev" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <a class="sitem" href="board.html"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2" y="2.5" width="5" height="11" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2.5" width="5" height="7" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg><span class="nav-label">Board</span></a>
+    <a class="sitem on" href="debate.html" aria-current="page"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.4 9.5a1.5 1.5 0 0 1-1.5 1.5H5.6l-3 2.7V4.3a1.5 1.5 0 0 1 1.5-1.5h7.8a1.5 1.5 0 0 1 1.5 1.5v5.2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span class="nav-label">Who decided</span></a>
+    <a class="sitem" href="council.html"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="3.4" r="1.15" fill="currentColor"/><circle cx="11.9" cy="6" r="1.15" fill="currentColor"/><circle cx="10.4" cy="10.9" r="1.15" fill="currentColor"/><circle cx="5.6" cy="10.9" r="1.15" fill="currentColor"/><circle cx="4.1" cy="6" r="1.15" fill="currentColor"/></svg><span class="nav-label">Council sandbox</span></a>
+    <a class="sitem" href="selftest.html"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 8.3 3 3 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-label">Self-test</span></a>
+    <a class="sitem" href="runtime.html"><span class="nav-label">Engine (live)</span></a>
+    <div class="sfoot"><i class="dot n"></i>HISTORY · fixture snapshot</div>
+  </nav>
+
+  <main class="main">
+    <section class="history" aria-labelledby="page-title">
+      <div class="crumbbar">
+        <span class="repo">fkst-packages-testing</span><span class="sep">›</span>
+        <span class="t">Who decided · issue <span id="issue-number" data-field="number">#—</span></span>
+        <span class="history-tag"><i></i>Recorded history</span>
+      </div>
+
+      <header class="page-header headline">
+        <div class="page-header__copy">
+          <div class="page-eyebrow">Reference deployment · consensus record</div>
+          <h1 class="page-title" id="page-title" data-field="title">Loading recorded issue…</h1>
+          <p class="page-lede caption">Recorded consensus · five reference-deployment lenses · app-defined seats live in the <a href="council.html">Council sandbox</a>.</p>
+          <p class="recorded-author">recorded by <code>devloop-bot</code> · reference deployment</p>
+        </div>
+      </header>
+
+      <section class="lens-gloss" aria-labelledby="lens-gloss-title">
+        <p class="lens-gloss__label" id="lens-gloss-title">display gloss — recorded names unchanged</p>
+        <div class="lens-gloss__items">
+          <div class="lens-gloss__item"><code>teleology</code><span>Does this change serve the actual goal?</span></div>
+          <div class="lens-gloss__item"><code>parsimony</code><span>Is this the simplest change that works?</span></div>
+          <div class="lens-gloss__item"><code>fidelity</code><span>Does it match the recorded contracts and specs?</span></div>
+          <div class="lens-gloss__item"><code>natural-ownership</code><span>Is the change in the right component’s hands?</span></div>
+          <div class="lens-gloss__item"><code>proportional-containment</code><span>Is the blast radius appropriately contained?</span></div>
+        </div>
+      </section>
+
+      <div class="summary" aria-label="Consensus summary">
+        <div class="metric"><span class="k">Decision</span><span class="v decision" id="decision" data-field="comments[result:v1].marker.decision"><i></i>Loading</span></div>
+        <div class="metric"><span class="k">Recorded at</span><span class="v" id="recorded-at" data-field="comments[result:v1].createdAt">—</span></div>
+        <div class="metric"><span class="k">Binding source</span><span class="v" id="binding-source">issue-111.json + trust-policy.json · result:v1</span></div>
+      </div>
+
+      <div class="speakers" id="speaker-filters" aria-label="Filter verdicts by lens" data-field="comments[result:v1].body.Verdicts">
+        <span class="speakers-label">Filter by lens</span>
+        <button class="sp all on" type="button" data-lens="all" aria-pressed="true">All lenses 5</button>
+        <span class="spx" id="filter-status" aria-live="polite">Loading consensus…</span>
+      </div>
+
+      <div class="thread" id="thread" aria-live="polite" aria-busy="true">
+        <div class="loading" id="loading">Reading the recorded <code>result:v1</code> consensus from <code>fixtures/issue-111.json</code>…</div>
+      </div>
+    </section>
+
+    <aside class="tally" aria-label="Recorded verdict tally">
+      <div class="thd">Recorded outcome</div>
+      <div class="outcome"><strong id="outcome-decision" data-field="comments[result:v1].marker.decision">Loading</strong><p id="outcome-copy">Waiting for the fixture-backed consensus record.</p></div>
+      <div class="thd">Where each lens stood</div>
+      <div id="tally-rows" data-field="comments[result:v1].body.Verdicts"><div class="empty-tally">Loading verdicts…</div></div>
+      <div class="thd">Provenance</div>
+      <p class="source-note"><b>History, not a live round.</b> Verdict names and prose are parsed at runtime from the captured consensus comment carrying the issue’s separate <code>result:v1</code> marker.</p>
+    </aside>
+  </main>
+</div>
+
+<script type="module">
+import {readResultFact} from './assets/markers.js';
+import {formatAsOf} from './assets/format.js';
+
+  const FIXTURE_URL = 'fixtures/issue-111.json';
+  const TRUST_POLICY_URL = 'fixtures/trust-policy.json';
+  // Known-good route identity transcribed once from the shared state proposal; never derived from marker input at runtime.
+  const ROUTE_CONTEXT = Object.freeze({
+    repo: 'ChronoAIProject/fkst-packages-testing',
+    issueNumber: 111,
+    expectedProposal: 'github-devloop/issue/ChronoAIProject/fkst-packages-testing/111',
+    expectedLogicalIdentity: 'consensus:github-devloop/issue/ChronoAIProject/fkst-packages-testing/111/2026-07-19T13-37-19Z'
+  });
+  const LENSES = [
+    'teleology',
+    'parsimony',
+    'fidelity',
+    'natural-ownership',
+    'proportional-containment'
+  ];
+  const LENS_META = {
+    'teleology': { initial: 'T' },
+    'parsimony': { initial: 'P' },
+    'fidelity': { initial: 'F' },
+    'natural-ownership': { initial: 'N' },
+    'proportional-containment': { initial: 'C' }
+  };
+  const active = new Set();
+  let consensus = null;
+
+  const thread = document.getElementById('thread');
+  const filters = document.getElementById('speaker-filters');
+  const filterStatus = document.getElementById('filter-status');
+  const tallyRows = document.getElementById('tally-rows');
+
+  function parseConsensus({fixture}) {
+    const outcome = readResultFact(fixture.comments, ROUTE_CONTEXT);
+    if (outcome.status !== 'ok') {
+      const error = new Error(`result:v1 failed predicate ${outcome.failedPredicate ?? 'unavailable'}`);
+      error.factStatus = outcome.status;
+      throw error;
+    }
+
+    const marker = outcome.fact;
+    const {comment} = marker;
+    const {decision} = marker;
+
+    const verdictLine = comment.body.match(/^Verdicts:\s*(.+)$/m)?.[1];
+    if (!verdictLine) throw new Error('The consensus comment has no Verdicts line.');
+
+    const verdictByLens = new Map(
+      [...verdictLine.matchAll(/([a-z][a-z-]*)=(approve|reject|abstain|concern)\b/g)]
+        .map(([, lens, verdict]) => [lens, verdict])
+    );
+    const lensAlternation = LENSES.join('|');
+    const prosePattern = new RegExp(
+      `^(${lensAlternation}):\\n([\\s\\S]*?)(?=\\n\\n(?:${lensAlternation}):\\n|\\n\\n<!--\\s*fkst:)`,
+      'gm'
+    );
+    const proseByLens = new Map(
+      [...comment.body.matchAll(prosePattern)].map(([, lens, prose]) => [lens, prose.trim()])
+    );
+
+    const verdicts = LENSES.map(lens => ({
+      lens,
+      verdict: verdictByLens.get(lens),
+      prose: proseByLens.get(lens)
+    }));
+    const incomplete = verdicts.find(({ verdict, prose }) => !verdict || !prose);
+    if (incomplete) throw new Error(`The recorded verdict for ${incomplete.lens} is incomplete.`);
+    if (verdictByLens.size !== LENSES.length || proseByLens.size !== LENSES.length) {
+      throw new Error('The recorded consensus does not contain exactly five expected lens verdicts.');
+    }
+
+    return { fixture, comment, decision, verdicts };
+  }
+
+  function makeAvatar(lens) {
+    const avatar = document.createElement('span');
+    avatar.className = 'vd';
+    avatar.textContent = LENS_META[lens].initial;
+    avatar.setAttribute('aria-hidden', 'true');
+    return avatar;
+  }
+
+  function renderFilter({ lens }) {
+    const button = document.createElement('button');
+    button.className = 'sp';
+    button.type = 'button';
+    button.dataset.lens = lens;
+    button.setAttribute('aria-pressed', 'false');
+    button.append(makeAvatar(lens), document.createTextNode(`${lens} 1`));
+    filters.insertBefore(button, filterStatus);
+  }
+
+  function renderMessage({ lens, verdict, prose }, comment) {
+    const article = document.createElement('article');
+    article.className = 'msg';
+    article.dataset.lens = lens;
+    article.dataset.field = `comments[result:v1].body.${lens}`;
+
+    const content = document.createElement('div');
+    const header = document.createElement('div');
+    header.className = 'mh';
+
+    const who = document.createElement('span');
+    who.className = 'who';
+    who.textContent = lens;
+    const role = document.createElement('span');
+    role.className = 'role';
+    role.textContent = 'reference deployment lens';
+    const verdictBadge = document.createElement('span');
+    verdictBadge.className = 'verdict';
+    verdictBadge.textContent = verdict;
+    header.append(who, role, verdictBadge);
+
+    const body = document.createElement('p');
+    body.className = 'mb';
+    body.textContent = prose;
+
+    const meta = document.createElement('div');
+    meta.className = 'mmeta';
+    const marker = document.createElement('code');
+    marker.textContent = 'result:v1';
+    const source = document.createElement('span');
+    source.textContent = `recorded comment ${comment.id}`;
+    meta.append(marker, source);
+
+    content.append(header, body, meta);
+    article.append(makeAvatar(lens), content);
+    return article;
+  }
+
+  function renderTally({ lens, verdict }) {
+    const row = document.createElement('div');
+    row.className = 'trow';
+    const name = document.createElement('span');
+    name.className = 'nm';
+    name.textContent = lens;
+    const value = document.createElement('span');
+    value.className = 'v';
+    value.textContent = verdict;
+    row.append(makeAvatar(lens), name, value);
+    tallyRows.append(row);
+  }
+
+  function applyFilter() {
+    if (!consensus) return;
+    const showAll = active.size === 0;
+    let shown = 0;
+
+    thread.querySelectorAll('.msg').forEach(message => {
+      const visible = showAll || active.has(message.dataset.lens);
+      message.hidden = !visible;
+      if (visible) shown += 1;
+    });
+    filters.querySelectorAll('.sp').forEach(button => {
+      const selected = button.dataset.lens === 'all'
+        ? showAll
+        : active.has(button.dataset.lens);
+      button.classList.toggle('on', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+
+    filterStatus.textContent = showAll
+      ? `showing all ${shown} recorded verdicts`
+      : `showing ${shown} of ${consensus.verdicts.length} · ${active.size} lens${active.size === 1 ? '' : 'es'} selected`;
+  }
+
+  function render(data) {
+    consensus = data;
+    const { fixture, comment, decision, verdicts } = data;
+    document.getElementById('issue-number').textContent = `#${fixture.number}`;
+    document.getElementById('page-title').textContent = fixture.title;
+    document.getElementById('decision').lastChild.textContent = decision;
+    document.getElementById('recorded-at').textContent = formatAsOf(comment.createdAt);
+    document.getElementById('outcome-decision').textContent = decision;
+    document.getElementById('outcome-copy').textContent = `${verdicts.length}/${verdicts.length} recorded lenses returned ${decision}.`;
+
+    thread.replaceChildren();
+    const round = document.createElement('div');
+    round.className = 'round';
+    round.innerHTML = '<span class="rl">Round — recorded consensus</span><span class="rq">5 recorded verdicts · reference deployment</span><span class="rr"></span>';
+    thread.append(round);
+    tallyRows.replaceChildren();
+    verdicts.forEach(verdict => {
+      renderFilter(verdict);
+      thread.append(renderMessage(verdict, comment));
+      renderTally(verdict);
+    });
+    thread.setAttribute('aria-busy', 'false');
+    applyFilter();
+  }
+
+  function showError(error) {
+    thread.setAttribute('aria-busy', 'false');
+    thread.innerHTML = '';
+    const message = document.createElement('div');
+    message.className = 'error';
+    message.setAttribute('role', 'alert');
+    const factStatus = error.factStatus === 'ambiguous' ? 'Ambiguous' : 'Unknown';
+    message.textContent = `${factStatus} recorded consensus: ${error.message}`;
+    thread.append(message);
+    filterStatus.textContent = 'fixture unavailable';
+    document.getElementById('decision').lastChild.textContent = factStatus;
+    document.getElementById('outcome-decision').textContent = factStatus;
+    document.getElementById('outcome-copy').textContent = 'No live engine fallback is used.';
+  }
+
+  filters.addEventListener('click', event => {
+    const button = event.target.closest('button[data-lens]');
+    if (!button || !consensus) return;
+    const { lens } = button.dataset;
+    if (lens === 'all') active.clear();
+    else if (active.has(lens)) active.delete(lens);
+    else active.add(lens);
+    applyFilter();
+  });
+
+  async function fetchJson(path, label) {
+    const response = await fetch(path, {cache: 'no-store'});
+    if (!response.ok) throw new Error(`${label} request failed with HTTP ${response.status}`);
+    return response.json();
+  }
+
+  Promise.all([
+    fetchJson(FIXTURE_URL, 'fixture'),
+    fetchJson(TRUST_POLICY_URL, 'trust policy')
+  ])
+    .then(([fixture, trustPolicy]) => {
+      if (fixture?.number !== ROUTE_CONTEXT.issueNumber) {
+        throw new Error('fixture does not describe the immutable route issue');
+      }
+      if (trustPolicy?.schema !== 'fkst.demo.trust-policy.v1') {
+        throw new Error('trust policy schema is unsupported');
+      }
+      return {fixture, trustPolicy};
+    })
+    .then(parseConsensus)
+    .then(render)
+    .catch(showError);
+</script>
+</body>
+</html>

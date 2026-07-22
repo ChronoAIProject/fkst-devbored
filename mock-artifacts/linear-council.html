@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>devboard — Council</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:oklch(16% .011 250); --raise:oklch(20% .012 250); --raise-2:oklch(23% .013 250);
+  --line:oklch(26% .012 250); --line-2:oklch(33% .013 250);
+  --fg:oklch(97% .005 240); --dim:oklch(72% .014 245); --faint:oklch(58% .014 245); --ghost:oklch(46% .012 245);
+  --amber:oklch(81% .15 80); --amber-ink:oklch(22% .04 80);
+  --green:oklch(74% .13 158); --red:oklch(67% .18 18); --gold:oklch(80% .10 85);
+  --blue:oklch(70% .10 250); --violet:oklch(70% .10 300); --teal:oklch(74% .09 195); --rose:oklch(72% .11 350);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:400 13px/1.45 "Inter",sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:1px;border-radius:4px}
+svg{display:block;flex:none}
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);height:100vh}
+
+/* sidebar */
+.side{background:color-mix(in oklab,var(--raise) 55%,var(--bg));border-right:1px solid var(--line);display:flex;flex-direction:column;padding:10px 8px;gap:2px;min-width:0}
+.ws{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;margin-bottom:6px}
+.ws:hover{background:var(--raise)}
+.logo{font:700 15px/1 "Space Grotesk";letter-spacing:.01em;position:relative;color:var(--fg)}
+.kk{position:relative}
+.knode{position:absolute;left:.04em;top:.36em;width:.205em;height:.205em;border-radius:50%;background:var(--amber);box-shadow:0 0 0 .05em var(--bg)}
+.ws .chev{color:var(--ghost);margin-top:1px}
+.ws .pen{margin-left:auto;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:6px;color:var(--faint);background:var(--bg)}
+.sitem{display:flex;align-items:center;gap:9px;height:28px;padding:0 8px;border-radius:6px;color:var(--dim);font-weight:500;font-size:13px;width:100%;text-align:left}
+.sitem svg{color:var(--faint)}
+.sitem:hover{background:var(--raise);color:var(--fg)}
+.sitem.on{background:var(--raise);color:var(--fg)}
+.sitem.on svg{color:var(--dim)}
+.sitem .n{margin-left:auto;font-size:11.5px;font-weight:400;color:var(--ghost)}
+.shead{display:flex;align-items:center;gap:6px;height:26px;padding:0 8px;margin-top:14px;color:var(--ghost);font-size:11.5px;font-weight:500;width:100%;text-align:left}
+.sub{padding-left:14px;display:flex;flex-direction:column;gap:1px}
+.dot{width:7px;height:7px;border-radius:50%;flex:none}
+.dot.g{background:var(--green)} .dot.y{background:var(--gold)} .dot.n{background:var(--line-2)}
+.sfoot{margin-top:auto;padding:8px;display:flex;align-items:center;gap:7px;color:var(--ghost);font-size:11.5px}
+
+/* main */
+.main{display:flex;flex-direction:column;min-width:0}
+.crumb{display:flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-bottom:1px solid var(--line);flex:none}
+.crumb .t{font-weight:500;font-size:13.5px}
+.crumb .sep{color:var(--ghost)}
+.crumb .muted{color:var(--faint);font-weight:400}
+.crumb .right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.gbtn{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border:1px solid var(--line-2);border-radius:6px;color:var(--dim);font-size:12px;font-weight:500}
+.gbtn:hover{color:var(--fg);border-color:var(--faint)}
+.gbtn.pri{background:var(--amber);color:var(--amber-ink);border-color:transparent}
+.gbtn.pri:hover{filter:brightness(1.06)}
+
+.tabs{display:flex;align-items:center;gap:2px;padding:0 20px;border-bottom:1px solid var(--line);flex:none}
+.tab{height:38px;padding:0 12px;font-size:12.5px;font-weight:500;color:var(--faint);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab:hover{color:var(--dim)}
+.tab.on{color:var(--fg);border-bottom-color:var(--amber)}
+.tab .n{color:var(--ghost);font-weight:400;margin-left:5px}
+.scopebar{margin-left:auto;display:flex;align-items:center;gap:8px}
+.sel{display:inline-flex;align-items:center;gap:7px;height:25px;padding:0 9px;border:1px solid var(--line);border-radius:6px;color:var(--dim);font-size:12px;font-weight:500;background:var(--raise)}
+.sel:hover{border-color:var(--line-2)}
+.sel .k{color:var(--ghost);font-weight:400}
+
+.body{overflow-y:auto;flex:1;padding:18px 20px 40px}
+.pane{display:none}
+.pane.on{display:block}
+.lead{color:var(--faint);font-size:12.5px;line-height:1.6;max-width:760px;margin-bottom:18px}
+.lead b{color:var(--dim);font-weight:500}
+.secthd{display:flex;align-items:center;gap:9px;margin:24px 0 10px}
+.secthd:first-child{margin-top:0}
+.secthd h3{font-size:12.5px;font-weight:600}
+.secthd .n{color:var(--ghost);font-size:11.5px;font-weight:400}
+.secthd .rule{flex:1;height:1px;background:var(--line)}
+.secthd .act{color:var(--faint);font-size:11.5px;font-weight:500}
+.secthd .act:hover{color:var(--dim)}
+
+/* persona cards */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:8px}
+.pcard{background:var(--raise);border:1px solid color-mix(in oklab,var(--line) 80%,transparent);border-radius:9px;padding:12px 13px;min-width:0}
+.pcard:hover{background:var(--raise-2)}
+.pcard .ph{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.vd{width:22px;height:22px;border-radius:50%;font-size:8.5px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--bg);flex:none}
+.vd.sm{width:16px;height:16px;font-size:7px}
+.vd.lg{width:26px;height:26px;font-size:9.5px}
+.pcard .nm{font-weight:600;font-size:13px}
+.pcard .tog{margin-left:auto;width:28px;height:16px;border-radius:8px;background:var(--line-2);position:relative;flex:none}
+.pcard .tog::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--faint)}
+.pcard.on .tog{background:var(--amber)}
+.pcard.on .tog::after{left:14px;background:var(--amber-ink)}
+.pcard .lens{color:var(--dim);font-size:12px;line-height:1.55;margin-bottom:9px}
+.pmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:5px;height:19px;padding:0 7px;border:1px solid var(--line);border-radius:10px;color:var(--faint);font-size:10.5px;font-weight:500;white-space:nowrap}
+.tag.veto{color:var(--red);border-color:color-mix(in oklab,var(--red) 38%,var(--line))}
+.tag.model{color:var(--dim)}
+.pcard.retired{opacity:.55}
+.pcard.add{border-style:dashed;border-color:var(--line-2);background:none;display:flex;align-items:center;justify-content:center;gap:7px;color:var(--faint);font-size:12.5px;font-weight:500;min-height:92px;cursor:pointer}
+.pcard.add:hover{color:var(--dim);border-color:var(--faint)}
+
+/* flows */
+.flowsel{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.fpill{display:inline-flex;align-items:center;gap:7px;height:27px;padding:0 11px;border:1px solid var(--line);border-radius:14px;color:var(--faint);font-size:12px;font-weight:500;background:var(--raise)}
+.fpill:hover{color:var(--dim);border-color:var(--line-2)}
+.fpill.on{background:var(--raise-2);color:var(--fg);border-color:var(--line-2)}
+.fpill .w{color:var(--ghost);font-weight:400}
+.flow{display:flex;flex-direction:column;gap:0;max-width:900px}
+.step{display:grid;grid-template-columns:22px minmax(0,1fr);gap:14px;position:relative;padding-bottom:16px}
+.step::before{content:"";position:absolute;left:10.5px;top:20px;bottom:0;width:1px;background:var(--line)}
+.step:last-child::before{display:none}
+.snum{width:22px;height:22px;border-radius:50%;border:1px solid var(--line-2);background:var(--bg);color:var(--faint);font-size:10.5px;font-weight:600;display:flex;align-items:center;justify-content:center;z-index:1}
+.step.gate .snum{border-color:color-mix(in oklab,var(--gold) 50%,var(--line));color:var(--gold)}
+.step.term .snum{border-color:color-mix(in oklab,var(--green) 50%,var(--line));color:var(--green)}
+.sbox{background:var(--raise);border:1px solid color-mix(in oklab,var(--line) 80%,transparent);border-radius:9px;padding:11px 13px;min-width:0}
+.sh{display:flex;align-items:center;gap:9px;margin-bottom:8px;flex-wrap:wrap}
+.sh .st{font-weight:600;font-size:13px}
+.sh .sd{color:var(--ghost);font-size:11.5px}
+.sh .edit{margin-left:auto;color:var(--faint);font-size:11.5px;font-weight:500}
+.sh .edit:hover{color:var(--dim)}
+.seats{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.seats .plus{width:22px;height:22px;border-radius:50%;border:1px dashed var(--line-2);color:var(--ghost);font-size:12px;display:flex;align-items:center;justify-content:center}
+.seats .plus:hover{color:var(--faint);border-color:var(--faint)}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:7px 16px}
+.rule-r{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim);min-width:0}
+.rule-r .k{color:var(--ghost);font-size:11.5px;white-space:nowrap}
+.rule-r .v{margin-left:auto;font-weight:500;font-size:11.5px;white-space:nowrap}
+.rule-r .v.warn{color:var(--gold)}
+.branch{margin-top:9px;padding-top:9px;border-top:1px solid color-mix(in oklab,var(--line) 60%,transparent);display:flex;flex-direction:column;gap:5px}
+.br{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--faint)}
+.br .cond{color:var(--dim);font-weight:500}
+.br .arrow{color:var(--ghost)}
+.br .dest{color:var(--faint)}
+.br.bad .cond{color:var(--red)}
+.br.good .cond{color:var(--green)}
+
+/* scores */
+.stable{border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.strow{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr)) 84px;gap:12px;align-items:center;padding:9px 14px;border-bottom:1px solid color-mix(in oklab,var(--line) 55%,transparent);font-size:12px}
+.strow:last-child{border-bottom:0}
+.strow.hd{background:color-mix(in oklab,var(--raise) 62%,var(--bg));color:var(--ghost);font-size:11px;font-weight:500}
+.strow:not(.hd):hover{background:color-mix(in oklab,var(--raise) 55%,transparent)}
+.sname{display:flex;align-items:center;gap:8px;min-width:0}
+.sname .t{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.num{font-variant-numeric:tabular-nums;color:var(--dim)}
+.num.good{color:var(--green)} .num.bad{color:var(--red)} .num.mid{color:var(--gold)}
+.spark{display:flex;align-items:flex-end;gap:2px;height:18px}
+.spark i{width:4px;border-radius:1px;background:var(--line-2)}
+.spark i.hi{background:var(--faint)}
+.strow.ret{opacity:.5}
+.hint{color:var(--ghost);font-size:11.5px;line-height:1.6;margin-top:12px;max-width:760px}
+.hint b{color:var(--faint);font-weight:500}
+.prov{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);color:var(--ghost);font-size:11px;line-height:1.7;max-width:820px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <nav class="side">
+    <div class="ws">
+      <span class="logo">F<span class="kk">K<i class="knode"></i></span>ST</span>
+      <svg class="chev" width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="pen" title="New issue"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M11.3 2.7a1.6 1.6 0 0 1 2.3 2.3L5.5 13l-3 .7.7-3 8.1-8Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></button>
+    </div>
+    <a class="sitem" href="linear-list.html"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M1.8 8.5 8 2.3l6.2 6.2M3 7.5V13a1 1 0 0 0 1 1h2.5v-3.4h3V14H12a1 1 0 0 0 1-1V7.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Inbox<span class="n">2</span></a>
+    <a class="sitem" href="linear-board.html"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="5" height="11" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2.5" width="5" height="7" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>All work</a>
+    <button class="sitem on"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="3.4" r="1.15" fill="currentColor"/><circle cx="11.9" cy="6" r="1.15" fill="currentColor"/><circle cx="10.4" cy="10.9" r="1.15" fill="currentColor"/><circle cx="5.6" cy="10.9" r="1.15" fill="currentColor"/><circle cx="4.1" cy="6" r="1.15" fill="currentColor"/></svg>Council</button>
+    <button class="shead"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" transform="rotate(90 8 8)"/></svg>Connections</button>
+    <div class="sub">
+      <button class="sitem"><i class="dot g"></i>fkst-packages<span class="n">11</span></button>
+      <button class="sitem"><i class="dot g"></i>devloop-sandbox<span class="n">3</span></button>
+      <button class="sitem"><i class="dot y"></i>godgpt-sdk<span class="n">—</span></button>
+    </div>
+    <div class="sfoot"><i class="dot n"></i>DRY-RUN · synced 2m ago</div>
+  </nav>
+
+  <main class="main">
+    <div class="crumb">
+      <span class="t">Council</span><span class="sep">›</span><span class="t muted">fkst-packages</span>
+      <div class="right">
+        <a class="gbtn" href="linear-council-debate.html">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13.5 9.5a1.6 1.6 0 0 1-1.6 1.6H5.6L2.5 14V4.2a1.6 1.6 0 0 1 1.6-1.6h7.8a1.6 1.6 0 0 1 1.6 1.6v5.3Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/></svg>
+          Debates
+        </a>
+        <button class="gbtn pri">Save · applies next run</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab on" data-t="personas">Personas<span class="n">7</span></button>
+      <button class="tab" data-t="flows">Flows<span class="n">3</span></button>
+      <button class="tab" data-t="scores">Scores</button>
+      <div class="scopebar">
+        <button class="sel"><span class="k">loop</span>fkst-packages</button>
+        <button class="sel"><span class="k">roster</span>default-6</button>
+      </div>
+    </div>
+
+    <div class="body">
+
+      <!-- ============ PERSONAS ============ -->
+      <section class="pane on" data-p="personas">
+        <p class="lead">A persona is a <b>lens</b> a codex worker argues from. Each one gets its own isolated context and prompt, so five personas on one question produce five genuinely independent readings rather than one model agreeing with itself. Toggle a persona off and it stops being seated in every flow that references this roster.</p>
+
+        <div class="secthd"><h3>Seated · default-6 roster</h3><span class="n">6 active</span><span class="rule"></span><button class="act">Duplicate roster</button></div>
+        <div class="pgrid">
+
+          <div class="pcard on">
+            <div class="ph"><span class="vd" style="background:var(--teal)">T</span><span class="nm">teleology</span><span class="tog"></span></div>
+            <p class="lens">Asks what the mechanism is <em>for</em>, and whether the change serves that purpose. Rejects solutions that treat a symptom rather than the reason the thing exists.</p>
+            <div class="pmeta"><span class="tag model">gpt-5.6-sol · high</span><span class="tag">design + review</span></div>
+          </div>
+
+          <div class="pcard on">
+            <div class="ph"><span class="vd" style="background:var(--blue)">P</span><span class="nm">parsimony</span><span class="tog"></span></div>
+            <p class="lens">Hunts for the simpler solution. Flags second mechanisms, magic numbers, and anything that could be deleted without loss. "Could one thing do this?"</p>
+            <div class="pmeta"><span class="tag model">gpt-5.6-sol · high</span><span class="tag">design + review</span></div>
+          </div>
+
+          <div class="pcard on">
+            <div class="ph"><span class="vd" style="background:var(--violet)">F</span><span class="nm">fidelity</span><span class="tog"></span></div>
+            <p class="lens">Checks the claim against the evidence. Rejects rationales built on unverified premises, and will not approve reasoning that isn't written down where the next reader can find it.</p>
+            <div class="pmeta"><span class="tag model">gpt-5.6-sol · high</span><span class="tag">design + review</span></div>
+          </div>
+
+          <div class="pcard on">
+            <div class="ph"><span class="vd" style="background:var(--rose)">N</span><span class="nm">natural-ownership</span><span class="tog"></span></div>
+            <p class="lens">Asks which layer should own the invariant. Blocks logic that leaks upward into the engine when a package could hold it, or sideways across a boundary.</p>
+            <div class="pmeta"><span class="tag model">gpt-5.6-sol · medium</span><span class="tag">design</span></div>
+          </div>
+
+          <div class="pcard on">
+            <div class="ph"><span class="vd" style="background:var(--gold)">C</span><span class="nm">proportional-containment</span><span class="tog"></span></div>
+            <p class="lens">Weighs whether the fix is sized to the problem. Rejects generalising off one incident, and gold-plating that builds more machinery than the case earns.</p>
+            <div class="pmeta"><span class="tag model">gpt-5.6-sol · medium</span><span class="tag">design</span></div>
+          </div>
+
+          <div class="pcard on">
+            <div class="ph"><span class="vd" style="background:var(--red)">S</span><span class="nm">security</span><span class="tog"></span></div>
+            <p class="lens">Standing seat outside the design framing. Treats issue and PR text as attacker-controllable, and checks trust boundaries, auth, and anything that could be made to fail open.</p>
+            <div class="pmeta"><span class="tag veto">veto seat</span><span class="tag model">gpt-5.6-sol · high</span><span class="tag">review</span></div>
+          </div>
+
+          <div class="pcard on">
+            <div class="ph"><span class="vd" style="background:var(--faint)">M</span><span class="nm">meta-judge</span><span class="tog"></span></div>
+            <p class="lens">Does not vote. Reads the seats' outputs, decides whether they actually disagree or are answering different questions, and narrows the question for the next round.</p>
+            <div class="pmeta"><span class="tag">no vote · narrows</span><span class="tag model">gpt-5.6-sol · xhigh</span></div>
+          </div>
+
+          <button class="pcard add">＋ New persona</button>
+        </div>
+
+        <div class="secthd"><h3>Library · not seated here</h3><span class="n">retired &amp; available</span><span class="rule"></span><button class="act">Show all</button></div>
+        <div class="pgrid">
+          <div class="pcard retired">
+            <div class="ph"><span class="vd" style="background:var(--green)">E</span><span class="nm">empiricism</span><span class="tog"></span></div>
+            <p class="lens">Demanded a reproduction before any diagnosis. Retired 2026-06 — overlapped fidelity on 71% of votes and rarely changed an outcome.</p>
+            <div class="pmeta"><span class="tag">retired 2026-06-14</span><span class="tag">seated in 41 debates</span></div>
+          </div>
+          <div class="pcard retired">
+            <div class="ph"><span class="vd" style="background:var(--gold)">L</span><span class="nm">legibility</span><span class="tog"></span></div>
+            <p class="lens">Argued for the reader of the code in six months. Folded into fidelity's brief; kept for comparison in Scores.</p>
+            <div class="pmeta"><span class="tag">retired 2026-05-30</span><span class="tag">seated in 88 debates</span></div>
+          </div>
+          <div class="pcard retired">
+            <div class="ph"><span class="vd" style="background:var(--blue)">O</span><span class="nm">ops-cost</span><span class="tog"></span></div>
+            <p class="lens">Weighed runtime cost and rate budget. Only seated on the growth loop today.</p>
+            <div class="pmeta"><span class="tag">seated on 1 other loop</span></div>
+          </div>
+        </div>
+
+        <p class="prov">Personas are prompts, not code — each is a lens paragraph plus a model and effort setting, materialised into the loop's config on save. Editing one here never touches platform package internals; it writes to this deployment's roster. Changes apply on the next supervise start, not to debates already in flight.</p>
+      </section>
+
+      <!-- ============ FLOWS ============ -->
+      <section class="pane" data-p="flows">
+        <p class="lead">A flow decides <b>what happens to a piece of work</b>: which personas are seated at each step, what counts as agreement, and where the work goes when they don't agree. Work is routed to a flow by label or risk tier — everything else falls to <b>Default</b>.</p>
+
+        <div class="flowsel">
+          <button class="fpill on">Default <span class="w">· unlabelled work</span></button>
+          <button class="fpill">High-risk <span class="w">· engine, auth, CI</span></button>
+          <button class="fpill">Docs-only <span class="w">· *.md</span></button>
+          <button class="fpill" style="border-style:dashed">＋ New flow</button>
+        </div>
+
+        <div class="flow">
+
+          <div class="step">
+            <span class="snum">1</span>
+            <div class="sbox">
+              <div class="sh"><span class="st">Intake</span><span class="sd">decide if the loop should take this at all</span><button class="edit">Edit</button></div>
+              <div class="seats"><span class="vd" style="background:var(--faint)">IJ</span><span class="tag">intake-judge</span></div>
+              <div class="rules">
+                <div class="rule-r"><span class="k">Admits</span><span class="v">labelled fkst-dev:enabled</span></div>
+                <div class="rule-r"><span class="k">Milestone filter</span><span class="v">M12, M13</span></div>
+              </div>
+              <div class="branch">
+                <div class="br good"><span class="cond">admit</span><span class="arrow">→</span><span class="dest">Design consensus</span></div>
+                <div class="br"><span class="cond">decline</span><span class="arrow">→</span><span class="dest">closed with reason comment</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <span class="snum">2</span>
+            <div class="sbox">
+              <div class="sh"><span class="st">Design consensus</span><span class="sd">agree on the shape before code exists</span><button class="edit">Edit</button></div>
+              <div class="seats">
+                <span class="vd" style="background:var(--teal)">T</span><span class="vd" style="background:var(--blue)">P</span><span class="vd" style="background:var(--violet)">F</span><span class="vd" style="background:var(--rose)">N</span><span class="vd" style="background:var(--gold)">C</span><span class="vd" style="background:var(--faint)">M</span>
+                <button class="plus">＋</button>
+              </div>
+              <div class="rules">
+                <div class="rule-r"><span class="k">Agreement</span><span class="v">unanimous 5/5</span></div>
+                <div class="rule-r"><span class="k">Converge rounds</span><span class="v">max 3</span></div>
+                <div class="rule-r"><span class="k">On no-consensus</span><span class="v">meta-judge narrows</span></div>
+                <div class="rule-r"><span class="k">Stall detector</span><span class="v warn">3 unchanged rounds</span></div>
+              </div>
+              <div class="branch">
+                <div class="br good"><span class="cond">reached</span><span class="arrow">→</span><span class="dest">Implement</span></div>
+                <div class="br"><span class="cond">converge</span><span class="arrow">→</span><span class="dest">re-ask narrowed question (round +1)</span></div>
+                <div class="br bad"><span class="cond">true stall</span><span class="arrow">→</span><span class="dest">blocked, with WHY</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <span class="snum">3</span>
+            <div class="sbox">
+              <div class="sh"><span class="st">Implement</span><span class="sd">one worker, isolated worktree</span><button class="edit">Edit</button></div>
+              <div class="seats"><span class="vd" style="background:var(--blue)">IM</span><span class="tag">implementer</span><span class="tag model">gpt-5.6-sol · high</span></div>
+              <div class="rules">
+                <div class="rule-r"><span class="k">Scope</span><span class="v">approved framing only</span></div>
+                <div class="rule-r"><span class="k">Local gate</span><span class="v">scripts/run.sh test</span></div>
+                <div class="rule-r"><span class="k">Liveness</span><span class="v">heartbeat-deferred</span></div>
+              </div>
+              <div class="branch">
+                <div class="br good"><span class="cond">pushed</span><span class="arrow">→</span><span class="dest">PR review</span></div>
+                <div class="br bad"><span class="cond">no output</span><span class="arrow">→</span><span class="dest">impl-failed, terminal</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step gate">
+            <span class="snum">4</span>
+            <div class="sbox">
+              <div class="sh"><span class="st">PR review</span><span class="sd">adversarial read of the real diff</span><button class="edit">Edit</button></div>
+              <div class="seats">
+                <span class="vd" style="background:var(--teal)">T</span><span class="vd" style="background:var(--blue)">P</span><span class="vd" style="background:var(--violet)">F</span><span class="vd" style="background:var(--rose)">N</span><span class="vd" style="background:var(--gold)">C</span><span class="vd" style="background:var(--red)">S</span>
+                <button class="plus">＋</button>
+              </div>
+              <div class="rules">
+                <div class="rule-r"><span class="k">Agreement</span><span class="v">unanimous 5/5</span></div>
+                <div class="rule-r"><span class="k">Veto seats</span><span class="v warn">security</span></div>
+                <div class="rule-r"><span class="k">Fix rounds</span><span class="v">max 3</span></div>
+                <div class="rule-r"><span class="k">Reads</span><span class="v">full diff from source</span></div>
+              </div>
+              <div class="branch">
+                <div class="br good"><span class="cond">approve</span><span class="arrow">→</span><span class="dest">Merge gate</span></div>
+                <div class="br"><span class="cond">reject</span><span class="arrow">→</span><span class="dest">Fix (new head, re-review)</span></div>
+                <div class="br bad"><span class="cond">fix budget spent</span><span class="arrow">→</span><span class="dest">review-meta → blocked</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step term">
+            <span class="snum">5</span>
+            <div class="sbox">
+              <div class="sh"><span class="st">Merge gate</span><span class="sd">machine checks — no persona can override</span><button class="edit">Edit</button></div>
+              <div class="rules">
+                <div class="rule-r"><span class="k">Head-bound approval</span><span class="v">required</span></div>
+                <div class="rule-r"><span class="k">CI</span><span class="v">green required</span></div>
+                <div class="rule-r"><span class="k">Mergeable</span><span class="v">clean required</span></div>
+                <div class="rule-r"><span class="k">Posture</span><span class="v warn">DRY-RUN — holds</span></div>
+                <div class="rule-r"><span class="k">Target</span><span class="v">integration-ElonSG</span></div>
+              </div>
+              <div class="branch">
+                <div class="br good"><span class="cond">all gates pass + LIVE</span><span class="arrow">→</span><span class="dest">merged</span></div>
+                <div class="br"><span class="cond">any gate fails</span><span class="arrow">→</span><span class="dest">holds at gate, re-checked each poll</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <p class="prov">Flows are the loop's routing rules, not a workflow engine you drive by hand — you set the shape, the loop executes it autonomously. The merge gate's checks are machine facts and deliberately not persona-configurable: no lens can vote CI green.</p>
+      </section>
+
+      <!-- ============ SCORES ============ -->
+      <section class="pane" data-p="scores">
+        <p class="lead">Scores answer whether a persona is <b>earning its seat</b>. A lens that never objects adds nothing; one that objects and is always overruled is noise; one whose objections keep getting upheld — or that keeps catching what others miss — is doing the work. Measured over merged outcomes, not self-report.</p>
+
+        <div class="secthd"><h3>Seated personas</h3><span class="n">last 90 days · 214 debates</span><span class="rule"></span><button class="act">Export CSV</button></div>
+        <div class="stable">
+          <div class="strow hd">
+            <span>Persona</span><span>Spoke</span><span>Objected</span><span>Upheld</span><span>Changed mind</span><span>Caught alone</span><span>Trend</span>
+          </div>
+          <div class="strow">
+            <span class="sname"><span class="vd sm" style="background:var(--teal)">T</span><span class="t">teleology</span></span>
+            <span class="num">198</span><span class="num">34</span><span class="num good">79%</span><span class="num">11</span><span class="num good">9</span>
+            <span class="spark"><i class="hi" style="height:8px"></i><i class="hi" style="height:11px"></i><i class="hi" style="height:9px"></i><i class="hi" style="height:14px"></i><i class="hi" style="height:13px"></i><i class="hi" style="height:16px"></i></span>
+          </div>
+          <div class="strow">
+            <span class="sname"><span class="vd sm" style="background:var(--blue)">P</span><span class="t">parsimony</span></span>
+            <span class="num">198</span><span class="num">61</span><span class="num good">72%</span><span class="num">22</span><span class="num good">14</span>
+            <span class="spark"><i class="hi" style="height:12px"></i><i class="hi" style="height:10px"></i><i class="hi" style="height:15px"></i><i class="hi" style="height:13px"></i><i class="hi" style="height:16px"></i><i class="hi" style="height:15px"></i></span>
+          </div>
+          <div class="strow">
+            <span class="sname"><span class="vd sm" style="background:var(--violet)">F</span><span class="t">fidelity</span></span>
+            <span class="num">198</span><span class="num">48</span><span class="num good">81%</span><span class="num">7</span><span class="num good">18</span>
+            <span class="spark"><i class="hi" style="height:11px"></i><i class="hi" style="height:13px"></i><i class="hi" style="height:12px"></i><i class="hi" style="height:16px"></i><i class="hi" style="height:15px"></i><i class="hi" style="height:17px"></i></span>
+          </div>
+          <div class="strow">
+            <span class="sname"><span class="vd sm" style="background:var(--rose)">N</span><span class="t">natural-ownership</span></span>
+            <span class="num">140</span><span class="num">12</span><span class="num mid">58%</span><span class="num">4</span><span class="num">2</span>
+            <span class="spark"><i class="hi" style="height:9px"></i><i class="hi" style="height:7px"></i><i class="hi" style="height:8px"></i><i class="hi" style="height:6px"></i><i class="hi" style="height:7px"></i><i class="hi" style="height:5px"></i></span>
+          </div>
+          <div class="strow">
+            <span class="sname"><span class="vd sm" style="background:var(--gold)">C</span><span class="t">proportional-containment</span></span>
+            <span class="num">140</span><span class="num">39</span><span class="num good">74%</span><span class="num">19</span><span class="num good">11</span>
+            <span class="spark"><i class="hi" style="height:7px"></i><i class="hi" style="height:11px"></i><i class="hi" style="height:12px"></i><i class="hi" style="height:14px"></i><i class="hi" style="height:13px"></i><i class="hi" style="height:15px"></i></span>
+          </div>
+          <div class="strow">
+            <span class="sname"><span class="vd sm" style="background:var(--red)">S</span><span class="t">security</span></span>
+            <span class="num">96</span><span class="num">9</span><span class="num good">100%</span><span class="num">0</span><span class="num good">9</span>
+            <span class="spark"><i class="hi" style="height:4px"></i><i class="hi" style="height:6px"></i><i class="hi" style="height:5px"></i><i class="hi" style="height:9px"></i><i class="hi" style="height:7px"></i><i class="hi" style="height:10px"></i></span>
+          </div>
+          <div class="strow">
+            <span class="sname"><span class="vd sm" style="background:var(--faint)">M</span><span class="t">meta-judge</span></span>
+            <span class="num">214</span><span class="num">—</span><span class="num">—</span><span class="num">—</span><span class="num">—</span>
+            <span class="spark"><i class="hi" style="height:13px"></i><i class="hi" style="height:12px"></i><i class="hi" style="height:14px"></i><i class="hi" style="height:13px"></i><i class="hi" style="height:15px"></i><i class="hi" style="height:14px"></i></span>
+          </div>
+        </div>
+
+        <p class="hint"><b>natural-ownership is the seat to look at.</b> It objects rarely (12 in 140), is upheld barely over half the time, and has caught only 2 things no other seat caught — its trend line is falling. Either its brief overlaps another lens, or it belongs only on flows that cross package boundaries. <b>security</b> is the opposite: it speaks least of all, but every objection it has raised was upheld.</p>
+
+        <div class="secthd"><h3>Retired personas</h3><span class="n">kept for comparison</span><span class="rule"></span></div>
+        <div class="stable">
+          <div class="strow hd">
+            <span>Persona</span><span>Spoke</span><span>Objected</span><span>Upheld</span><span>Changed mind</span><span>Caught alone</span><span>Retired</span>
+          </div>
+          <div class="strow ret">
+            <span class="sname"><span class="vd sm" style="background:var(--green)">E</span><span class="t">empiricism</span></span>
+            <span class="num">41</span><span class="num">8</span><span class="num mid">62%</span><span class="num">3</span><span class="num bad">0</span><span class="num">2026-06-14</span>
+          </div>
+          <div class="strow ret">
+            <span class="sname"><span class="vd sm" style="background:var(--gold)">L</span><span class="t">legibility</span></span>
+            <span class="num">88</span><span class="num">27</span><span class="num good">77%</span><span class="num">9</span><span class="num good">6</span><span class="num">2026-05-30</span>
+          </div>
+        </div>
+
+        <p class="hint">Retiring <b>legibility</b> may have been a mistake — 77% upheld and 6 solo catches is a working lens. Its brief was folded into fidelity, whose solo-catch rate rose from 12 to 18 afterwards, so the coverage probably survived the merge. That's the kind of question this table exists to make askable.</p>
+
+        <p class="prov">Scored from merged outcomes on the GitHub thread: an objection counts as <em>upheld</em> when the final merged diff reflects it, <em>overruled</em> when it merged unchanged. <em>Caught alone</em> means no other seat raised it that round. These are derived from public markers and commits — nothing is self-reported by the persona.</p>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+const tabs=[...document.querySelectorAll('.tab')],panes=[...document.querySelectorAll('.pane')];
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(x=>x.classList.toggle('on',x===t));
+  panes.forEach(p=>p.classList.toggle('on',p.dataset.p===t.dataset.t));
+}));
+document.querySelectorAll('.pcard .tog').forEach(g=>g.addEventListener('click',e=>{
+  e.stopPropagation(); g.closest('.pcard').classList.toggle('on');
+}));
+document.querySelectorAll('.fpill').forEach(p=>p.addEventListener('click',()=>{
+  document.querySelectorAll('.fpill').forEach(x=>x.classList.remove('on')); p.classList.add('on');
+}));
+</script>
+</body>
+</html>

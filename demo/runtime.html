@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>devbored — Engine delivery ledger</title>
+<link rel="stylesheet" href="assets/app.css">
+<script src="assets/banner.js" defer></script>
+<style>
+body{overflow:hidden}
+.livebar{flex:none;position:sticky;top:0;z-index:1000;min-height:34px;padding:7px 16px;display:flex;align-items:center;gap:9px;background:var(--raise);border-bottom:1px solid var(--line);color:var(--dim);font-size:11.5px}
+.livebar__pulse{width:7px;height:7px;border-radius:50%;background:var(--dim)}
+.livebar strong{font-weight:650}
+.livebar__scope{margin-left:auto;color:var(--faint);font-variant-numeric:tabular-nums}
+.runtime-app{flex:1;min-height:0;display:grid;grid-template-columns:236px minmax(0,1fr)}
+.side .runtime-source{color:var(--dim)}
+.runtime-main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.runtime-main>.crumbbar{flex:none;min-height:40px}
+.runtime-head{flex:none;min-height:68px;padding:11px 20px;border-bottom:1px solid var(--line)}
+.runtime-head .page-lede{max-width:720px;margin-top:4px;overflow:hidden;font-size:11.5px;text-overflow:ellipsis;white-space:nowrap}
+.runtime-head__state{margin-left:auto;display:flex;align-items:flex-end;flex-direction:column;gap:5px}
+.connection-pill{display:inline-flex;align-items:center;min-height:23px;padding:3px 9px;border:1px solid var(--line-2);border-radius:999px;color:var(--faint);font-size:11px;font-weight:650;text-transform:uppercase;letter-spacing:.06em}
+.connection-pill--online{color:var(--green);border-color:color-mix(in oklab,var(--green) 38%,var(--line))}
+.connection-pill--offline{color:var(--gold);border-color:color-mix(in oklab,var(--gold) 38%,var(--line))}
+.connection-pill--unknown{color:var(--faint);border-style:dashed}
+#last-read{color:var(--faint);font-family:var(--mono);font-size:10.5px;font-variant-numeric:tabular-nums}
+.runtime-scroll{flex:1;min-height:0;overflow:auto;padding:18px 20px 28px}
+.authority-note{max-width:1120px;margin:0 auto 14px;padding:10px 12px;border-left:2px solid var(--amber);background:color-mix(in oklab,var(--amber) 5%,var(--raise));color:var(--dim);font-size:12px;line-height:1.6}
+.authority-note strong{color:var(--fg);font-weight:600}
+#runtime-content{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.eyebrow{color:var(--faint);font-size:10.5px;font-weight:650;letter-spacing:.075em;text-transform:uppercase}
+.snapshot-note{display:flex;align-items:center;gap:24px;padding:15px 16px;background:var(--raise);border:1px solid var(--line);border-radius:9px}
+.snapshot-note h2{margin-top:4px;font:600 16px/1.3 "Space Grotesk",sans-serif}
+.snapshot-meta{margin-left:auto;display:flex;gap:24px}
+.snapshot-meta div{display:flex;flex-direction:column;gap:2px}
+.snapshot-meta dt{color:var(--faint);font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.snapshot-meta dd{color:var(--dim);font-size:11.5px;font-variant-numeric:tabular-nums}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.metric{padding:12px 13px;background:var(--raise);border:1px solid var(--line);border-radius:8px}
+.metric__label{color:var(--faint);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.055em}
+.metric__value{margin:4px 0 2px;color:var(--fg);font:650 25px/1 "Space Grotesk",sans-serif;font-variant-numeric:tabular-nums}
+.metric__note{color:var(--faint);font-size:10.5px}
+.ledger-panel{background:var(--raise);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.panel-heading{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid var(--line)}
+.panel-heading__copy{min-width:0}
+.panel-heading h2{font:600 14px/1.3 "Space Grotesk",sans-serif}
+.panel-heading p{margin-top:4px;color:var(--faint);font-size:11.5px}
+.projection-disclosure{flex:none;display:flex;align-items:flex-end;flex-direction:column;gap:4px;text-align:right}
+.projection-status{padding:2px 7px;border:1px solid var(--line-2);border-radius:999px;color:var(--faint);font-size:9px;font-weight:650;letter-spacing:.055em;text-transform:uppercase}
+.projection-status--partial{color:var(--amber);border-color:color-mix(in oklab,var(--amber) 42%,var(--line))}
+.projection-detail{color:var(--dim);font-family:var(--mono);font-size:10px;font-variant-numeric:tabular-nums}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11.5px;white-space:nowrap}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid color-mix(in oklab,var(--line) 70%,transparent);font-variant-numeric:tabular-nums}
+th{color:var(--faint);font-size:9.5px;font-weight:650;text-transform:uppercase;letter-spacing:.055em}
+td{color:var(--dim)}
+td:first-child{font-family:var(--mono)}
+tbody tr:last-child td{border-bottom:0}
+.table-empty{padding:28px 14px;color:var(--faint);font-size:11.5px;text-align:center}
+.panel-footer{min-height:31px;padding:7px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);color:var(--faint);font-family:var(--mono);font-size:10px;font-variant-numeric:tabular-nums}
+.unavailable{min-height:330px;padding:54px 28px 0;display:flex;align-items:center;flex-direction:column;text-align:center;background:var(--raise);border:1px dashed var(--line-2);border-radius:10px;overflow:hidden}
+.unavailable__mark{width:52px;height:52px;margin-bottom:18px;display:grid;place-items:center;border:1px solid var(--line-2);border-radius:50%;color:var(--faint);font:650 14px/1 "Space Grotesk",sans-serif}
+.unavailable--unavailable .unavailable__mark{color:var(--gold);border-color:color-mix(in oklab,var(--gold) 35%,var(--line))}
+.unavailable h2{margin-top:6px;font:650 20px/1.25 "Space Grotesk",sans-serif;letter-spacing:-.02em}
+.unavailable__copy{max-width:590px;margin-top:10px;color:var(--dim);line-height:1.65}
+.unavailable__guardrail{max-width:590px;margin-top:8px;color:var(--fg);font-weight:550}
+.unavailable__detail{margin-top:17px;color:var(--faint);font-size:11px}
+.unavailable .panel-footer{width:calc(100% + 56px);margin-top:auto}
+.read-caveat{max-width:1120px;margin:14px auto 0;color:var(--faint);font-size:10.5px;line-height:1.6}
+.read-caveat strong{color:var(--faint);font-weight:600}
+@media(max-width:900px){
+  body{overflow:auto}.runtime-app{display:block}.side{display:none}.runtime-main{min-height:calc(100vh - 34px)}.runtime-scroll{overflow:visible}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  .livebar{align-items:flex-start;flex-wrap:wrap}.livebar__scope{width:100%;margin-left:16px}.runtime-head{align-items:flex-start;padding:13px 14px}.runtime-head__state{flex:none;margin-left:0;align-items:flex-start}.runtime-scroll{padding:12px}.snapshot-note{align-items:flex-start;flex-direction:column}.snapshot-meta{margin-left:0;flex-direction:column;gap:8px}.metrics{grid-template-columns:1fr 1fr}.panel-heading{align-items:flex-start;flex-direction:column;gap:9px}.projection-disclosure{align-items:flex-start;text-align:left}.panel-footer{align-items:flex-start;flex-direction:column}.unavailable{padding-inline:18px}.unavailable .panel-footer{width:calc(100% + 36px)}
+}
+</style>
+</head>
+<body data-banner-mode="live">
+<div class="livebar" role="status">
+  <i class="livebar__pulse" aria-hidden="true"></i>
+  <strong>SUBSTRATE READ</strong>
+  <span>Live-or-offline substrate snapshot reader (read-only)</span>
+  <span class="livebar__scope">127.0.0.1 · local effects only</span>
+</div>
+<noscript><div class="noscript-panel">The substrate snapshot reader did not poll the local BFF because JavaScript is disabled. Engine delivery state is unknown; unavailable is not zero.</div></noscript>
+<div class="runtime-app">
+  <nav class="side" aria-label="Demo screens">
+    <div class="ws">
+      <span class="logo">F<span class="kk">K<i class="knode"></i></span>ST</span>
+      <a class="pen" href="index.html" title="Demo catalog" aria-label="Demo catalog">+</a>
+    </div>
+    <a class="sitem" href="board.html">Board</a>
+    <a class="sitem" href="debate.html">Who decided</a>
+    <a class="sitem" href="council.html">Council sandbox</a>
+    <a class="sitem" href="selftest.html">Self-test</a>
+    <a class="sitem on runtime-source" href="runtime.html" aria-current="page">Engine snapshot</a>
+    <div class="sfoot"><i class="dot g"></i>LOCAL READ · read-only</div>
+  </nav>
+
+  <main class="runtime-main">
+    <div class="crumbbar" aria-label="Breadcrumb">
+      <span>FKST-devbored</span><span aria-hidden="true">›</span><span>Engine ledger</span><span aria-hidden="true">·</span><span>snapshot reader</span>
+    </div>
+    <header class="page-header runtime-head">
+      <div class="page-header__copy">
+        <h1 class="page-title">Engine delivery ledger</h1>
+        <p class="page-lede">Live-or-offline substrate snapshot reader (read-only), refreshed every 2 seconds.</p>
+      </div>
+      <div class="runtime-head__state">
+        <span id="connection-status" class="connection-pill connection-pill--unknown" aria-live="polite">Unknown</span>
+        <span id="last-read">Waiting for a validated local read</span>
+      </div>
+    </header>
+
+    <div class="runtime-scroll">
+      <p class="authority-note"><strong>This is the delivery ledger, not work status.</strong> Queue depth, current deliveries, retries, and dead letters are engine-delivery facts only. GitHub marker-derived business state is outside this screen’s authority.</p>
+      <div id="runtime-content" aria-live="polite" aria-busy="false"></div>
+      <p class="read-caveat"><strong>Current snapshot only.</strong> Polling can miss deliveries that arrive and acknowledge between reads; acknowledged deliveries are removed, and at-least-once delivery means a delivery ID may legitimately repeat. This screen does not claim a historical timeline.</p>
+    </div>
+  </main>
+</div>
+<script type="module" src="assets/live-runtime.js"></script>
+</body>
+</html>

@@ -12,3 +12,6 @@ coverage/
 playwright-report/
 test-results/
 .pnpm-store/
+.fkst/run/
+fixtures/local/
+build/

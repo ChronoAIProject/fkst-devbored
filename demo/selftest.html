@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>devbored — Council fixture case self-check</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+body{min-height:100%;display:block}
+.shell{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:26px 0 48px}
+.intro{padding:36px 0 24px}
+.lede{max-width:720px;color:var(--dim);font-size:14px;line-height:1.65;margin-top:13px}
+.run-state{display:flex;align-items:center;gap:8px;color:var(--faint);font-size:12px;padding:9px 12px;border:1px solid var(--line);border-radius:999px;background:var(--raise)}
+.run-state i{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.run-state.pass{color:var(--green);border-color:color-mix(in oklab,var(--green) 35%,var(--line))}
+.run-state.pass i{background:var(--green)}
+.run-state.fail{color:var(--red);border-color:color-mix(in oklab,var(--red) 35%,var(--line))}
+.run-state.fail i{background:var(--red)}
+.run-state.blocked{border-style:dashed;color:var(--dim)}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.bucket{padding:16px 17px;border:1px solid var(--line);border-radius:9px;background:var(--raise)}
+.bucket-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bucket h2{font-size:12px;font-weight:600;letter-spacing:.015em}
+.badge{font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 6px;border-radius:4px;background:color-mix(in oklab,var(--green) 12%,var(--raise-2));color:var(--green)}
+.bucket.bad .badge{color:var(--red);background:color-mix(in oklab,var(--red) 12%,var(--raise-2))}
+.count{font:700 29px/1 "Space Grotesk",sans-serif;margin-top:15px;font-variant-numeric:tabular-nums}
+.count span{color:var(--faint);font-size:12px;font-weight:400;line-height:1.2;margin-left:5px}
+.panel{border:1px solid var(--line);border-radius:9px;background:var(--raise);overflow:hidden}
+.panel-head{display:flex;align-items:center;gap:12px;padding:12px 15px;border-bottom:1px solid var(--line)}
+.panel-head h2{font-size:12px;font-weight:600}
+.panel-head span{margin-left:auto;color:var(--faint);font-size:11px}
+.table-scroll{overflow:auto;max-height:55vh}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{position:sticky;top:0;z-index:1;text-align:left;padding:9px 12px;background:var(--raise-2);color:var(--faint);font-size:10px;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--line)}
+td{padding:9px 12px;border-bottom:1px solid color-mix(in oklab,var(--line) 68%,transparent);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+.status{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--green)}
+.status.fail{color:var(--red)}
+.bucket-name{color:var(--faint)}
+.case-summary{display:block;max-width:680px;color:var(--dim);font-size:12px;line-height:1.5}
+.case-id{display:block;margin-top:4px;color:var(--faint);font:500 10px/1.45 var(--mono);overflow-wrap:anywhere}
+details{max-width:520px}
+summary{color:var(--faint);cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";display:inline-block;width:15px;color:var(--ghost)}
+details[open] summary::before{content:"−"}
+pre{margin-top:8px;padding:9px;border-radius:5px;background:var(--bg);border:1px solid var(--line);color:var(--dim);font:11px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word}
+.scope-note{margin-top:13px;padding:11px 13px;border-left:2px solid var(--gold);background:color-mix(in oklab,var(--gold) 7%,var(--raise));color:var(--dim);font-size:11.5px;line-height:1.55}
+.scope-note strong{color:var(--gold);font-weight:600}
+.scope-note ul{margin:6px 0 0 17px;padding:0}
+.scope-note li+li{margin-top:3px}
+.error-box{padding:16px;color:var(--red);line-height:1.6}
+@media(max-width:760px){.shell{width:min(100% - 20px,1180px);padding-top:14px}.intro{align-items:flex-start;flex-direction:column;gap:16px;padding-top:28px}.summary{grid-template-columns:1fr}.table-scroll{max-height:none}}
+</style>
+<script src="assets/banner.js" defer></script>
+</head>
+<body>
+<noscript><div class="noscript-panel">The fixture case self-check did not run because JavaScript is disabled. Serve <code>demo/</code> over HTTP and enable JavaScript to load the local validator and all three pinned contract fixture files.</div></noscript>
+<div class="shell">
+  <main>
+    <header class="page-header intro" aria-labelledby="page-title">
+      <div class="page-header__copy">
+        <p class="page-eyebrow">Fixture verification</p>
+        <h1 id="page-title">Council fixture case self-check</h1>
+        <p class="lede">The browser imports the same validator as the headless check, fetches the pinned contract fixtures at runtime, and evaluates the declarative suite and both corpus buckets separately. Passing means those fixture cases matched; it is not a full conformance claim.</p>
+      </div>
+      <p class="run-state" id="run-state" role="status" aria-live="polite"><i></i><span>Running 55 cases…</span></p>
+    </header>
+
+    <section class="summary" id="summary" aria-label="Fixture bucket results"></section>
+
+    <section class="panel" aria-labelledby="results-heading">
+      <div class="panel-head">
+        <h2 id="results-heading">Case results</h2>
+        <span id="case-total">Awaiting fixture data</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Rule checked</th><th>Result</th><th>Bucket</th><th>Expected / actual</th></tr></thead>
+          <tbody id="case-rows"></tbody>
+        </table>
+      </div>
+      <div class="error-box" id="error-box" hidden></div>
+    </section>
+
+    <div class="scope-note">
+      <strong>Rules not validated by this fixture case self-check:</strong>
+      <ul>
+        <li>digest and canonicalization parity — R-010;</li>
+        <li>lineage and activation-cap enforcement — C-10;</li>
+        <li>runtime invocation, timeout, replay, and normalization mechanics — C-07.</li>
+      </ul>
+    </div>
+  </main>
+</div>
+
+<script>
+window.__fkstSelftestComplete = false;
+document.addEventListener('DOMContentLoaded', () => {
+  window.setTimeout(() => {
+    if (window.__fkstSelftestComplete) return;
+    const state = document.querySelector('#run-state');
+    if (!state) return;
+    state.classList.remove('pass', 'fail');
+    state.classList.add('blocked');
+    state.querySelector('span').textContent = 'did not run (module blocked — serve over http://)';
+  }, 3000);
+});
+</script>
+
+<script type="module">
+import { loadContract, runFixtures } from './assets/validator.js';
+
+const paths = {
+  contract: './fixtures/contract/council-v1.contract.json',
+  fixtures: './fixtures/contract/council-v1.fixtures.json',
+  corpus: './fixtures/contract/council-corpus-v1.json',
+};
+const labels = {
+  declarative: 'Declarative fixtures',
+  definitionCases: 'Definition corpus',
+  roundCases: 'Round corpus',
+};
+const summaries = {
+  'declarative:definition-valid-bounded': 'A bounded Council definition with the recorded seats and policies is accepted.',
+  'declarative:definition-empty-seats-invalid': 'A Council definition with no reviewer seats is rejected.',
+  'declarative:definition-duplicate-seat-id-invalid': 'Two reviewer seats cannot share the same machine ID.',
+  'declarative:policy-unknown-roster-seat-invalid': 'A policy roster cannot name a reviewer seat that the definition does not contain.',
+  'declarative:unanimous-all-approve': 'A unanimous policy approves only when every roster seat approves.',
+  'declarative:unanimous-abstain-inconclusive': 'An abstention prevents a unanimous policy from approving.',
+  'declarative:unanimous-change-defeats-approval': 'A requested change prevents a unanimous approval.',
+  'declarative:simple-majority-more-than-half': 'A simple majority requires approvals from more than half of the full roster.',
+  'declarative:simple-majority-approval-precedes-minority-change': 'A true approval majority wins even when a minority requests changes.',
+  'declarative:simple-majority-tie-inconclusive': 'A tied simple-majority vote remains inconclusive.',
+  'declarative:changes-requested-precedes-inconclusive': 'A requested change takes precedence when the round cannot approve.',
+  'declarative:abstain-failure-timeout-missing-never-approve': 'Abstained, failed, timed-out, and missing seats never count as approvals.',
+  'declarative:missing-seat-normalizes-to-explicit-failed-slot': 'A missing seat is normalized to an explicit failed contribution slot.',
+  'declarative:missing-contribution-in-emitted-fact-invalid': 'An emitted round fact is rejected when a roster contribution is missing.',
+  'declarative:duplicate-contribution-invalid': 'An emitted round fact is rejected when one seat contributes twice.',
+  'declarative:extra-contribution-invalid': 'An emitted round fact is rejected when it contains an extra contribution.',
+  'declarative:reordered-contribution-invalid': 'Contributions must preserve the policy roster order.',
+  'declarative:wrong-lens-contribution-invalid': 'Each contribution must use the lens assigned to its reviewer seat.',
+  'declarative:failed-status-pair-invalid': 'A failed contribution status must use the contract’s matching verdict pair.',
+  'declarative:approved-ends-stage': 'An approved round marks the current stage complete.',
+  'declarative:changes-requested-ends-stage': 'A changes-requested round ends the current stage for revision.',
+  'declarative:below-cap-inconclusive-continues-internally': 'An inconclusive round below the cap continues without external routing.',
+  'declarative:at-cap-inconclusive-exhausts-without-routing': 'An inconclusive round at the cap exhausts the policy without routing elsewhere.',
+  'declarative:round-over-cap-invalid': 'A round number above the policy cap is rejected.',
+  'declarative:accepted-round-replay-is-zero-invocation': 'Replaying an already accepted round requires no new reviewer invocation.',
+  'declarative:replay-conflict-fails-closed': 'A conflicting replay is rejected instead of silently replacing accepted facts.',
+  'definitionCases:valid': 'The baseline engineering-team definition satisfies the Council contract.',
+  'definitionCases:unknown-field': 'A Council definition with an unknown field is rejected.',
+  'definitionCases:wrong-schema': 'A Council definition must carry the exact wire-schema literal.',
+  'definitionCases:empty-seats': 'The engineering team must contain at least one reviewer seat.',
+  'definitionCases:over-seat-bound': 'The engineering team cannot exceed the contract’s reviewer-seat limit.',
+  'definitionCases:duplicate-seat': 'Reviewer seat IDs must be unique within a definition.',
+  'definitionCases:wrong-lens': 'Every reviewer lens must come from the contract vocabulary.',
+  'definitionCases:empty-policies': 'A Council definition must contain at least one review policy.',
+  'definitionCases:duplicate-roster': 'A policy roster cannot list the same reviewer seat twice.',
+  'definitionCases:unknown-roster-seat': 'Every policy-roster entry must resolve to a defined reviewer seat.',
+  'definitionCases:rounds-over-bound': 'A policy’s maximum-round count cannot exceed the contract limit.',
+  'definitionCases:timeout-over-bound': 'A reviewer timeout cannot exceed the contract’s hard limit.',
+  'definitionCases:wrong-agreement': 'The agreement rule must come from the frozen contract vocabulary.',
+  'definitionCases:wrong-dissent-rule': 'The dissent rule must come from the frozen contract vocabulary.',
+  'roundCases:approved': 'A valid approved round fact is accepted and completes the stage.',
+  'roundCases:below-cap-inconclusive': 'A valid inconclusive round below the cap keeps the stage open.',
+  'roundCases:at-cap-inconclusive': 'A valid inconclusive round at the cap records exhaustion.',
+  'roundCases:majority-precedes-dissent': 'A full-roster approval majority is preserved alongside minority dissent.',
+  'roundCases:changes-requested': 'A valid changes-requested round fact is accepted.',
+  'roundCases:missing': 'A round fact missing a roster contribution is rejected.',
+  'roundCases:duplicate': 'A round fact with a duplicate seat contribution is rejected.',
+  'roundCases:extra': 'A round fact with an extra contribution is rejected.',
+  'roundCases:reordered': 'A round fact with contributions outside roster order is rejected.',
+  'roundCases:wrong-lens': 'A round contribution using the wrong reviewer lens is rejected.',
+  'roundCases:unknown-evidence-field': 'Unknown fields in recorded contribution evidence are rejected.',
+  'roundCases:status-verdict': 'A contribution with an incompatible status and verdict is rejected.',
+  'roundCases:over-round-bound': 'A recorded round beyond the policy limit is rejected.',
+  'roundCases:decision-mismatch': 'A recorded decision must match the reducer’s decision.',
+  'roundCases:dissent-mismatch': 'A recorded dissent list must match the reducer’s dissent result.',
+};
+
+async function fetchJson(path) {
+  const response = await fetch(path);
+  if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+  return response.json();
+}
+
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function caseSummary(bucketKey, testCase) {
+  return summaries[`${bucketKey}:${testCase.id}`] ?? 'This recorded fixture case matched its expected contract result.';
+}
+
+function render(results) {
+  const summary = document.querySelector('#summary');
+  const rows = document.querySelector('#case-rows');
+  const state = document.querySelector('#run-state');
+  const totalLabel = document.querySelector('#case-total');
+  let total = 0;
+  let failed = 0;
+
+  for (const [key, bucket] of Object.entries(results)) {
+    total += bucket.total;
+    failed += bucket.failed;
+
+    const card = element('article', `bucket${bucket.failed ? ' bad' : ''}`);
+    const head = element('div', 'bucket-head');
+    head.append(element('h2', '', labels[key]), element('span', 'badge', bucket.failed ? 'FAIL' : 'PASS'));
+    const count = element('p', 'count', `${bucket.passed}/${bucket.total}`);
+    count.append(element('span', '', `${bucket.failed} failed`));
+    card.append(head, count);
+    summary.append(card);
+
+    for (const testCase of bucket.cases) {
+      const row = document.createElement('tr');
+      const caseCell = document.createElement('td');
+      caseCell.append(
+        element('span', 'case-summary', caseSummary(key, testCase)),
+        element('code', 'case-id', testCase.id),
+      );
+      row.append(
+        caseCell,
+        element('td', `status${testCase.passed ? '' : ' fail'}`, testCase.passed ? 'PASS' : 'FAIL'),
+        element('td', 'bucket-name', labels[key]),
+      );
+      const detailCell = document.createElement('td');
+      const details = document.createElement('details');
+      details.append(element('summary', '', testCase.passed ? 'machine expected / actual' : 'machine mismatch details'));
+      details.append(element('pre', '', `expected ${JSON.stringify(testCase.expected, null, 2)}\nactual   ${JSON.stringify(testCase.actual, null, 2)}`));
+      detailCell.append(details);
+      row.append(detailCell);
+      rows.append(row);
+    }
+  }
+
+  totalLabel.textContent = `${total} cases · ${failed} failed`;
+  state.classList.add(failed ? 'fail' : 'pass');
+  state.querySelector('span').textContent = failed ? `FAIL · ${failed} unexpected mismatch${failed === 1 ? '' : 'es'}` : `PASS · all ${total} cases matched`;
+  window.__fkstSelftestComplete = true;
+}
+
+try {
+  const [contractJson, fixturesJson, corpusJson] = await Promise.all([
+    fetchJson(paths.contract),
+    fetchJson(paths.fixtures),
+    fetchJson(paths.corpus),
+  ]);
+  render(runFixtures(loadContract(contractJson), fixturesJson, corpusJson));
+} catch (error) {
+  const state = document.querySelector('#run-state');
+  state.classList.add('fail');
+  state.querySelector('span').textContent = 'Fixture case self-check could not run';
+  const box = document.querySelector('#error-box');
+  box.hidden = false;
+  box.textContent = `${error instanceof Error ? error.message : String(error)}. Serve the demo directory over HTTP and confirm all three contract fixture files are present.`;
+  window.__fkstSelftestComplete = true;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "schema": "fkst.command-transcript/v1",
+  "id": "R2-preflight-contract-tests-2026-07-21",
+  "recorded_at": "2026-07-21T01:27:18Z",
+  "recorded_by": {
+    "role": "main_pm",
+    "agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "provider": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205"
+  },
+  "test_subject": {
+    "repo_relative_path": "contracts/test/round_trip_test.dart",
+    "sha256": "6e8718de8c76016ece275326dc7c656191b6ed57e0f8973b922701120a6f1b73",
+    "fixture_resolution_source": "lines 7-9 resolve Directory.current.parent through ../packages/packages/devbored/tests/fixtures/"
+  },
+  "runs": [
+    {
+      "id": "isolated_heca_integration_worktree",
+      "heca_worktree_id": "019f81f7-9d7c-7a23-a205-e66284a3a01c",
+      "worktree_path": "[redacted-home]/Library/Application Support/heca/worktrees/80693732/full-app-v2-00-readiness",
+      "branch": "codex/full-app-v2-00-readiness",
+      "commit": "ea42eaf431efa38adba43f9e77595ad9efff5679",
+      "cwd": "[redacted-home]/Library/Application Support/heca/worktrees/80693732/full-app-v2-00-readiness/contracts",
+      "command": "dart test --reporter expanded",
+      "exit_code": 1,
+      "pre_test_porcelain": "",
+      "post_test_porcelain": "",
+      "result_counter": "+2 -18",
+      "failure_accounting": "All 18 fixture-reading cases failed before semantic evaluation; the two fixture-independent marker tests passed.",
+      "exact_output_excerpt": [
+        "00:00 +0: loading test/round_trip_test.dart",
+        "PathNotFoundException: Cannot open file, path = '[redacted-home]/Library/Application Support/heca/worktrees/80693732/packages/packages/devbored/tests/fixtures/markers/state.txt' (OS Error: No such file or directory, errno = 2)",
+        "00:00 +2 -18: Some tests failed."
+      ]
+    },
+    {
+      "id": "primary_checkout_with_ambient_sibling",
+      "checkout_kind": "authority_primary_checkout",
+      "checkout_path": "[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored",
+      "branch": "develop",
+      "commit": "fbe715048af53a5b69f0cba31a5c6078b4860b96",
+      "cwd": "[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/contracts",
+      "command": "dart test --reporter expanded",
+      "exit_code": 1,
+      "pre_test_porcelain": "Only the six R2 plan-mutation documentation/evidence paths were modified or untracked; contracts/** was clean.",
+      "post_test_porcelain": "Identical to pre-test state; dart test created no tracked or untracked delta.",
+      "result_counter": "+19 -1",
+      "failure_accounting": "All ambient sibling fixtures were found; only the legacy valid.json case failed semantic parsing.",
+      "exact_output_excerpt": [
+        "00:00 +0: loading test/round_trip_test.dart",
+        "00:00 +9 -1: test/round_trip_test.dart: devbored.config.v1 corpus valid.json loads as an immutable typed contract [E]",
+        "devbored config error: unknown field $.stages.design.enabled",
+        "00:00 +19 -1: Some tests failed."
+      ],
+      "ambient_reference_source": {
+        "repository_path": "[redacted-home]/Desktop/aelf-frontend-work/FKST/packages",
+        "repository_commit": "f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b",
+        "fixture_path": "packages/devbored/tests/fixtures/valid.json",
+        "fixture_sha256": "38c7456744bf1852891b43be7e50f5385f2012810d53cbeb898c3e5d297aee21",
+        "repository_porcelain": "?? .DS_Store"
+      }
+    }
+  ],
+  "conclusion": "The same committed harness is layout-dependent: its ambient sibling path exists beside the primary checkout but not beside the isolated Heca worktree. R-059 must remove that assumption and cannot treat the obsolete reference fixture as app authority.",
+  "nonclaims": [
+    "This transcript does not authorize product coding.",
+    "The primary-checkout fixture discovery is evidence of an ambient path dependency, not an allowed runtime or test dependency.",
+    "No reference package is admitted into the shipped graph by this observation."
+  ]
+}

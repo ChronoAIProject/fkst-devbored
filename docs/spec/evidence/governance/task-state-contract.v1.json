@@ -1,0 +1,105 @@
+{
+  "schema": "fkst.task-state-contract/v1",
+  "applies_from": "R2-dispatch",
+  "recorded_at": "2026-07-21T00:56:06Z",
+  "state_vocabulary": [
+    "PROPOSED",
+    "READY",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "FABLE_ADVISORY",
+    "OPUS_REVIEW",
+    "CHANGES_REQUESTED",
+    "RETURNED",
+    "OPUS_APPROVED",
+    "PM_REVIEW",
+    "ACCEPTED",
+    "INTEGRATED"
+  ],
+  "transition_rules": [
+    "PROPOSED -> READY -> IN_DEVELOPMENT -> DEV_VERIFIED",
+    "A task whose packet requires standing Fable advice may append FABLE_ADVISORY while its top-level state remains DEV_VERIFIED.",
+    "Fable CHANGES_REQUIRED appends RETURNED -> IN_DEVELOPMENT -> DEV_VERIFIED under the same Sol owner; Fable PASS returns to DEV_VERIFIED and never grants approval authority.",
+    "DEV_VERIFIED -> OPUS_REVIEW -> CHANGES_REQUESTED -> IN_DEVELOPMENT -> DEV_VERIFIED uses the same Sol owner and a fresh Opus session for the next review.",
+    "DEV_VERIFIED -> OPUS_REVIEW -> OPUS_APPROVED -> PM_REVIEW -> ACCEPTED -> INTEGRATED.",
+    "PM RETURNED appends RETURNED -> IN_DEVELOPMENT -> DEV_VERIFIED, followed by a fresh Opus review before another PM acceptance decision."
+  ],
+  "submission_entry": {
+    "required_keys": [
+      "review_cycle",
+      "commit",
+      "result"
+    ],
+    "required_values": {
+      "review_cycle": "non-negative integer; increments only when an Opus review cycle begins",
+      "commit": "full 40-hex owner artifact commit",
+      "result": "DEV_VERIFIED"
+    },
+    "optional_keys": [
+      "submitted_at",
+      "submitted_at_utc",
+      "parent",
+      "artifacts",
+      "evidence",
+      "checks",
+      "runtime_claim_status",
+      "governance_nonclaims",
+      "owner_metadata",
+      "limitations"
+    ],
+    "extension_rule": "Task-specific keys are allowed only when self-describing and must not replace the three required keys."
+  },
+  "advisory_entry": {
+    "container": "advisories",
+    "required_keys": [
+      "review_cycle",
+      "agent_id",
+      "provider",
+      "model",
+      "provider_session_id",
+      "verdict",
+      "reviewed_head",
+      "authority",
+      "repository_authorship"
+    ],
+    "authority": "advisory_only"
+  },
+  "opus_review_entry": {
+    "container": "reviews",
+    "fresh_session_per_cycle": true,
+    "repository_authorship": false,
+    "required_verdicts": [
+      "APPROVE",
+      "CHANGES_REQUESTED"
+    ]
+  },
+  "pm_decision_entry": {
+    "container": "pm_decisions",
+    "required_actor": "identified main GPT-5.6 Sol PM",
+    "acceptance_requires_fresh_opus_approve": true
+  },
+  "integration_entry": {
+    "required_before_state": "ACCEPTED",
+    "required_keys": [
+      "source_accepted_head",
+      "integration_branch",
+      "integration_base_commit",
+      "declared_order",
+      "order_index",
+      "cherry_pick_commits",
+      "collision_gate"
+    ]
+  },
+  "wave_r1_legacy_disposition": {
+    "status": "GRANDFATHERED_APPEND_ONLY",
+    "scope": [
+      "R-001",
+      "R-004",
+      "R-007",
+      "R-009",
+      "R-012",
+      "R-013"
+    ],
+    "rule": "Historical submission/advisory aliases remain truthful and immutable. Every new R2-or-later submission uses the canonical required keys and the advisories container."
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "fkst.authority-freeze/v1",
+  "recorded_at": "2026-07-21T01:10:00Z",
+  "authority_commit": "92e7aa72ebbd579e993f5f8e45e6e9636afc9f03",
+  "branch": "develop",
+  "pm": {
+    "agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "provider": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205"
+  },
+  "fable_advisory": {
+    "record": "R1-addendum-fable.json",
+    "verdict": "PASS",
+    "repository_authorship": false
+  },
+  "scope": [
+    "README.md",
+    "docs/**",
+    "plans/**"
+  ],
+  "validation": {
+    "governance_json_parse": "PASS",
+    "markdown_files_checked": 44,
+    "local_links_checked": 95,
+    "broken_local_links": 0,
+    "unbalanced_markdown_fences": 0,
+    "git_diff_check": "PASS"
+  },
+  "governance_closure": {
+    "state_vocabulary_frozen": true,
+    "canonical_submission_core_frozen": true,
+    "fable_advisory_authority_only": true,
+    "fresh_opus_required": true,
+    "same_owner_rework_required": true,
+    "pm_acceptance_required": true,
+    "wave_r1_legacy_history_rewritten": false
+  },
+  "boundaries": {
+    "primary_dependencies": [
+      "fkst-substrate",
+      "devloop"
+    ],
+    "primary_mechanisms": [
+      "Workflow",
+      "Council"
+    ],
+    "reference_only": [
+      "devbored",
+      "github-devloop*",
+      "consensus",
+      "github-proxy"
+    ]
+  },
+  "readiness_verdict": "STOP_NOT_READY_FOR_APPLICATION_CODING",
+  "product_coding_authorized": false,
+  "next_dispatch_base_rule": "R2 worktrees must include authority commit 92e7aa72ebbd579e993f5f8e45e6e9636afc9f03, this receipt commit, and the integrated R1 state head."
+}

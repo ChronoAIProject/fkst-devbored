@@ -1,0 +1,101 @@
+{
+  "schema": "fkst.governance-evidence/v1",
+  "gate": "G-007",
+  "recorded_at": "2026-07-20T19:50:01Z",
+  "recorded_at_local": "2026-07-21T03:50:01+08:00",
+  "verdict": "pass",
+  "decision": "OPEN_STEP_0_R_TASKS_ONLY",
+  "pm": {
+    "provider": "openai",
+    "model": "gpt-5.6-sol",
+    "session_id": "019f8017-5bad-7302-b7fb-e081e3d35205"
+  },
+  "fable_advisory": {
+    "result": "FABLE_G007: PASS",
+    "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+    "provider": "claude",
+    "model": "claude-fable-5",
+    "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+    "repository_authorship": false,
+    "approval_authority": false
+  },
+  "governance_gates": {
+    "G-001": "PASS",
+    "G-002": "PASS",
+    "G-003": "PASS",
+    "G-004": "PASS",
+    "G-005": "PASS",
+    "G-006": "PASS"
+  },
+  "route_contract": {
+    "pm_and_implementation": {
+      "provider": "codex",
+      "model": "gpt-5.6-sol"
+    },
+    "technical_advisor": {
+      "provider": "claude",
+      "model": "claude-fable-5"
+    },
+    "independent_reviewer": {
+      "provider": "claude",
+      "model": "claude-opus-4-8"
+    },
+    "drift_policy": "Any unavailable or mismatched provider/model invalidates the affected governance evidence and stops new dispatch."
+  },
+  "engineering_agent_posture": {
+    "heca_mode": "full-access",
+    "reason": "The current Heca nightly did not surface the Codex auto-mode git-add permission during G-002.",
+    "required_compensating_controls": [
+      "one dedicated Heca worktree and branch per task",
+      "exact exclusive and forbidden path packet",
+      "preflight base/head/clean-status verification",
+      "canonical task/agent/provider/model/session commit trailers",
+      "post-task main/dependency/unrelated-path diff audit",
+      "fresh read-only Opus review of the committed diff",
+      "main-PM acceptance before integration"
+    ],
+    "auto_mode_status": "not_accepted_until_permission_queue_is_reproven",
+    "scope_note": "This is an outer engineering-orchestration posture only and is never evidence for the sanitized product Codex worker required by RDY-20."
+  },
+  "time_basis": {
+    "recorded_at": "UTC from date -u",
+    "recorded_at_local": "Asia/Singapore",
+    "rollout_filename_note": "Codex rollout filenames use local calendar/time while session_meta timestamp values use UTC."
+  },
+  "mechanical_checks": {
+    "governance_json": "PASS",
+    "git_diff_check": "PASS",
+    "task_nodes": 210,
+    "dependency_edges": 797,
+    "roots": [
+      "G-001"
+    ],
+    "leaves": [
+      "X-009"
+    ],
+    "cycles": 0,
+    "readiness_rows": 25,
+    "org_rows": 6,
+    "broken_authoritative_relative_markdown_links": 0
+  },
+  "dependency_integrity_at_gate": {
+    "substrate_commit": "1e03c4f91d7cc9e42dff1dc180623912ea889f65",
+    "substrate_status": "clean",
+    "devloop_source_distribution_commit": "f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b",
+    "devloop_source_distribution_status": "only_pre_existing_untracked_.DS_Store"
+  },
+  "newly_ready_tasks": [
+    "R-001",
+    "R-004",
+    "R-007",
+    "R-009",
+    "R-012",
+    "R-013"
+  ],
+  "still_forbidden": [
+    "all U/C/D/A/L/B/P/W/F/I/E/X implementation tasks before their dependencies",
+    "all product, UI, runtime, or adapter coding before R-039",
+    "any reference-package runtime dependency or copied devloop implementation",
+    "any silent provider/model fallback"
+  ]
+}

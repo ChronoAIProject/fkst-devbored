@@ -1,0 +1,168 @@
+{
+  "schema": "fkst.demo.transition-version-parity.v1",
+  "engineSource": "packages/libraries/contract/transition_version.lua",
+  "engineTests": [
+    "packages/github-devloop/tests/contract_transition_version_test.lua",
+    "packages/github-devloop/tests/versions_equivalent_corpus_freeze_test.lua"
+  ],
+  "comparisons": [
+    {
+      "name": "newer updated_at wins",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-05T01-02-03Z",
+      "expectedSign": -1
+    },
+    {
+      "name": "timestamped version wins over timestampless fallback",
+      "left": "consensus:github-devloop/issue/owner/repo/42/v1",
+      "right": "consensus:github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z",
+      "expectedSign": -1
+    },
+    {
+      "name": "safe-equivalent slash and hyphen bases tie",
+      "left": "ready/consensus/v1",
+      "right": "ready-consensus-v1",
+      "expectedSign": 0
+    },
+    {
+      "name": "loop round orders within the same base",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/loop/1",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/loop/2",
+      "expectedSign": -1
+    },
+    {
+      "name": "fix round orders after the same loop round",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/loop/2",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/loop/2/fix/1",
+      "expectedSign": -1
+    },
+    {
+      "name": "fix field outranks later review-meta-action field",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/review-meta-action/9/fix/1",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/fix/2",
+      "expectedSign": -1
+    },
+    {
+      "name": "fix field outranks later reimplement field",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/reimplement/9",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/fix/1",
+      "expectedSign": -1
+    },
+    {
+      "name": "timeout max round orders across timeout states",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/timeout/ready/1",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/timeout/reviewing/2",
+      "expectedSign": -1
+    },
+    {
+      "name": "review-meta-action field outranks review-loop field",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/review-loop/9",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/review-meta-action/1",
+      "expectedSign": -1
+    },
+    {
+      "name": "review-loop field outranks ready-split field",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/ready-split/9",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/review-loop/1",
+      "expectedSign": -1
+    },
+    {
+      "name": "explicit loop zero equals absent loop suffix",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/loop/0",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z",
+      "expectedSign": 0
+    },
+    {
+      "name": "same timeout max round is equal regardless of state",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/timeout/ready/2",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/timeout/reviewing/2",
+      "expectedSign": 0
+    },
+    {
+      "name": "higher timeout max round wins regardless of state",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/timeout/ready/3",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-04T01-02-03Z/timeout/reviewing/2",
+      "expectedSign": 1
+    },
+    {
+      "name": "slash fix chain",
+      "left": "2026-06-03T01-02-03Z",
+      "right": "2026-06-03T01-02-03Z/fix/1/fix/2/fix/3",
+      "expectedSign": -1
+    },
+    {
+      "name": "hyphen fix chain",
+      "left": "2026-06-03T01-02-03Z",
+      "right": "2026-06-03T01-02-03Z-fix-1-fix-2",
+      "expectedSign": -1
+    },
+    {
+      "name": "consensus loop zero",
+      "left": "consensus:github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z",
+      "right": "consensus:github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/loop/0",
+      "expectedSign": 0
+    },
+    {
+      "name": "consensus loop one",
+      "left": "consensus:github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z",
+      "right": "consensus:github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/loop/1",
+      "expectedSign": -1
+    },
+    {
+      "name": "ready split",
+      "left": "consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z",
+      "right": "consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/ready-split/1",
+      "expectedSign": -1
+    },
+    {
+      "name": "review loop",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/review-loop/1",
+      "expectedSign": -1
+    },
+    {
+      "name": "review meta action",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/review-meta-action/1",
+      "expectedSign": -1
+    },
+    {
+      "name": "review meta parses but is ordering-neutral",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/review-meta/1",
+      "expectedSign": 0
+    },
+    {
+      "name": "reimplement",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/reimplement/1",
+      "expectedSign": -1
+    },
+    {
+      "name": "timeout",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/timeout/ready/3",
+      "expectedSign": -1
+    },
+    {
+      "name": "timeout reconcile parses but is ordering-neutral",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/timeout-reconcile/implementing/3",
+      "expectedSign": 0
+    },
+    {
+      "name": "rereview parses but adds no ordering field",
+      "left": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/review-loop/1",
+      "right": "ready/consensus-github-devloop/issue/owner/repo/42/2026-06-03T01-02-03Z/review-loop/1/rereview/1/def456",
+      "expectedSign": 0
+    }
+  ],
+  "stateMarkerComparisons": [
+    {
+      "name": "safe-equivalent bases tie before stage rank",
+      "left": {"version": "ready/consensus/v1", "state": "ready", "stageRank": 500},
+      "right": {"version": "ready-consensus-v1", "state": "implementing", "stageRank": 600},
+      "expectedSign": -1
+    }
+  ]
+}

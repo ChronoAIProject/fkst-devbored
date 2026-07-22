@@ -1,0 +1,55 @@
+{
+  "schema": "fkst.governance-evidence/v1",
+  "gate": "G-004",
+  "recorded_at": "2026-07-20T19:29:00Z",
+  "verdict": "pass",
+  "advisory_verdict": "pass",
+  "disposition_verdict": "accepted",
+  "provider": "anthropic",
+  "heca_provider": "claude",
+  "model": "claude-fable-5",
+  "mode": "plan",
+  "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+  "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+  "role": "standing_technical_advisor",
+  "authority": {
+    "implementation_authorship": false,
+    "independent_approval": false,
+    "pm_authority": false,
+    "advisory_only": true
+  },
+  "reviewed_topics": [
+    "exact two-primary-FKST-dependency boundary",
+    "Workflow/Council-led devloop",
+    "Flutter and runtime separation of concerns",
+    "Step-0 stop gate",
+    "Sol implementation and independent Opus review protocol"
+  ],
+  "initial_observations": [
+    "Place the two current execution plans explicitly in the authority order.",
+    "Replace ambiguous model-tier wording with review emphasis under the fixed Sol role.",
+    "Specify exact route freeze, outage, and drift behavior.",
+    "Bind the advisory to prior G-001 evidence at the PM gate.",
+    "Specify fresh Opus sessions for every post-rework review.",
+    "Review ADR-032 directly."
+  ],
+  "pm_disposition": [
+    "Added the two current plans below docs/spec and above ADRs, with no spec override authority.",
+    "Replaced every Model tier label with Review emphasis while retaining Sol ownership.",
+    "Froze current provider/model IDs and made outage or drift invalidate governance and stop dispatch.",
+    "Linked G-001 in the governance evidence set and retained G-007 cross-check responsibility.",
+    "Required a fresh Opus agent/session for every initial and post-rework review.",
+    "Fable directly reviewed the amended ADR-032 text."
+  ],
+  "follow_up_result": "FABLE_DISPOSITION: ACCEPTED",
+  "repository_effects": {
+    "repository_files_edited_by_advisor": [],
+    "commits_by_advisor": [],
+    "external_harness_plan_record": "[redacted-home]/.claude/plans/act-as-the-standing-encapsulated-cookie.md"
+  },
+  "limitations": [
+    "The external Claude plan artifact is harness state, not repository authorship.",
+    "Fable advice does not replace Opus review or PM acceptance.",
+    "Normal engineering dispatch remains blocked until G-007."
+  ]
+}

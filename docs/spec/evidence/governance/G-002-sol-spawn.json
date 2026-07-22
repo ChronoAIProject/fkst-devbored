@@ -1,0 +1,48 @@
+{
+  "schema": "fkst.governance-evidence/v1",
+  "gate": "G-002",
+  "recorded_at": "2026-07-20T19:21:00Z",
+  "verdict": "pass",
+  "provider": "openai",
+  "heca_provider": "codex",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "xhigh",
+  "agent_id": "019f80f7-7369-7000-8b41-443684ce9e6b",
+  "provider_session_id": "019f80f7-742d-7361-9905-6666fddb10db",
+  "worktree": {
+    "id": "019f80f3-127d-7bb0-8cea-1d64a606fd8e",
+    "branch": "codex/v2-g002-sol-spawn",
+    "base_commit": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+    "path": "[redacted-home]/Library/Application Support/heca/worktrees/80693732/g002-sol-smoke"
+  },
+  "commit": {
+    "sha": "f36aa63a12a2ef3498fdd81a4927076fc8741def",
+    "parent": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+    "subject": "test(orchestration): prove G-002 Sol isolation",
+    "changed_files": [
+      ".orchestration-smoke/g-002-sol.txt"
+    ],
+    "fixture_sha256": "1f329ac76ea6d6c8a1243ef25a41f5df6b7e09b6895e5e4df2bdebbb1bc810c6",
+    "post_commit_porcelain": ""
+  },
+  "session_metadata_evidence": {
+    "originator": "heca",
+    "codex_cli_version": "0.144.6",
+    "model_provider": "openai",
+    "turn_model": "gpt-5.6-sol",
+    "rollout_file": "[redacted-home]/.codex/sessions/2026/07/21/rollout-2026-07-21T03-18-48-019f80f7-742d-7361-9905-6666fddb10db.jsonl"
+  },
+  "failed_attempt": {
+    "agent_id": "019f80f3-d7ac-7ec3-8150-864d0ba1994c",
+    "provider_session_id": "019f80f3-d8d3-73d0-9f3e-91e4f606d79d",
+    "mode": "auto",
+    "result": "terminated_after_heca_failed_to_surface_the_exact_git_add_permission",
+    "repository_effect": "created_only_the_required_untracked_fixture;_no_commit"
+  },
+  "accepted_scope": "A fresh provider-selected Sol agent worked in an isolated disposable branch, committed one harmless fixture, and handed back machine-verifiable metadata.",
+  "limitations": [
+    "The retry used Heca full-access mode only to complete the disposable governance smoke after the auto-mode permission was not exposed.",
+    "This is not evidence for the sanitized role sandbox, dedicated Codex home, or effective-tool policy required by RDY-20.",
+    "This does not authorize normal engineering dispatch until G-007 passes."
+  ]
+}

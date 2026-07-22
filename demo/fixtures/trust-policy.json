@@ -1,0 +1,11 @@
+{
+  "schema": "fkst.demo.trust-policy.v1",
+  "trustedLoopActor": {
+    "login": "devloop-bot"
+  },
+  "allowedAssociations": [
+    "OWNER",
+    "MEMBER",
+    "COLLABORATOR"
+  ]
+}

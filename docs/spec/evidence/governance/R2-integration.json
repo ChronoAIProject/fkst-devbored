@@ -1,0 +1,102 @@
+{
+  "schema": "fkst.wave-integration/v1",
+  "wave": "R2-wave-A-contract-and-source-evidence",
+  "recorded_at": "2026-07-21T05:06:32Z",
+  "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+  "pm_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+  "integration_branch": "codex/full-app-v2-00-readiness",
+  "integration_base_commit": "b48f61d1559e29a8c436a5c3ed18762d48012ed1",
+  "aggregate_content_head": "a6d0804779c6fef2436d11b2e3ee5f6e6c2eb80f",
+  "declared_order": [
+    "R-003",
+    "R-008",
+    "R-014",
+    "R-016"
+  ],
+  "collision_gate": {
+    "status": "PASS",
+    "method": "For every pair, compare the exact integration-base..accepted-source-head changed-path sets and require an empty intersection.",
+    "task_count": 4,
+    "pairwise_intersections_checked": 6,
+    "collisions": []
+  },
+  "tasks": [
+    {
+      "id": "R-003",
+      "source_accepted_head": "efdc43de8cba112522bc25eec73ecf097fe4d68b",
+      "changed_path_count": 4,
+      "state": "INTEGRATED",
+      "integration_merge_commit": "29cca55",
+      "residual_gates": [
+        "R-020/R-021/R-025 must turn admitted host contracts into executable package and host proof.",
+        "R-043/R-046/R-048 and R-057/R-058 retain root, containment, and lifetime closure."
+      ]
+    },
+    {
+      "id": "R-008",
+      "source_accepted_head": "1ea7a10584f31e76aadfeb1cb16d3a2cd6de3f80",
+      "changed_path_count": 15,
+      "state": "INTEGRATED",
+      "integration_merge_commit": "4fee980",
+      "residual_gates": [
+        "R-010 may reuse but may not fork the canonical kernel.",
+        "R-011/R-022/R-043 retain assignment, runtime consumption, manifest, and exhaustion proof.",
+        "R-059 retains the independent historical full-suite portability repair."
+      ]
+    },
+    {
+      "id": "R-014",
+      "source_accepted_head": "774c4401cfd5613e36ee11afaf3ec4bb865bacef",
+      "changed_path_count": 4,
+      "state": "INTEGRATED",
+      "integration_merge_commit": "2d5ca26",
+      "residual_gates": [
+        "R-030 must prove behavior and no-write semantics.",
+        "R-041 and R-005 must close app-package visibility and pin the landed public-devloop commit.",
+        "R-024 and R-045 must prove duplicate, conflict, and receipt handling."
+      ]
+    },
+    {
+      "id": "R-016",
+      "source_accepted_head": "e4025bedcebd96a95114a82e164c63df17eb6f25",
+      "changed_path_count": 3,
+      "state": "INTEGRATED",
+      "integration_merge_commit": "a6d0804",
+      "residual_gates": [
+        "R-042 must admit a safe public merge seam or select hold-only behavior.",
+        "R-045 and R-055 retain immutable evidence and proxy-free restart/replay closure.",
+        "R-018 consumes the map and R-033 owns executable no-write probes."
+      ]
+    }
+  ],
+  "integration_verification": {
+    "dart_pub_get_enforce_lockfile": "PASS",
+    "dart_analyze": "PASS (No issues found)",
+    "workflow_contract_test": "PASS (9/9)",
+    "substrate_lua_workflow_integration": "PASS (9/9, 0 failures)",
+    "r003_source_inventory_verifier": "PASS (20 source files, 54 ranges, 49 inventory entries, 41 Rust items, 2 TOML coordinates, 11 scopes)",
+    "r014_public_devloop_identity_verifier": "PASS (7 exports, 14 symbols, 5 reference files, 13 cases, 10 red findings, 5 no-write red probes)",
+    "json_parse": "PASS",
+    "git_diff_check": "PASS",
+    "integration_porcelain": "CLEAN"
+  },
+  "authority": {
+    "primary_dependencies": [
+      "fkst-substrate",
+      "public-devloop"
+    ],
+    "app_mechanisms": [
+      "Workflow",
+      "Council"
+    ],
+    "reference_only": [
+      "devbored",
+      "github-devloop*",
+      "consensus",
+      "github-proxy"
+    ],
+    "product_or_ui_coding_authorized": false
+  },
+  "wave_gate": "R2-WAVE-A-PASS",
+  "authorization_rule": "R-039 remains the mandatory gate before product or UI implementation until an accepted, append-only accelerated-delivery mutation explicitly supersedes the execution process without weakening technical readiness."
+}

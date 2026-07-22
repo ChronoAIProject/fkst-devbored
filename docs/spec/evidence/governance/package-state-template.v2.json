@@ -1,0 +1,20 @@
+{
+  "schema": "fkst.package-state/v2",
+  "package_id": "AP-XX",
+  "state": "PROPOSED",
+  "covered_requirement_ids": [],
+  "dependency_package_ids": [],
+  "minimum_authorization_tier": "T0_FOUNDATION",
+  "repository": "fkst-devbored",
+  "integration_base_commit": null,
+  "exclusive_paths": [],
+  "owner": null,
+  "submissions": [],
+  "reviews": [],
+  "integration_checks": [],
+  "integration": null,
+  "invalidations": [],
+  "blockers": [],
+  "milestone_id": null,
+  "history": ["PROPOSED"]
+}

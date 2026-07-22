@@ -1,0 +1,69 @@
+{
+  "schema": "fkst.governance-evidence/v1",
+  "gate": "G-006",
+  "recorded_at": "2026-07-20T19:28:00Z",
+  "verdict": "pass",
+  "base_commit": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+  "lanes": [
+    {
+      "lane": "A",
+      "agent_id": "019f80fa-6689-7b42-9081-a5fca9ce7e82",
+      "provider_session_id": "019f80fa-6780-7a40-b795-00498c7824f8",
+      "provider": "openai",
+      "heca_provider": "codex",
+      "model": "gpt-5.6-sol",
+      "worktree_id": "019f80fa-3e1c-7ed1-adcf-4db270de197b",
+      "branch": "codex/v2-g006-lane-a",
+      "owned_path": ".orchestration-smoke/g-006/lane-a.txt",
+      "commit": "94f4a14565aaf51fb0363ea1d078d4e17ea703fe",
+      "post_commit_porcelain": ""
+    },
+    {
+      "lane": "B",
+      "agent_id": "019f80fa-6689-7b42-9081-a60a1c587f38",
+      "provider_session_id": "019f80fa-6795-7a63-9aff-a4c0947664e7",
+      "provider": "openai",
+      "heca_provider": "codex",
+      "model": "gpt-5.6-sol",
+      "worktree_id": "019f80fa-3e1f-75c0-a359-04ea30c2314a",
+      "branch": "codex/v2-g006-lane-b",
+      "owned_path": ".orchestration-smoke/g-006/lane-b.txt",
+      "commit": "868309906bf60a4da6973a320f4b938ce932dfb6",
+      "post_commit_porcelain": ""
+    }
+  ],
+  "concurrency": {
+    "both_agents_created_at_same_millisecond": true,
+    "overlapping_execution_observed": true,
+    "exclusive_paths_disjoint": true
+  },
+  "collision_guard": {
+    "algorithm": "sorted commit path intersection",
+    "disjoint_lane_a_vs_lane_b_status": 0,
+    "disjoint_output": "NO_COLLISION",
+    "hostile_lane_a_vs_lane_a_status": 42,
+    "hostile_output": "COLLISION:.orchestration-smoke/g-006/lane-a.txt"
+  },
+  "integration": {
+    "worktree_id": "019f80fe-4b03-70d0-bb1e-8d709ea3f450",
+    "branch": "codex/v2-g006-integration",
+    "merge_order": [
+      "A",
+      "B"
+    ],
+    "cherry_picked_commits": [
+      "8e9d3a4ac7b910ffc20f83c67e42b467e2c933d9",
+      "a84df7df51e12c3bbfb3f76a9cd10c9aa825502b"
+    ],
+    "changed_files": [
+      ".orchestration-smoke/g-006/lane-a.txt",
+      ".orchestration-smoke/g-006/lane-b.txt"
+    ],
+    "post_integration_porcelain": ""
+  },
+  "limitations": [
+    "All branches and files are disposable governance fixtures and never enter product history.",
+    "The Sol workers used Heca full-access mode after the auto-mode permission-queue defect observed in G-002; this is not RDY-20 worker-sandbox evidence.",
+    "Normal engineering dispatch remains blocked until G-007."
+  ]
+}

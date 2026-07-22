@@ -1,0 +1,85 @@
+{
+  "schema": "fkst.wave-integration/v1",
+  "wave": "R1-initial-roots",
+  "recorded_at": "2026-07-21T00:56:06Z",
+  "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+  "pm_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+  "integration_branch": "codex/full-app-v2-00-readiness",
+  "integration_worktree_id": "019f81f7-9d7c-7a23-a205-e66284a3a01c",
+  "integration_base_commit": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+  "aggregate_content_head": "01b4f4dfb09db1e9afa34090252b6a633cb0c741",
+  "integrated_state_head": "cc46dd029a699d55151c22a4259e52b7c6684c7a",
+  "declared_order": [
+    "R-001",
+    "R-004",
+    "R-007",
+    "R-009",
+    "R-012",
+    "R-013"
+  ],
+  "collision_gate": {
+    "status": "PASS",
+    "method": "For every pair, sort the base..accepted-head changed-path sets and require comm -12 to be empty.",
+    "task_count": 6,
+    "pairwise_intersections_checked": 15,
+    "collisions": []
+  },
+  "tasks": [
+    {
+      "id": "R-001",
+      "source_accepted_head": "58297eac563d1b4a98da0d3b4497252fe9f317ad",
+      "changed_path_count": 4,
+      "state": "INTEGRATED",
+      "integration_state_commit": "d1de85dcf72330320afaee46ed4c14ac317b01e9",
+      "residual_gate": "R-052 must prove the binary-to-source build tie."
+    },
+    {
+      "id": "R-004",
+      "source_accepted_head": "d14aa0cc3ebf1dcba885eae0afd17f8ef3c51ad6",
+      "changed_path_count": 3,
+      "state": "INTEGRATED",
+      "integration_state_commit": "ceeae30eb98fe8b76453764c4cb265dea6ded165",
+      "residual_gate": "R-041 must add the chosen app-package visibility; R-005 pins required public-devloop changes."
+    },
+    {
+      "id": "R-007",
+      "source_accepted_head": "8905e11aa27f84f7893782101188996d042facb8",
+      "changed_path_count": 6,
+      "state": "INTEGRATED",
+      "integration_state_commit": "20d808c02bc1eeaf7573e78785b7ffbc09b5f373",
+      "fable_verdict": "PASS",
+      "opus_verdict": "APPROVE",
+      "residual_gate": "R-008/R-011/R-022/R-043 retain canonical, referential, runtime, cap, exhaustion, and reasonCode proof."
+    },
+    {
+      "id": "R-009",
+      "source_accepted_head": "566ba7ebbfe6b23bdd478a88d9cd5e2dd72518c4",
+      "changed_path_count": 5,
+      "state": "INTEGRATED",
+      "integration_state_commit": "0bb54361ceda67e1ca9e958ebaafb6cbdec86296",
+      "fable_initial_verdict": "CHANGES_REQUIRED",
+      "same_owner_rework": true,
+      "fable_rework_verdict": "PASS",
+      "opus_verdict": "APPROVE",
+      "residual_gate": "R-010 must execute both precedence fixtures plus the four deferred hostile cases; R-011 owns the Workflow seam."
+    },
+    {
+      "id": "R-012",
+      "source_accepted_head": "abf6f5c3de980f98c2286d9a81154dae7d635edc",
+      "changed_path_count": 4,
+      "state": "INTEGRATED",
+      "integration_state_commit": "9f88ceb5cc3c22d4714fa1dddcaf70454722804e",
+      "residual_gate": "R-014/R-029/R-030/R-049 must execute dual-context and label-only behavior."
+    },
+    {
+      "id": "R-013",
+      "source_accepted_head": "9d459e78fde09938a96bcfee56138d3d71b90b0b",
+      "changed_path_count": 4,
+      "state": "INTEGRATED",
+      "integration_state_commit": "cc46dd029a699d55151c22a4259e52b7c6684c7a",
+      "residual_gate": "R-051/R-029 must implement and prove the safe current-Codex invocation and sanitized personal-account environment."
+    }
+  ],
+  "product_coding_authorized": false,
+  "authorization_rule": "R-039 remains the mandatory Step-0 PM acceptance gate before product or UI implementation."
+}

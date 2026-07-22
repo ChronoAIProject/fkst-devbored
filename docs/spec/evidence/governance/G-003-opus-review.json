@@ -1,0 +1,40 @@
+{
+  "schema": "fkst.governance-evidence/v1",
+  "gate": "G-003",
+  "recorded_at": "2026-07-20T19:25:00Z",
+  "verdict": "pass",
+  "review_verdict": "approve",
+  "provider": "anthropic",
+  "heca_provider": "claude",
+  "model": "claude-opus-4-8",
+  "mode": "plan",
+  "agent_id": "019f80f9-376f-7243-bbca-9166908a1bff",
+  "provider_session_id": "6506eabb-c27a-4dc8-b7a2-0cd80d18c7b7",
+  "reviewed": {
+    "commit": "f36aa63a12a2ef3498fdd81a4927076fc8741def",
+    "parent": "d921ee67dd742521feb21b8b1af8adb26138bdfc",
+    "author_agent_id": "019f80f7-7369-7000-8b41-443684ce9e6b",
+    "author_provider_session_id": "019f80f7-742d-7361-9905-6666fddb10db",
+    "changed_files": [
+      ".orchestration-smoke/g-002-sol.txt"
+    ]
+  },
+  "independence": {
+    "distinct_agent_id": true,
+    "distinct_provider": true,
+    "distinct_model": true,
+    "distinct_provider_session": true,
+    "implementation_authorship": false,
+    "pre_review_porcelain": "",
+    "post_review_porcelain": "",
+    "head_unchanged": true
+  },
+  "findings": [],
+  "observation": "The disposable G-002 commit had no self-contained agent/model/session trailers; provenance was reconstructible from Heca and timestamps.",
+  "pm_disposition": "Accepted G-003; added mandatory FKST provenance trailers to every non-bootstrap engineering commit and to Opus/PM acceptance.",
+  "limitations": [
+    "Claude plan mode wrote its harness plan record outside the Git worktree.",
+    "The reviewer did not edit, stage, amend, commit, or approve product code.",
+    "Normal engineering dispatch remains blocked until G-007."
+  ]
+}

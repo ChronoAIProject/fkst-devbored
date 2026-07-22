@@ -1,0 +1,21 @@
+{
+  "schema": "fkst.task-state/v1",
+  "task_id": "<task-id>",
+  "state": "PROPOSED",
+  "integration_base_commit": "<40-hex-commit>",
+  "dependencies": [],
+  "exclusive_paths": [],
+  "owner_agent_id": null,
+  "owner_provider": null,
+  "owner_model": null,
+  "owner_provider_session": null,
+  "review_cycle": 0,
+  "transition_history": [
+    "PROPOSED"
+  ],
+  "submissions": [],
+  "advisories": [],
+  "reviews": [],
+  "pm_decisions": [],
+  "integration": null
+}

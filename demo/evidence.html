@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>devbored — Evidence · #111</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+body{min-width:320px}
+.app{grid-template-columns:224px minmax(0,1fr)}
+.side{padding-top:14px}
+.brand{display:flex;align-items:center;gap:10px;padding:5px 8px 17px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.brand-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.brand-copy small{color:var(--faint);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.route-nav{display:flex;flex-direction:column;gap:3px}
+.route-nav .sitem{height:34px}
+.route-nav .sitem[aria-current="page"]{background:var(--raise);color:var(--fg)}
+.route-nav .sitem[aria-current="page"]::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--amber);margin-left:-3px}
+.side-note{margin-top:auto;padding:14px 8px 8px;border-top:1px solid var(--line);color:var(--faint);font-size:10.5px;line-height:1.55}
+.side-note code{color:var(--faint)}
+
+.main{min-width:0;overflow:auto}
+.main>.crumbbar{height:40px;padding:0 28px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;position:sticky;top:0;z-index:5;background:color-mix(in oklab,var(--bg) 92%,transparent);backdrop-filter:blur(12px)}
+.crumbbar .repo{color:var(--faint);font-family:var(--mono);font-size:11px}
+.crumbbar .sep{color:var(--ghost)}
+.crumbbar .current{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--fg);font-weight:500}
+.fixture-ref{margin-left:auto;color:var(--faint);font:500 10.5px/1.2 var(--mono)}
+.content{width:min(100%,1060px);margin:0 auto;padding:26px 34px 64px}
+.provenance-strip{display:flex;align-items:center;gap:10px;min-height:38px;padding:8px 13px;margin-bottom:26px;border:1px solid color-mix(in oklab,var(--amber) 26%,var(--line));border-radius:8px;background:color-mix(in oklab,var(--amber) 6%,var(--raise));color:var(--dim);font-size:11.5px}
+.provenance-strip .signal{width:7px;height:7px;border-radius:50%;background:var(--amber);flex:none}
+.provenance-strip strong{color:var(--amber);font-weight:600;letter-spacing:.01em}
+.provenance-strip .method{margin-left:auto;color:var(--faint)}
+
+.issue-header{align-items:flex-start;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.issue-id{color:var(--green)}
+.issue-header .page-title{max-width:760px;font-size:20px;line-height:1.15;letter-spacing:-.02em}
+.issue-summary{max-width:760px;margin-top:7px;color:var(--dim);font-size:11.5px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.snapshot{display:flex;flex-direction:column;align-items:flex-end;gap:5px;color:var(--faint);font-size:10.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.snapshot b{color:var(--dim);font-size:12px;font-weight:500}
+
+.loading,.load-error{margin-top:26px;border:1px dashed var(--line-2);border-radius:10px;padding:22px;color:var(--faint);background:color-mix(in oklab,var(--raise) 58%,transparent)}
+.loading{display:flex;align-items:center;gap:10px}
+.loading[hidden]{display:none}
+.spinner{width:14px;height:14px;border:2px solid var(--line-2);border-top-color:var(--faint);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-error strong{display:block;color:var(--red);font-weight:600;margin-bottom:5px}
+.load-error code{font-size:11px;color:var(--dim)}
+
+.evidence-body{padding-top:34px}
+.section-heading{display:flex;align-items:flex-end;gap:12px;margin-bottom:19px}
+.section-heading h2{font:700 18px/1.15 "Space Grotesk",sans-serif;letter-spacing:-.015em}
+.section-heading p{color:var(--faint);font-size:11px}
+.section-heading .count{margin-left:auto;display:inline-flex;align-items:center;height:21px;padding:0 8px;border:1px solid var(--line);border-radius:11px;color:var(--faint);font-size:10.5px;font-variant-numeric:tabular-nums}
+.current-accepted{display:grid;grid-template-columns:minmax(170px,.55fr) minmax(0,1fr);gap:16px;align-items:center;margin:0 0 20px;padding:15px 17px;border:1px solid var(--line-2);border-radius:9px;background:var(--raise)}
+.current-label{display:block;margin-bottom:5px;color:var(--faint);font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.current-accepted strong{font:700 19px/1.1 "Space Grotesk",sans-serif;letter-spacing:-.015em;text-transform:capitalize}
+.current-version{min-width:0;color:var(--faint);font:500 9.5px/1.5 var(--mono);overflow-wrap:anywhere}
+.cas-rule{display:block;margin-top:3px;color:var(--faint);font:500 9.5px/1.4 var(--mono)}
+
+.timeline{list-style:none;position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:36px}
+.timeline::before{content:"";position:absolute;left:16.66%;right:16.66%;top:19px;height:1px;background:var(--line-2);z-index:0}
+.state-item{min-width:0;position:relative;z-index:1}
+.state-index{width:39px;height:39px;display:grid;place-items:center;margin:0 0 11px 14px;border:1px solid var(--line-2);border-radius:50%;background:var(--bg);color:var(--faint);font:600 11px/1 var(--mono);font-variant-numeric:tabular-nums}
+.state-item.is-current .state-index{border-color:var(--faint);color:var(--dim)}
+.state-card{height:calc(100% - 50px);min-height:220px;padding:17px;border:1px solid var(--line);border-radius:10px;background:var(--raise);display:flex;flex-direction:column}
+.state-item.is-current .state-card{border-color:var(--line-2)}
+.state-top{display:flex;align-items:center;gap:8px;margin-bottom:17px}
+.schema{display:inline-flex;align-items:center;height:20px;padding:0 7px;border:1px solid color-mix(in oklab,var(--amber) 34%,var(--line));border-radius:4px;color:var(--amber);font:600 9.5px/1 var(--mono);letter-spacing:.03em}
+.rank{margin-left:auto;color:var(--faint);font:500 10px/1 var(--mono)}
+.state-name{font:700 22px/1.1 "Space Grotesk",sans-serif;letter-spacing:-.02em;text-transform:capitalize;margin-bottom:17px}
+.carrier{display:grid;gap:10px;margin-top:auto}
+.carrier-row{display:grid;gap:3px;min-width:0}
+.carrier dt{color:var(--faint);font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.carrier dd{color:var(--dim);font-size:11px;min-width:0;overflow-wrap:anywhere}
+.carrier time{font-variant-numeric:tabular-nums}
+.trusted{display:inline-flex;align-items:center;gap:6px;color:var(--green)}
+.trusted::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green)}
+.marker-details{margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}
+.marker-details summary{cursor:pointer;color:var(--faint);font-size:10.5px;list-style:none}
+.marker-details summary::-webkit-details-marker{display:none}
+.marker-details summary::after{content:" +";color:var(--faint)}
+.marker-details[open] summary::after{content:" −"}
+.marker-details code{display:block;margin-top:9px;color:var(--faint);font:400 9.5px/1.45 var(--mono);overflow-wrap:anywhere}
+
+.carrier-separation{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:14px;padding-top:27px;border-top:1px solid var(--line)}
+.carrier-block{min-width:0}
+.carrier-label{display:flex;align-items:center;gap:8px;margin-bottom:9px;color:var(--faint);font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase}
+.carrier-label::before{content:"";width:16px;height:1px;background:var(--line-2)}
+.result-card{min-height:165px;padding:21px;border:1px solid color-mix(in oklab,var(--green) 32%,var(--line));border-radius:10px;background:color-mix(in oklab,var(--green) 5%,var(--raise));display:flex;flex-direction:column;transition:border-color .15s,transform .15s}
+.result-card:hover{border-color:color-mix(in oklab,var(--green) 58%,var(--line));transform:translateY(-1px)}
+.result-top{display:flex;align-items:center;gap:8px}
+.result-schema{color:var(--green);font:600 10px/1 var(--mono)}
+.result-link{margin-left:auto;display:inline-flex;align-items:center;gap:5px;color:var(--faint);font-size:10.5px}
+.decision{margin:19px 0 8px;font:700 27px/1 "Space Grotesk",sans-serif;letter-spacing:-.025em;text-transform:capitalize}
+.decision::before{content:"decision = ";color:var(--faint);font:500 12px/1 var(--mono);letter-spacing:0;text-transform:none}
+.result-meta{margin-top:auto;color:var(--faint);font-size:10.5px;font-variant-numeric:tabular-nums}
+.hint-card{min-height:165px;padding:21px;border:1px dashed var(--line-2);border-radius:10px;background:color-mix(in oklab,var(--raise) 70%,var(--bg));display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.hint-chip{display:inline-flex;align-items:center;gap:7px;min-height:28px;padding:5px 11px;border:1px dashed color-mix(in oklab,var(--green) 52%,var(--line));border-radius:14px;color:var(--green);font-size:11px;font-weight:600}
+.hint-chip::before{content:"";width:7px;height:7px;border:1px solid currentColor;border-radius:2px;transform:rotate(45deg)}
+.hint-caption{margin-top:13px;color:var(--dim);font-size:12px;font-weight:500}
+.hint-explainer{margin-top:5px;color:var(--faint);font-size:10.5px;line-height:1.5}
+.empty-carrier{height:100%;min-height:150px;display:grid;place-items:center;padding:20px;border:1px dashed var(--line-2);border-radius:10px;color:var(--faint);font-size:11px;text-align:center}
+.scope-note{display:flex;align-items:flex-start;gap:9px;margin-top:26px;padding:12px 0;color:var(--faint);font-size:10.5px;line-height:1.55}
+.scope-note svg{margin-top:1px;color:var(--faint)}
+
+@media(max-width:900px){
+  .app{grid-template-columns:178px minmax(0,1fr)}
+  .content{padding-left:24px;padding-right:24px}
+  .timeline{grid-template-columns:1fr}
+  .timeline::before{left:19px;right:auto;top:19px;bottom:19px;width:1px;height:auto;background:var(--line-2)}
+  .state-item{display:grid;grid-template-columns:52px minmax(0,1fr)}
+  .state-index{margin:0}
+  .state-card{height:auto;min-height:0}
+}
+@media(max-width:680px){
+  body{display:block}
+  .app{display:block}
+  .side{position:relative;border-right:0;border-bottom:1px solid var(--line);padding:8px 12px}
+  .brand{display:none}
+  .route-nav{display:grid;grid-template-columns:repeat(4,max-content);gap:4px;overflow-x:auto;padding-bottom:2px}
+  .route-nav .sitem{width:auto;padding:0 10px;font-size:11.5px}
+  .route-nav .sitem[aria-current="page"]::before{display:none}
+  .side-note{display:none}
+  .main>.crumbbar{position:relative}
+  .fixture-ref{display:none}
+  .content{padding:24px 18px 48px}
+  .provenance-strip{align-items:flex-start;flex-wrap:wrap;margin-bottom:22px}
+  .provenance-strip .method{width:100%;margin:1px 0 0 17px}
+  .snapshot{align-items:flex-start}
+  .current-accepted{grid-template-columns:1fr}
+  .carrier-separation{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){.spinner{animation:none}.result-card{transition:none}}
+</style>
+<script src="assets/banner.js" defer></script>
+</head>
+<body>
+<noscript><div class="noscript-panel">The evidence chain could not be loaded because JavaScript is disabled. Serve <code>demo/</code> over HTTP and enable JavaScript to read the local issue and trust-policy fixtures; marker and label evidence remains unknown until then.</div></noscript>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <span class="logo">F<span class="kk">K<i class="knode"></i></span>ST</span>
+      <span class="brand-copy"><small>Evidence ledger</small></span>
+    </div>
+    <nav class="route-nav" aria-label="Demo routes">
+      <a class="sitem" href="board.html">Board</a>
+      <a class="sitem" href="debate.html">Who decided</a>
+      <a class="sitem" href="council.html">Council sandbox</a>
+      <a class="sitem" href="selftest.html">Self-test</a>
+      <a class="sitem" href="runtime.html">Engine (live)</a>
+    </nav>
+    <div class="side-note">
+      Rendered at runtime from<br><code>fixtures/issue-111.json</code>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="crumbbar">
+      <span class="repo">fkst-packages-testing</span><span class="sep">›</span><span class="current">Evidence · issue #111</span>
+      <span class="fixture-ref">issue-111.json</span>
+    </header>
+
+    <div class="content">
+      <div class="provenance-strip" role="note" aria-label="Provenance rule">
+        <span class="signal" aria-hidden="true"></span>
+        <strong>markers = fact, labels = hints</strong>
+        <span class="method">carrier chronology · current state by version-first CAS</span>
+      </div>
+
+      <section class="page-header issue-header" aria-labelledby="issue-title">
+        <div class="page-header__copy">
+          <div class="page-eyebrow"><span class="issue-id">Issue #111</span><span>·</span><span>evidence chain</span></div>
+          <h1 class="page-title" id="issue-title">Loading issue evidence…</h1>
+          <p class="page-lede issue-summary">Trusted marker carriers · accepted state by version-first CAS · labels remain hints.</p>
+        </div>
+        <div class="snapshot"><span>Fixture snapshot</span><b>20 Jul 2026</b></div>
+      </section>
+
+      <section class="lens-gloss" aria-labelledby="lens-gloss-title">
+        <p class="lens-gloss__label" id="lens-gloss-title">display gloss — recorded names unchanged</p>
+        <div class="lens-gloss__items">
+          <div class="lens-gloss__item"><code>teleology</code><span>Does this change serve the actual goal?</span></div>
+          <div class="lens-gloss__item"><code>parsimony</code><span>Is this the simplest change that works?</span></div>
+          <div class="lens-gloss__item"><code>fidelity</code><span>Does it match the recorded contracts and specs?</span></div>
+          <div class="lens-gloss__item"><code>natural-ownership</code><span>Is the change in the right component’s hands?</span></div>
+          <div class="lens-gloss__item"><code>proportional-containment</code><span>Is the blast radius appropriately contained?</span></div>
+        </div>
+      </section>
+
+      <div class="loading" id="loading" role="status"><span class="spinner" aria-hidden="true"></span>Reading the recorded issue fixture…</div>
+      <div class="load-error" id="load-error" role="alert" hidden>
+        <strong>Issue evidence could not be loaded.</strong>
+        Serve the <code>demo/</code> directory over HTTP so <code>fixtures/issue-111.json</code> is available.
+      </div>
+
+      <div class="evidence-body" id="evidence-body" hidden>
+        <section aria-labelledby="state-heading">
+          <div class="section-heading">
+            <div><h2 id="state-heading">State marker carrier chronology</h2><p>Trusted <code>state:v1</code> carriers ordered by recorded comment time</p></div>
+            <span class="count" id="state-count">0 markers</span>
+          </div>
+          <div class="current-accepted" id="current-accepted">
+            <div>
+              <span class="current-label">Current accepted state</span>
+              <strong id="current-state-name">—</strong>
+            </div>
+            <div class="current-version">
+              <span id="current-state-version">No accepted state marker</span>
+              <span class="cas-rule">CAS: version first · stage_rank only breaks a version tie</span>
+            </div>
+          </div>
+          <ol class="timeline" id="state-timeline"></ol>
+        </section>
+
+        <div class="carrier-separation">
+          <section class="carrier-block" aria-labelledby="result-heading">
+            <div class="carrier-label" id="result-heading">Reference consensus result</div>
+            <div id="result-carrier"></div>
+          </section>
+          <section class="carrier-block" aria-labelledby="merge-heading">
+            <div class="carrier-label" id="merge-heading">Separate merge evidence</div>
+            <div id="merge-carrier"></div>
+          </section>
+        </div>
+
+        <div class="scope-note">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 7.2v4M8 4.7v.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span>Only known <code>state:v1</code> and <code>result:v1</code> schemas are rendered. Other embedded marker schemas remain untouched and are ignored by this view.</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import {
+  compareCarrierChronology,
+  readResultFact,
+  readTrustedMarkers,
+  selectCurrentState
+} from './assets/markers.js';
+import {formatAsOf} from './assets/format.js';
+
+const fixturePath = 'fixtures/issue-111.json';
+const trustPolicyPath = 'fixtures/trust-policy.json';
+// Known-good route identity transcribed once from the shared state proposal; never derived from marker input at runtime.
+const ROUTE_CONTEXT = Object.freeze({
+  repo: 'ChronoAIProject/fkst-packages-testing',
+  issueNumber: 111,
+  expectedProposal: 'github-devloop/issue/ChronoAIProject/fkst-packages-testing/111',
+  expectedLogicalIdentity: 'consensus:github-devloop/issue/ChronoAIProject/fkst-packages-testing/111/2026-07-19T13-37-19Z'
+});
+  const loading = document.querySelector('#loading');
+  const errorPanel = document.querySelector('#load-error');
+  const evidenceBody = document.querySelector('#evidence-body');
+  const issueTitle = document.querySelector('#issue-title');
+  const stateTimeline = document.querySelector('#state-timeline');
+  const stateCount = document.querySelector('#state-count');
+  const currentStateName = document.querySelector('#current-state-name');
+  const currentStateVersion = document.querySelector('#current-state-version');
+  const resultCarrier = document.querySelector('#result-carrier');
+  const mergeCarrier = document.querySelector('#merge-carrier');
+
+  function makeElement(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function extractEvidence(issue, trustPolicy) {
+    const markers = readTrustedMarkers(issue?.comments, trustPolicy);
+    const stateMarkers = markers.filter((marker) => (
+      marker.schema === 'state' && marker.schemaVersion === 1
+    ));
+    const states = stateMarkers
+      .filter((marker) => marker.proposal === ROUTE_CONTEXT.expectedProposal)
+      .sort(compareCarrierChronology);
+    const currentState = selectCurrentState(issue?.comments, trustPolicy, ROUTE_CONTEXT);
+    const result = readResultFact(issue?.comments, ROUTE_CONTEXT);
+    const mergedLabel = (issue?.labels ?? []).find((label) => label?.name === 'fkst-dev:merged');
+    return {states, currentState, result, mergedLabel};
+  }
+
+  function addCarrierRow(list, term, value, options = {}) {
+    const row = makeElement('div', 'carrier-row');
+    row.append(makeElement('dt', '', term));
+    const detail = makeElement('dd', options.className ?? '');
+    if (options.time) {
+      const time = makeElement('time', '', value);
+      time.dateTime = options.time;
+      detail.append(time);
+    } else {
+      detail.textContent = value;
+    }
+    row.append(detail);
+    list.append(row);
+  }
+
+  function sameCarrier(left, right) {
+    return Boolean(
+      left &&
+      right &&
+      left.commentIndex === right.commentIndex &&
+      left.lineIndex === right.lineIndex &&
+      left.lineMarkerIndex === right.lineMarkerIndex
+    );
+  }
+
+  function renderCurrentState(outcome) {
+    if (outcome.status !== 'ok') {
+      currentStateName.textContent = outcome.status === 'ambiguous' ? 'Ambiguous' : 'Unknown';
+      currentStateVersion.textContent = `state:v1 failed predicate: ${outcome.failedPredicate ?? 'unavailable'}`;
+      return;
+    }
+    const marker = outcome.fact;
+    currentStateName.textContent = marker.state;
+    currentStateVersion.textContent = `version=${marker.version ?? '—'} · stage_rank=${marker.stageRank}`;
+  }
+
+  function renderStates(states, currentStateOutcome) {
+    stateCount.textContent = `${states.length} ${states.length === 1 ? 'marker' : 'markers'}`;
+    renderCurrentState(currentStateOutcome);
+    const currentState = currentStateOutcome.fact;
+    if (states.length === 0) {
+      const empty = makeElement('li', 'empty-carrier', 'No trusted state:v1 markers were found in this fixture.');
+      stateTimeline.append(empty);
+      return;
+    }
+
+    states.forEach((marker, index) => {
+      const item = makeElement('li', 'state-item');
+      if (sameCarrier(marker, currentState)) item.classList.add('is-current');
+      item.append(makeElement('div', 'state-index', String(index + 1).padStart(2, '0')));
+
+      const card = makeElement('article', 'state-card');
+      const top = makeElement('div', 'state-top');
+      top.append(
+        makeElement('span', 'schema', 'state:v1'),
+        makeElement('span', 'rank', `stage_rank ${marker.stageRank}`)
+      );
+      card.append(top, makeElement('h3', 'state-name', marker.state));
+
+      const carrierList = makeElement('dl', 'carrier');
+      addCarrierRow(carrierList, 'As-of timestamp', formatAsOf(marker.createdAt), {time: marker.createdAt});
+      addCarrierRow(carrierList, 'Trusted author', `${marker.author} · ${marker.association}`, {className: 'trusted'});
+      addCarrierRow(carrierList, 'Carrier', marker.commentId);
+      card.append(carrierList);
+
+      const details = makeElement('details', 'marker-details');
+      details.append(makeElement('summary', '', 'Marker provenance'));
+      details.append(makeElement('code', '', `version=${marker.attributes.version ?? '—'} · marker_order_key=${marker.attributes.marker_order_key ?? '—'}`));
+      card.append(details);
+      item.append(card);
+      stateTimeline.append(item);
+    });
+  }
+
+  function renderResult(outcome) {
+    if (outcome.status !== 'ok') {
+      const label = outcome.status === 'ambiguous' ? 'Ambiguous' : 'Unknown';
+      resultCarrier.append(makeElement(
+        'div',
+        'empty-carrier',
+        `${label}: result:v1 failed predicate ${outcome.failedPredicate ?? 'unavailable'}.`
+      ));
+      return;
+    }
+
+    const marker = outcome.fact;
+    const card = makeElement('a', 'result-card');
+    card.href = 'debate.html';
+    card.setAttribute('aria-label', `Open the reference consensus result: ${marker.decision}`);
+
+    const top = makeElement('div', 'result-top');
+    top.append(makeElement('span', 'result-schema', 'result:v1'));
+    const link = makeElement('span', 'result-link', 'See who decided');
+    link.setAttribute('aria-hidden', 'true');
+    const arrow = makeElement('span', '', '→');
+    link.append(arrow);
+    top.append(link);
+
+    const decision = makeElement('div', 'decision', marker.decision);
+    const meta = makeElement('div', 'result-meta', `${formatAsOf(marker.createdAt)} · trusted author ${marker.author}`);
+    card.append(top, decision, meta);
+    resultCarrier.append(card);
+  }
+
+  function renderMergeLabel(label) {
+    if (!label) {
+      mergeCarrier.append(makeElement('div', 'empty-carrier', 'The fkst-dev:merged label is not present in this fixture.'));
+      return;
+    }
+
+    const card = makeElement('div', 'hint-card');
+    card.append(
+      makeElement('span', 'hint-chip', label.name),
+      makeElement('p', 'hint-caption', 'label = hint, not a marker'),
+      makeElement('p', 'hint-explainer', 'Shown separately from the recorded state and result marker carriers.')
+    );
+    mergeCarrier.append(card);
+  }
+
+  async function fetchJson(path, label) {
+    const response = await fetch(path, {cache: 'no-store'});
+    if (!response.ok) throw new Error(`${label} request failed with HTTP ${response.status}`);
+    return response.json();
+  }
+
+  async function loadEvidence() {
+    try {
+      const [issue, trustPolicy] = await Promise.all([
+        fetchJson(fixturePath, 'Fixture'),
+        fetchJson(trustPolicyPath, 'Trust policy')
+      ]);
+      if (issue?.number !== 111) throw new Error('Fixture does not describe issue #111');
+      if (trustPolicy?.schema !== 'fkst.demo.trust-policy.v1') {
+        throw new Error('Trust policy schema is unsupported');
+      }
+
+      document.title = `devbored — Evidence · #${issue.number}`;
+      issueTitle.textContent = issue.title;
+
+      const evidence = extractEvidence(issue, trustPolicy);
+      renderStates(evidence.states, evidence.currentState);
+      renderResult(evidence.result);
+      renderMergeLabel(evidence.mergedLabel);
+
+      loading.hidden = true;
+      evidenceBody.hidden = false;
+    } catch (error) {
+      console.error('Unable to render issue #111 evidence:', error);
+      loading.hidden = true;
+      errorPanel.hidden = false;
+      issueTitle.textContent = 'Issue #111 evidence unavailable';
+    }
+  }
+
+  loadEvidence();
+</script>
+</body>
+</html>

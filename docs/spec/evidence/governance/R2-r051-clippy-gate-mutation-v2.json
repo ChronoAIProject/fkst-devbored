@@ -1,0 +1,211 @@
+{
+  "schema": "fkst.plan-mutation/v1",
+  "id": "R2-R051-CLIPPY-BASELINE-2",
+  "task_id": "R-051",
+  "specification_version": "full-app/v2",
+  "state": "ACCEPTED",
+  "recorded_at_utc": "2026-07-21T04:22:54Z",
+  "recorded_by": {
+    "role": "main_pm",
+    "agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "provider": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205"
+  },
+  "supersedes": {
+    "id": "R2-R051-CLIPPY-BASELINE-1",
+    "evidence": "R2-r051-clippy-gate-mutation.json",
+    "scope": "Only the scheduling-sensitive fingerprint command and its v1 baseline counts and hash are superseded.",
+    "preserved": [
+      "The original non-keep-going invocation remains BASELINE_RED evidence and is not a comparator.",
+      "The v1 task boundary, no-ADR disposition, absolute-green non-clippy gates, and forbidden dispositions remain in force.",
+      "No implementation, specification, readiness, traceability, graph, authority, dependency, runtime, or product scope is changed."
+    ]
+  },
+  "trigger": {
+    "new_fact": "Without Cargo --keep-going, denied-warning failures cancel unscheduled targets, so the emitted diagnostic subset changes with scheduling and cannot be a repeatable baseline fingerprint.",
+    "observed_non_keep_going_subsets": [
+      "119 distinct fingerprints / 219 total multiplicity",
+      "181 distinct fingerprints / 347 total multiplicity",
+      "183 distinct fingerprints / 379 total multiplicity",
+      "190 distinct fingerprints / 373 total multiplicity"
+    ],
+    "affected_step_stopped": "R-051 remains below DEV_VERIFIED until the owner records two internally identical final-head canonical runs under this v2 recipe and satisfies every differential and absolute-green gate."
+  },
+  "pinned_base": {
+    "repository": "fkst-substrate",
+    "checkout_path": "[redacted-home]/Desktop/aelf-frontend-work/FKST/substrate",
+    "branch": "dev",
+    "commit": "1e03c4f91d7cc9e42dff1dc180623912ea889f65",
+    "tree": "bac9f1bb83a996d38168b2f4f882509f1e8f980a",
+    "pre_porcelain_lines": [],
+    "post_porcelain_lines": [],
+    "pre_post_porcelain_identical": true
+  },
+  "reproducible_baseline": {
+    "argv": [
+      "cargo",
+      "clippy",
+      "--keep-going",
+      "-p",
+      "fkst-framework",
+      "--all-targets",
+      "--message-format=json",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "argv_nul_sha256": "3ccf48f9501170edb4b02e26cdccbe484fdd3d5eef339a5f3193cc51a43453bb",
+    "expected_exit_code": 101,
+    "result": "REPRODUCIBLE_BASELINE_RED",
+    "rustc": "rustc 1.94.1 (e408947bf 2026-03-25)",
+    "cargo": "cargo 1.94.1 (29ea6fb6a 2026-03-24)",
+    "clippy": "clippy 0.1.94 (e408947bfd 2026-03-25)",
+    "toolchain_transcript_sha256": "604a8b6c7b16f69f026136034b069ffaca55078a5a9f76d4f177547939adba3d",
+    "cargo_lock_sha256": "00358036500e2bb7a0341c86a9bdcfde10c434e2bcf307a6abb4ac6820116642",
+    "cargo_lock_git_blob": "b181718da5dc3e40374b19dbd4e1b2f97d86b7c6",
+    "allowlisted_environment_keys": [
+      "PATH",
+      "RUSTFLAGS",
+      "CARGO_TARGET_DIR",
+      "CARGO_HOME",
+      "RUSTUP_TOOLCHAIN",
+      "RUSTC_WRAPPER",
+      "RUSTC_WORKSPACE_WRAPPER",
+      "CARGO_BUILD_RUSTC_WRAPPER"
+    ],
+    "allowlisted_environment_nul_sha256": "af002603049e7c196111ad62c75190a1e87e83a42ad464006dd11147f8e7f38f",
+    "environment_values_recorded": false,
+    "pm_repeated_runs": {
+      "count": 2,
+      "exit_codes": [101, 101],
+      "canonical_arrays_byte_identical": true
+    },
+    "fable_repeated_runs": {
+      "count": 2,
+      "exit_codes": [101, 101],
+      "raw_jsonl_sha256": [
+        "adf287d028739f0e2190a8c614512352630e12e473859ab47ede69bf20c36bcb",
+        "e0ff48411f8594f27332e347f589653c0d67b09f15a507880c2e0550c71f8060"
+      ],
+      "raw_ordering_non_authoritative": true,
+      "canonical_arrays_byte_identical_under_pinned_recipe": true
+    }
+  },
+  "canonicalization_recipe": {
+    "script": "R2-r051-clippy-fingerprints.jq",
+    "script_sha256": "62f230ebebcb6d6e77f933b96094dce6015197fbaac508e347f819ba70e8c58f",
+    "jq_version": "jq-1.7.1-apple",
+    "jq_version_transcript": "jq=jq-1.7.1-apple\\n",
+    "jq_version_transcript_sha256": "648fadd43a04b7eb61a0a5fbcb1f24f8178b582e4af8d9bbd06c35b6bcfd41ea",
+    "invocation": "jq -s -f docs/spec/evidence/governance/R2-r051-clippy-fingerprints.jq RAW.jsonl > CANONICAL.json",
+    "input": "Every Cargo JSON line whose reason is compiler-message and whose message.code is non-null.",
+    "tuple": [
+      "message.code.code",
+      "the file_name of the first primary span, or <no-primary>",
+      "message.message"
+    ],
+    "ordering_and_grouping": "Sort tuple objects lexicographically by code, file, and message; group exact adjacent tuples; emit one object per group with exact multiplicity.",
+    "serialized_field_order": [
+      "code",
+      "file",
+      "message",
+      "multiplicity"
+    ],
+    "byte_contract": "UTF-8 jq default pretty JSON for the single array, two-space indentation, comma-space object separators as emitted by jq-1.7.1-apple, and exactly one trailing LF. Do not use -c, -S, color, or raw-output flags.",
+    "excluded": "Source coordinates, rendered ANSI text, target scheduling/order, diagnostics with a null code, and raw JSONL ordering.",
+    "fable_precision_correction_applied": "The script and serialization recipe are now embedded and digest-pinned. Applying this exact recipe to both Fable raw runs reproduces the PM canonical SHA-256."
+  },
+  "fingerprint_contract": {
+    "baseline": {
+      "distinct_fingerprint_rows": 200,
+      "total_multiplicity": 460,
+      "owned_path_distinct_rows": 10,
+      "owned_path_total_multiplicity": 19,
+      "non_owned_path_distinct_rows": 190,
+      "non_owned_path_total_multiplicity": 441,
+      "canonical_sha256": "3288d73619aea821118069484194941edd5f83484a0baa2297be633f1c89fbd3"
+    },
+    "owned_path_partition": [
+      "crates/fkst-framework/src/sdk_codex.rs",
+      "crates/fkst-framework/src/mlua_init.rs",
+      "crates/fkst-framework/src/config_registry.rs",
+      "crates/fkst-framework/src/self_test.rs",
+      "crates/fkst-framework/tests/sdk_codex.rs"
+    ],
+    "pass_rule": [
+      "The base and final runs use identical toolchain transcript, Cargo.lock, argv, jq recipe, and allowlisted-environment digests.",
+      "Two base canonical arrays and two final canonical arrays are each internally byte-identical.",
+      "The final non-owned-path fingerprint multiset is exactly equal to the baseline non-owned-path multiset.",
+      "For every owned-path fingerprint, final multiplicity is less than or equal to baseline multiplicity.",
+      "No final fingerprint absent from the baseline is allowed in either partition.",
+      "The R-051 diff adds no allow, expect, cap-lints, lint-level, or lint-configuration escape.",
+      "The expected exit code remains 101 because unrelated baseline diagnostics remain; the exit is never called a green result."
+    ]
+  },
+  "absolute_green_gates_unchanged": [
+    "cargo fmt --check",
+    "cargo test -p fkst-framework --test sdk_codex --locked",
+    "cargo test -p fkst-framework --locked",
+    "scripts/verify.sh",
+    "git diff --check",
+    "exclusive-path subset check",
+    "clean pre/post porcelain"
+  ],
+  "boundary_disposition": {
+    "adr_required": false,
+    "adr_rationale": "This is a verification-truth correction for a pre-existing repository condition. Authority, dependencies, writes, serialized contracts, runtime behavior, and product scope are unchanged.",
+    "spec_semantics_changed": false,
+    "readiness_rows_changed": false,
+    "traceability_rows_changed": false,
+    "task_graph_changed": false,
+    "task_nodes": 211,
+    "task_edges": 800,
+    "primary_dependencies": [
+      "fkst-substrate",
+      "public devloop"
+    ],
+    "workflow_and_council_authority_changed": false,
+    "reference_only_dependencies_promoted": false,
+    "product_or_ui_authorized": false
+  },
+  "standing_fable_advisory": {
+    "reviewed_at_utc": "2026-07-21T04:20:32Z",
+    "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+    "provider": "claude",
+    "model": "claude-fable-5",
+    "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+    "verdict": "PASS",
+    "authority": "advisory_only",
+    "repository_authorship": false,
+    "project_repository_pre_post_porcelain_identical": true,
+    "basis": "Fable independently ran the pinned base command twice, confirmed the exact 200/460 and 10/19 plus 190/441 multisets and the scheduling-sensitivity diagnosis, and endorsed --keep-going as the smallest truthful correction.",
+    "mandatory_precision_applied": "The exact canonicalizer, script digest, jq identity, field order, byte serialization, invocation, and trailing newline are now pinned; both Fable raw runs reproduce canonical SHA-256 3288d73619aea821118069484194941edd5f83484a0baa2297be633f1c89fbd3 under that recipe.",
+    "operational_note": "The provider updated its own non-repository Claude plan file despite the read-only prompt. No project or dependency repository file was authored or changed; the plan-file write is not accepted as evidence and the advisory remains non-authoritative."
+  },
+  "fresh_review_requirement": {
+    "implementation_review_cycle": "fresh independent Opus session after the final R-051 DEV_VERIFIED head",
+    "required_reproduction": "Run the exact pinned command twice on base and twice on final, apply the digest-pinned recipe, verify both internal equality checks and every differential rule, then reproduce every absolute-green gate with clean pre/post state and repository_authorship=false.",
+    "satisfied": false
+  },
+  "pm_decision": {
+    "decided_at_utc": "2026-07-21T04:22:54Z",
+    "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+    "provider": "codex",
+    "model": "gpt-5.6-sol",
+    "provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+    "decision": "ACCEPTED",
+    "basis": "The keep-going baseline is repeatable across two PM and two independent Fable runs, Fable's one precision correction is applied by the digest-pinned canonical recipe, v1 is explicitly superseded, no ADR trigger changes, and final implementation still requires owner verification, fresh Opus, and a separate PM audit.",
+    "governance_repository_authorship": true
+  },
+  "files_updated_together": [
+    "docs/spec/evidence/governance/R2-dispatch.json",
+    "docs/spec/evidence/governance/R2-r051-clippy-fingerprints.jq",
+    "docs/spec/evidence/governance/R2-r051-clippy-gate-mutation.json",
+    "docs/spec/evidence/governance/R2-r051-clippy-gate-mutation-v2.json",
+    "docs/spec/evidence/governance/README.md",
+    "docs/spec/evidence/governance/task-states/R-051.json"
+  ],
+  "next_action": "Bind v2 to the same R-051 owner, capture two final-head canonical runs and the exact delta, finish all absolute-green gates, then run standing Fable task review, fresh independent Opus review, and main-PM acceptance."
+}

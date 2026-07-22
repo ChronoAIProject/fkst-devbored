@@ -1,7 +1,9 @@
 // Deterministic live-read preflight. Reuses the reviewed server adapters verbatim
 // (gh actor + bounded GraphQL read, `fkst-framework observe` with the fixed argv,
 // bounded `health`) and reports PASS / FAIL / UNKNOWN / UNAVAILABLE per integration
-// without performing any write. Configuration comes only from the documented
+// without a GitHub mutation, engine start, or durable-root initialization.
+// A configured external health script may retain its documented build/cache
+// side effects. Configuration comes only from the documented
 // FKST_* environment variables. The default/configured gh binary is checked for
 // read-only authentication; repository, observe, and health reads require their
 // explicit source configuration.

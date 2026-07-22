@@ -1,0 +1,376 @@
+{
+  "schema": "fkst.council-semantic-contract/v1",
+  "contractId": "R-009/council-v1",
+  "wireSchema": "fkst.devbored.council.v1",
+  "version": 1,
+  "taskId": "R-009",
+  "claimStatus": "PLANNED_UNVERIFIED",
+  "purpose": "Freeze the app-owned Council v1 semantic model without claiming an executable consumer, cross-language parity, runtime behavior, independent review, or PM acceptance.",
+  "authorityPosture": {
+    "primaryFkstDependencies": [
+      "fkst-substrate@1e03c4f91d7cc9e42dff1dc180623912ea889f65",
+      "public-devloop@f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b"
+    ],
+    "appOwned": [
+      "Council definition wire semantics",
+      "ordered seat and roster semantics",
+      "mechanical decision and dissent reduction",
+      "Council round progression and Council-stage completion output",
+      "Council-specific evidence invariants"
+    ],
+    "notOwned": {
+      "workflowRouting": "R-011 resolves Workflow-to-Council assignment and the Workflow family owns routing and hold selection.",
+      "codexPrimitive": "fkst-substrate owns Codex process execution; R-017 freezes the app/Codex responsibility boundary.",
+      "reusableLoopSemantics": "Public devloop owns admitted reusable loop invariants; R-017 maps the exact public surface.",
+      "evidenceEnvelopeAndTransport": "R-043 owns the shared app evidence envelope and immutable transport contract; this contract freezes only Council-specific bindings and invariants.",
+      "runtimeOrchestration": "R-023 implements the Council consumer; R-031 supplies executable seam proof."
+    },
+    "referenceOnlyNeverAuthority": [
+      "devbored",
+      "github-devloop*",
+      "consensus",
+      "github-proxy"
+    ],
+    "forbiddenContractFields": [
+      "prompt",
+      "promptBody",
+      "personaPrompt",
+      "model",
+      "effort",
+      "semanticScore",
+      "personaScore",
+      "topology",
+      "edges",
+      "consensusAuthority",
+      "consensusImport"
+    ]
+  },
+  "limits": {
+    "safeId": {
+      "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,63}$",
+      "utf8Bytes": {
+        "min": 1,
+        "max": 64
+      }
+    },
+    "nonEmptyNameUtf8Bytes": {
+      "min": 1,
+      "max": 120
+    },
+    "seatsPerDefinition": {
+      "min": 1,
+      "max": 5
+    },
+    "policiesPerDefinition": {
+      "min": 1,
+      "max": 8,
+      "basis": "App-owned Step-0 tightening of a nonempty map so the v1 catalog cannot be unbounded; executable validation is R-010."
+    },
+    "seatsPerPolicyRoster": {
+      "min": 1,
+      "max": 5
+    },
+    "roundsPerStage": {
+      "min": 1,
+      "max": 3
+    },
+    "seatTimeoutSeconds": {
+      "min": 1,
+      "hardMax": 900,
+      "activationMax": "min(900, compatibilityManifest.councilSeatTimeoutSecondsMax)",
+      "basis": "The Council contract supplies a finite hard ceiling; R-043 must admit an equal or tighter compatibility cap before activation."
+    },
+    "contributionExcerptUtf8Bytes": {
+      "min": 0,
+      "max": 1024
+    },
+    "evidenceContributions": {
+      "min": 1,
+      "max": 5
+    }
+  },
+  "vocabularies": {
+    "seatLens": [
+      "product",
+      "architecture",
+      "implementation",
+      "quality",
+      "security"
+    ],
+    "seatVerdict": [
+      "approve",
+      "changesRequested",
+      "abstain",
+      "failed"
+    ],
+    "agreementPolicy": [
+      "unanimous",
+      "simpleMajority"
+    ],
+    "councilDecision": [
+      "approved",
+      "changesRequested",
+      "inconclusive"
+    ],
+    "dissentRule": [
+      "explicitChangesRequested"
+    ],
+    "executionStatus": [
+      "completed",
+      "timeout",
+      "failed"
+    ],
+    "stageOutcomeProducedByCouncil": [
+      "approved",
+      "changesRequested",
+      "inconclusive"
+    ],
+    "exhaustionReasonProducedByCouncil": [
+      "councilRoundsExhausted"
+    ]
+  },
+  "ordering": {
+    "definitionSeats": "CouncilDefinition.seats is ordered and seat ids are unique.",
+    "policyRoster": "CouncilPolicy.roster is ordered, contains unique ids, and every id resolves to exactly one seat in the same definition.",
+    "roundContributions": "CouncilRoundFact.contributions contains exactly one entry for every selected roster id, byte-for-byte in roster order, with the lens from the resolved seat.",
+    "dissent": "CouncilRoundFact.dissent is the roster-order projection of completed contributions whose verdict is changesRequested.",
+    "lensVocabulary": "The vocabulary order is stable for display and fixture enumeration only; a seat's selected lens, not enum position, determines its contribution lens."
+  },
+  "mechanics": {
+    "contributionNormalization": [
+      "A roster seat is invoked at most once in a new round.",
+      "A completed structured output emits executionStatus=completed and verdict approve, changesRequested, or abstain.",
+      "A timeout emits the seat exactly once with executionStatus=timeout and verdict=failed.",
+      "A missing, malformed, or other failed output emits the seat exactly once with executionStatus=failed and verdict=failed.",
+      "A missing invocation is explicit by the roster slot being present with failed/failed and null contributionDigest/codexRunRef; it is never represented by omitting the seat.",
+      "Evidence that is partial, duplicate, extra, reordered, or lens-mismatched is invalid and is never reduced into a decision."
+    ],
+    "decisionReducer": {
+      "precondition": "The definition, policy, roster resolution, contribution completeness/order/lenses, status-verdict pairs, and bounds are valid.",
+      "precedenceInvariant": "Approval rules are evaluated before changesRequested. Under simpleMajority, more than half of the full roster approving yields approved even when a minority has valid changesRequested verdicts; approved with nonempty dissent is valid and dissent still records those changes-requesting seats. Under unanimous, any non-approve prevents approval, so one or more valid changesRequested verdicts yield changesRequested when the full roster is not all approve.",
+      "orderedRules": [
+        {
+          "order": 1,
+          "when": "agreement=unanimous and every full-roster contribution verdict=approve",
+          "decision": "approved"
+        },
+        {
+          "order": 2,
+          "when": "agreement=simpleMajority and approveCount * 2 > fullRosterCount",
+          "decision": "approved"
+        },
+        {
+          "order": 3,
+          "when": "no approval rule matched and at least one completed contribution verdict=changesRequested",
+          "decision": "changesRequested"
+        },
+        {
+          "order": 4,
+          "when": "no earlier rule matched",
+          "decision": "inconclusive"
+        }
+      ],
+      "nonApprovalRule": "abstain, failed, timeout, missing, and malformed output never count as approval; the simple-majority denominator is always the full configured roster.",
+      "semanticScoring": "absent"
+    },
+    "dissentReducer": "For dissentRule=explicitChangesRequested, select seatId from completed changesRequested contributions in roster order. No model, prompt, score, or consensus result may reinterpret it.",
+    "roundProgression": [
+      {
+        "decision": "approved",
+        "stageComplete": true,
+        "stageOutcome": "approved",
+        "nextRound": null,
+        "reasonCode": null
+      },
+      {
+        "decision": "changesRequested",
+        "stageComplete": true,
+        "stageOutcome": "changesRequested",
+        "nextRound": null,
+        "reasonCode": null
+      },
+      {
+        "decision": "inconclusive",
+        "condition": "round < policy.maxRounds",
+        "stageComplete": false,
+        "stageOutcome": null,
+        "nextRound": "round + 1",
+        "reasonCode": null
+      },
+      {
+        "decision": "inconclusive",
+        "condition": "round = policy.maxRounds",
+        "stageComplete": true,
+        "stageOutcome": "inconclusive",
+        "nextRound": null,
+        "reasonCode": "councilRoundsExhausted"
+      }
+    ],
+    "capInvariant": "No round greater than maxRounds is invoked or emitted. Council emits only the stage outcome and optional exhaustion reason; Workflow routing, terminal selection, and assignment resolution are exclusively R-011/Workflow concerns.",
+    "laterRoundBinding": "A later round retains the same qualified entity, run, Workflow, Council, policy, stage, head, connection revision, app-package digest, and graph digest and includes the accepted prior structured round facts/excerpts. Any drift is invalid.",
+    "replay": "If the same accepted Council round identity and digest already exist, return the same accepted evidence and invoke zero seats. Conflicting evidence fails closed. Executable replay behavior is R-023/R-031."
+  },
+  "fieldMetadataRequired": [
+    "type",
+    "cardinality",
+    "default",
+    "authority",
+    "consumer",
+    "invariant",
+    "digest",
+    "evidence",
+    "downstreamTest"
+  ],
+  "types": {
+    "CouncilDefinition": {
+      "wireKind": "object",
+      "unknownFields": "reject",
+      "fields": {
+        "schema": {"type":"literal string fkst.devbored.council.v1","cardinality":"exactly 1 required","default":"none","authority":"app desired Council file; AUTH-DATA L645-L652","consumer":["R-010 corpus","R-023 integrated package"],"invariant":"exact literal; unknown schema rejects","digest":"included as literal","evidence":"PLANNED_UNVERIFIED accepted schema in config and work provenance","downstreamTest":["R-010","R-023"]},
+        "id": {"type":"SafeId","cardinality":"exactly 1 required","default":"none","authority":"app desired Council file; AUTH-DATA L645-L652","consumer":["R-011 assignment resolver","R-023 integrated package"],"invariant":"matches safeId; stable within version lineage","digest":"included as UTF-8 value","evidence":"PLANNED_UNVERIFIED councilId binding","downstreamTest":["R-010","R-011","R-023"]},
+        "version": {"type":"integer 1..2147483647","cardinality":"exactly 1 required","default":"none","authority":"app desired Council file; AUTH-DATA L645-L652","consumer":["R-010 corpus","R-023 integrated package"],"invariant":"positive and monotone under materialization; no implicit version","digest":"included as integer","evidence":"PLANNED_UNVERIFIED councilVersion binding","downstreamTest":["R-010","R-023"]},
+        "name": {"type":"UTF-8 string 1..120 bytes","cardinality":"exactly 1 required","default":"none","authority":"app desired Council file; AUTH-DATA L645-L652","consumer":["future catalog projection","R-023 integrated package consumes exact definition"],"invariant":"trimmed value is nonempty; bounded; not runtime authority","digest":"included as exact UTF-8 value","evidence":"PLANNED_UNVERIFIED config acceptance; not repeated as work truth","downstreamTest":["R-010","R-023"]},
+        "seats": {"type":"ordered array<CouncilSeat>","cardinality":"exactly 1 required; elements 1..5","default":"none","authority":"app desired Council file; AUTH-DATA L650 and L684-L695","consumer":["R-023 Council orchestrator","R-010 validator"],"invariant":"unique seat ids; array order preserved; no unbounded roster/topology","digest":"included with array order significant","evidence":"PLANNED_UNVERIFIED selected roster contributions expose matching seats/lenses","downstreamTest":["R-010","R-023","R-031"]},
+        "policies": {"type":"map<SafeId,CouncilPolicy>","cardinality":"exactly 1 required; entries 1..8","default":"none","authority":"app desired Council file; AUTH-DATA L651 and Step-0 bounded tightening","consumer":["R-011 assignment resolver","R-023 Council orchestrator"],"invariant":"unique keys; key is policyId; unknown fields reject; no routing fields","digest":"included; R-010 freezes canonical key ordering","evidence":"PLANNED_UNVERIFIED policyId and policy behavior in round evidence","downstreamTest":["R-010","R-011","R-023","R-031"]}
+      }
+    },
+    "CouncilSeat": {
+      "wireKind": "object",
+      "unknownFields": "reject",
+      "fields": {
+        "id": {"type":"SafeId","cardinality":"exactly 1 required per seat","default":"none","authority":"app desired Council file; AUTH-DATA L654-L658","consumer":["policy roster resolver","R-023 orchestrator"],"invariant":"unique within definition; stable identity independent of displayName","digest":"included; parent array order significant","evidence":"PLANNED_UNVERIFIED seatId on exactly one contribution per selected round","downstreamTest":["R-010","R-023","R-031"]},
+        "displayName": {"type":"UTF-8 string 1..120 bytes","cardinality":"exactly 1 required per seat","default":"none","authority":"app desired Council file; AUTH-DATA L654-L658","consumer":["future projection","R-023 consumes exact definition"],"invariant":"bounded nonempty label only; conveys no permissions/prompt/model","digest":"included as exact UTF-8 value","evidence":"PLANNED_UNVERIFIED config acceptance only; work fact binds seatId","downstreamTest":["R-010","R-023"]},
+        "lens": {"type":"enum SeatLens","cardinality":"exactly 1 required per seat","default":"none","authority":"app desired Council file; AUTH-DATA L657 and L677","consumer":["R-023 immutable lens-template selector","R-010 evidence validator"],"invariant":"one of product|architecture|implementation|quality|security; no prompt field","digest":"included as enum spelling","evidence":"PLANNED_UNVERIFIED every selected contribution repeats the matching lens","downstreamTest":["R-010","R-017","R-023","R-031"]}
+      }
+    },
+    "CouncilPolicy": {
+      "wireKind": "object",
+      "unknownFields": "reject",
+      "fields": {
+        "roster": {"type":"ordered array<SafeId>","cardinality":"exactly 1 required; elements 1..5","default":"none","authority":"app desired Council file; AUTH-DATA L660-L666 and L692-L693","consumer":["R-023 orchestrator","R-010 evidence validator"],"invariant":"unique ids; each resolves in same definition; determines invocation, contribution, and dissent order","digest":"included with order significant","evidence":"PLANNED_UNVERIFIED exact ordered contribution coverage","downstreamTest":["R-010","R-011","R-023","R-031"]},
+        "agreement": {"type":"enum unanimous|simpleMajority","cardinality":"exactly 1 required","default":"none","authority":"app desired Council file; AUTH-DATA L662 and L674-L690","consumer":["pure decision verifier","R-023 runtime reducer"],"invariant":"only mechanical reducer; denominator is full roster","digest":"included as enum spelling","evidence":"PLANNED_UNVERIFIED decision recomputable from contributions","downstreamTest":["R-010","R-023","R-031"]},
+        "maxRounds": {"type":"integer 1..3","cardinality":"exactly 1 required","default":"none","authority":"app desired Council file; AUTH-DATA L663 and L692-L706","consumer":["R-023 round controller","R-011 Workflow boundary"],"invariant":"round never exceeds value; inconclusive below cap alone continues","digest":"included as integer","evidence":"PLANNED_UNVERIFIED round/stageComplete/reasonCode","downstreamTest":["R-010","R-011","R-023","R-031"]},
+        "timeoutSeconds": {"type":"integer 1..min(900,manifest cap)","cardinality":"exactly 1 required","default":"none","authority":"app desired Council file plus compatibility cap; AUTH-DATA L664 and L692-L698","consumer":["R-017 Codex boundary","R-023 seat invoker"],"invariant":"applies per seat; finite; timeout emits explicit timeout/failed contribution","digest":"included as integer","evidence":"PLANNED_UNVERIFIED timeout contribution and Codex provenance","downstreamTest":["R-010","R-017","R-023","R-031"]},
+        "dissentRule": {"type":"literal enum explicitChangesRequested","cardinality":"exactly 1 required","default":"none","authority":"app desired Council file; AUTH-DATA L665 and L681-L700","consumer":["pure dissent verifier","R-023 runtime reducer"],"invariant":"exactly roster-order completed changesRequested seats; no reinterpretation","digest":"included as literal","evidence":"PLANNED_UNVERIFIED dissent array","downstreamTest":["R-010","R-023","R-031"]}
+      }
+    },
+    "QualifiedEntityRef": {
+      "wireKind": "object inherited from AppEvidenceEnvelope",
+      "unknownFields": "owned by R-043",
+      "fields": {
+        "connectionId": {"type":"UUID string","cardinality":"exactly 1 required","default":"none","authority":"qualified external identity; AUTH-DATA L1091-L1096","consumer":["evidence trust filter","Council projection"],"invariant":"part of canonical qualified entity; immutable across rounds","digest":"included through R-043 envelope","evidence":"PLANNED_UNVERIFIED trusted envelope","downstreamTest":["R-023","R-031"]},
+        "githubHost": {"type":"normalized nonempty host string","cardinality":"exactly 1 required","default":"none","authority":"qualified external identity; AUTH-DATA L1091-L1096","consumer":["evidence trust filter","Council projection"],"invariant":"same host across run; no unqualified number authority","digest":"included through R-043 envelope","evidence":"PLANNED_UNVERIFIED trusted envelope","downstreamTest":["R-023","R-031"]},
+        "repo": {"type":"qualified owner/name string","cardinality":"exactly 1 required","default":"none","authority":"qualified external identity; AUTH-DATA L1091-L1096","consumer":["evidence trust filter","Council projection"],"invariant":"same repository across run","digest":"included through R-043 envelope","evidence":"PLANNED_UNVERIFIED trusted envelope","downstreamTest":["R-023","R-031"]},
+        "kind": {"type":"enum issue|pullRequest","cardinality":"exactly 1 required","default":"none","authority":"qualified external identity; AUTH-DATA L1091-L1096","consumer":["evidence trust filter","Council projection"],"invariant":"entity kind cannot drift within chain","digest":"included through R-043 envelope","evidence":"PLANNED_UNVERIFIED trusted envelope","downstreamTest":["R-023","R-031"]},
+        "number": {"type":"positive integer","cardinality":"exactly 1 required","default":"none","authority":"qualified external identity; AUTH-DATA L1091-L1096","consumer":["evidence trust filter","Council projection"],"invariant":"interpreted only with connection/host/repo/kind","digest":"included through R-043 envelope","evidence":"PLANNED_UNVERIFIED trusted envelope","downstreamTest":["R-023","R-031"]}
+      }
+    },
+    "SeatEvidence": {
+      "wireKind": "object inside CouncilRoundFact.contributions",
+      "unknownFields": "reject",
+      "fields": {
+        "seatId": {"type":"SafeId","cardinality":"exactly 1 required per selected roster seat","default":"none","authority":"app Council runtime evidence; AUTH-DATA L1220-L1230 and L1275-L1280","consumer":["decision verifier","Council projection"],"invariant":"equals roster id at same index; no duplicate/extra/missing id","digest":"included with contribution array order significant","evidence":"PLANNED_UNVERIFIED immutable CouncilRoundFact","downstreamTest":["R-010","R-023","R-031"]},
+        "lens": {"type":"enum SeatLens","cardinality":"exactly 1 required","default":"none","authority":"resolved Council definition; AUTH-DATA L1220-L1230 and L1275-L1280","consumer":["evidence validator","Council projection"],"invariant":"equals selected definition seat lens","digest":"included as enum spelling","evidence":"PLANNED_UNVERIFIED immutable CouncilRoundFact","downstreamTest":["R-010","R-023","R-031"]},
+        "executionStatus": {"type":"enum completed|timeout|failed","cardinality":"exactly 1 required","default":"none","authority":"R-023 seat execution observation; AUTH-DATA L1223 and L1285-L1287","consumer":["normalizer","decision/evidence validator"],"invariant":"timeout or failed requires verdict=failed; completed forbids verdict=failed","digest":"included as enum spelling","evidence":"PLANNED_UNVERIFIED Codex result/provenance mapped by R-017","downstreamTest":["R-010","R-017","R-023","R-031"]},
+        "verdict": {"type":"enum approve|changesRequested|abstain|failed","cardinality":"exactly 1 required","default":"none","authority":"bounded seat structured output normalized by app package; AUTH-DATA L678 and L684-L691","consumer":["mechanical decision reducer","dissent reducer"],"invariant":"status pair valid; no semantic score or free-text decision","digest":"included as enum spelling","evidence":"PLANNED_UNVERIFIED bounded structured output","downstreamTest":["R-010","R-017","R-023","R-031"]},
+        "contributionDigest": {"type":"SHA-256 hex string or null","cardinality":"exactly 1 nullable","default":null,"authority":"R-023 bounded contribution canonicalization; AUTH-DATA L1225","consumer":["evidence verifier","replay/conflict detector"],"invariant":"required for completed; null for missing; timeout/failure policy frozen by R-010","digest":"field value included even when null","evidence":"PLANNED_UNVERIFIED raw contribution body is not persisted in this contract","downstreamTest":["R-010","R-017","R-023","R-031"]},
+        "codexRunRef": {"type":"bounded opaque string or null","cardinality":"exactly 1 nullable","default":null,"authority":"substrate Codex status/provenance mapped by R-017; AUTH-DATA L1226","consumer":["Council projection","runtime audit"],"invariant":"required for an invoked completed seat; null identifies a missing invocation only with failed/failed; never treated as Workflow authority","digest":"field value included even when null","evidence":"PLANNED_UNVERIFIED substrate source exposes run status but end-to-end correlation is unproved","downstreamTest":["R-010","R-017","R-023","R-031"]},
+        "excerpt": {"type":"UTF-8 string 0..1024 bytes or null","cardinality":"exactly 1 nullable","default":null,"authority":"R-023 bounded structured contribution projection; AUTH-DATA L1227","consumer":["later-round bounded context","Council projection"],"invariant":"display/context only; never mechanically scored; hostile markup remains text","digest":"field value included even when null","evidence":"PLANNED_UNVERIFIED bounded immutable fact","downstreamTest":["R-010","R-023","R-031"]},
+        "at": {"type":"RFC3339 UTC instant string","cardinality":"exactly 1 required","default":"none","authority":"R-023 execution observation; AUTH-DATA L1228","consumer":["evidence projection","audit"],"invariant":"observation time only; does not order contributions or confer authority","digest":"included as normalized instant spelling","evidence":"PLANNED_UNVERIFIED immutable fact","downstreamTest":["R-010","R-023","R-031"]},
+        "schema": {"type":"literal string fkst.devbored.council-seat-evidence.v1","cardinality":"exactly 1 required","default":"none","authority":"app-owned Step-0 evidence subtype freeze; AUTH-DATA L1229 and L1233-L1235","consumer":["evidence validator","Council projection"],"invariant":"unknown/reference schema fails closed","digest":"included as literal","evidence":"PLANNED_UNVERIFIED emitted by R-023","downstreamTest":["R-010","R-023","R-031"]}
+      }
+    },
+    "CouncilRoundFact": {
+      "wireKind": "Council fact variant inside the shared AppEvidenceEnvelope",
+      "unknownFields": "reject",
+      "fields": {
+        "round": {"type":"integer 1..policy.maxRounds","cardinality":"exactly 1 required","default":"none","authority":"R-023 Council round controller; AUTH-DATA L1132-L1137","consumer":["round verifier","Council projection"],"invariant":"starts at 1; increments by one only after below-cap inconclusive; never exceeds cap","digest":"included as integer","evidence":"PLANNED_UNVERIFIED immutable CouncilRoundFact","downstreamTest":["R-010","R-023","R-031"]},
+        "inputHeadSha": {"type":"40-hex Git SHA or null","cardinality":"exactly 1 nullable","default":null,"authority":"qualified git/GitHub fact inherited from envelope; AUTH-DATA L1133 and L1237-L1241","consumer":["head-binding validator","Council projection"],"invariant":"equals outer headSha when nonnull and stays immutable across later rounds","digest":"included even when null","evidence":"PLANNED_UNVERIFIED qualified head plus envelope equality","downstreamTest":["R-010","R-023","R-031"]},
+        "contributions": {"type":"ordered array<SeatEvidence>","cardinality":"exactly 1 required; elements exactly roster length 1..5","default":"none","authority":"R-023 Council execution normalization; AUTH-DATA L1134 and L1275-L1280","consumer":["mechanical decision/dissent verifier","Council projection"],"invariant":"exactly one ordered matching-lens entry per roster seat; no partial alternative","digest":"included with order significant","evidence":"PLANNED_UNVERIFIED emitted fact and runtime proof","downstreamTest":["R-010","R-017","R-023","R-031"]},
+        "decision": {"type":"enum approved|changesRequested|inconclusive","cardinality":"exactly 1 required","default":"none","authority":"app-owned mechanical reducer; AUTH-DATA L674-L693","consumer":["Council stage controller","pure projection verifier"],"invariant":"byte-deterministic from valid full-roster contributions and agreement","digest":"included as enum spelling","evidence":"PLANNED_UNVERIFIED recomputed rather than trusted blindly","downstreamTest":["R-010","R-023","R-031"]},
+        "dissent": {"type":"ordered array<SafeId>","cardinality":"exactly 1 required; elements 0..roster length","default":"none","authority":"app-owned mechanical dissent reducer; AUTH-DATA L691-L700","consumer":["Council projection","pure verifier"],"invariant":"exact roster-order ids with completed changesRequested verdict; no other ids","digest":"included with order significant","evidence":"PLANNED_UNVERIFIED recomputed from contributions","downstreamTest":["R-010","R-023","R-031"]},
+        "stageComplete": {"type":"boolean","cardinality":"exactly 1 required","default":"none","authority":"app-owned round progression; AUTH-DATA L702-L706","consumer":["R-011 Workflow boundary","Council projection"],"invariant":"true for approved/changesRequested and at-cap inconclusive; false only below-cap inconclusive","digest":"included as boolean","evidence":"PLANNED_UNVERIFIED emitted fact","downstreamTest":["R-010","R-011","R-023","R-031"]},
+        "reasonCode": {"type":"literal councilRoundsExhausted or null","cardinality":"exactly 1 nullable","default":null,"authority":"app-owned Council exhaustion output; AUTH-DATA L702-L706","consumer":["R-011 Workflow boundary","Council projection"],"invariant":"non-null exactly for at-cap inconclusive; Council does not choose a route or terminal","digest":"included even when null","evidence":"PLANNED_UNVERIFIED emitted fact","downstreamTest":["R-010","R-011","R-023","R-031"]}
+      }
+    },
+    "CouncilEnvelopeBinding": {
+      "wireKind": "required Council view of fields owned by fkst.devbored.evidence.v1/R-043",
+      "unknownFields": "R-043 owns the shared envelope",
+      "fields": {
+        "emitterStableId": {"type":"SafeId","cardinality":"exactly 1 required","default":"none","authority":"R-043 envelope; AUTH-DATA L1098-L1123","consumer":["trust/dedup verifier","Council projection"],"invariant":"admitted app-package emitter only","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED immutable trusted envelope","downstreamTest":["R-023","R-031"]},
+        "appPackageDigest": {"type":"SHA-256 hex string","cardinality":"exactly 1 required","default":"none","authority":"launch/app-package provenance; AUTH-DATA L1103 and L1292-L1295","consumer":["evidence verifier","Council projection"],"invariant":"matches archived launch receipt and stays fixed across rounds","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED launch receipt binding","downstreamTest":["R-017","R-023","R-031"]},
+        "graphDigest": {"type":"SHA-256 hex string","cardinality":"exactly 1 required","default":"none","authority":"launch graph provenance; AUTH-DATA L1104 and L1292-L1295","consumer":["reference-package exclusion verifier","Council projection"],"invariant":"matches archived launch receipt; no consensus/reference package graph","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED graph receipt binding","downstreamTest":["R-017","R-023","R-031"]},
+        "connectionRevision": {"type":"SHA-256 hex string","cardinality":"exactly 1 required","default":"none","authority":"accepted connection revision; AUTH-DATA L1105 and L1292-L1295","consumer":["evidence verifier","Council projection"],"invariant":"matches archived launch and is immutable across rounds","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED launch receipt binding","downstreamTest":["R-023","R-031"]},
+        "entity": {"type":"QualifiedEntityRef","cardinality":"exactly 1 required","default":"none","authority":"GitHub qualified identity; AUTH-DATA L1091-L1107","consumer":["trust filter","Council projection"],"invariant":"same qualified entity for chain and all rounds","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED qualified trusted comment","downstreamTest":["R-023","R-031"]},
+        "runId": {"type":"bounded nonempty string","cardinality":"exactly 1 required","default":"none","authority":"R-043 envelope chain identity; AUTH-DATA L1107 and L1260-L1264","consumer":["chain/replay verifier","Council projection"],"invariant":"partitions sequence with qualified entity; immutable across rounds","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED immutable chain","downstreamTest":["R-023","R-031"]},
+        "sequence": {"type":"positive integer","cardinality":"exactly 1 required","default":"none","authority":"R-043 envelope chain; AUTH-DATA L1108 and L1260-L1264","consumer":["chain verifier","Council projection"],"invariant":"starts at 1 and is gap-free for accepted evidence","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED chain validation","downstreamTest":["R-023","R-031"]},
+        "dedupKey": {"type":"bounded nonempty string","cardinality":"exactly 1 required","default":"none","authority":"R-043 deterministic evidence identity; AUTH-DATA L1109 and L1263-L1273","consumer":["publish/reconcile/replay verifier","Council projection"],"invariant":"binds emitter/entity/run/kind/stage/round/head under R-043 recipe","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED read-back reconciliation","downstreamTest":["R-023","R-031"]},
+        "workflowId": {"type":"SafeId","cardinality":"exactly 1 required","default":"none","authority":"accepted Workflow provenance; AUTH-DATA L1110-L1112","consumer":["R-011 binding verifier","Council projection"],"invariant":"inherited identity only; Council does not resolve assignment or route","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED accepted config binding","downstreamTest":["R-011","R-023","R-031"]},
+        "workflowVersion": {"type":"positive integer","cardinality":"exactly 1 required","default":"none","authority":"accepted Workflow provenance; AUTH-DATA L1110-L1112","consumer":["R-011 binding verifier","Council projection"],"invariant":"immutable across rounds","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED accepted config binding","downstreamTest":["R-011","R-023","R-031"]},
+        "workflowDigest": {"type":"SHA-256 hex string","cardinality":"exactly 1 required","default":"none","authority":"accepted Workflow provenance; AUTH-DATA L1110-L1112","consumer":["R-011 binding verifier","Council projection"],"invariant":"immutable across rounds; assignment/digest rules owned by R-011","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED accepted config binding","downstreamTest":["R-011","R-023","R-031"]},
+        "councilId": {"type":"SafeId","cardinality":"exactly 1 required for councilRound","default":"none","authority":"accepted Council definition; AUTH-DATA L1113-L1116","consumer":["Council evidence verifier","R-011 binding verifier"],"invariant":"equals selected definition id","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED accepted config binding","downstreamTest":["R-010","R-011","R-023","R-031"]},
+        "councilVersion": {"type":"positive integer","cardinality":"exactly 1 required for councilRound","default":"none","authority":"accepted Council definition; AUTH-DATA L1113-L1116","consumer":["Council evidence verifier","Council projection"],"invariant":"equals selected definition version and stays fixed across rounds","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED accepted config binding","downstreamTest":["R-010","R-023","R-031"]},
+        "councilDigest": {"type":"SHA-256 hex string","cardinality":"exactly 1 required for councilRound","default":"none","authority":"accepted Council definition; AUTH-DATA L1113-L1116","consumer":["Council evidence verifier","Council projection"],"invariant":"equals R-010 canonical definition digest and stays fixed across rounds","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED until R-010/R-023","downstreamTest":["R-010","R-023","R-031"]},
+        "policyId": {"type":"SafeId","cardinality":"exactly 1 required for councilRound","default":"none","authority":"selected Council policy; AUTH-DATA L1116","consumer":["Council evidence verifier","R-011 binding verifier"],"invariant":"resolves in selected definition; resolution ownership is R-011","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED accepted assignment binding","downstreamTest":["R-010","R-011","R-023","R-031"]},
+        "stageId": {"type":"SafeId","cardinality":"exactly 1 required","default":"none","authority":"accepted Workflow run; AUTH-DATA L1117","consumer":["R-011 stage compatibility verifier","Council projection"],"invariant":"Council treats as immutable context and owns no route","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED accepted assignment binding","downstreamTest":["R-011","R-023","R-031"]},
+        "headSha": {"type":"40-hex Git SHA or null","cardinality":"exactly 1 nullable","default":null,"authority":"qualified git/GitHub fact; AUTH-DATA L1118 and L1237-L1241","consumer":["head-binding verifier","Council projection"],"invariant":"equals fact.inputHeadSha when both apply; cannot drift across rounds","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED qualified head evidence","downstreamTest":["R-023","R-031"]},
+        "previousDigest": {"type":"SHA-256 hex string or null","cardinality":"exactly 1 nullable","default":null,"authority":"R-043 envelope chain; AUTH-DATA L1119 and L1260-L1264","consumer":["chain/replay verifier","Council projection"],"invariant":"null exactly at sequence 1; otherwise previous accepted envelope digest","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED chain validation","downstreamTest":["R-023","R-031"]},
+        "emittedAt": {"type":"RFC3339 UTC instant string","cardinality":"exactly 1 required","default":"none","authority":"R-023 emitter via R-043 envelope; AUTH-DATA L1121","consumer":["Council projection","audit"],"invariant":"bounded evidence metadata; does not confer trust","digest":"included through shared envelope","evidence":"PLANNED_UNVERIFIED immutable envelope","downstreamTest":["R-023","R-031"]},
+        "digest": {"type":"SHA-256 hex string","cardinality":"exactly 1 required","default":"none","authority":"R-043 canonical envelope digest; AUTH-DATA L1122 and L1260-L1261","consumer":["integrity/replay verifier","Council projection"],"invariant":"SHA-256 of frozen canonical envelope with digest field omitted","digest":"self-excluded; records digest of all other canonical fields","evidence":"PLANNED_UNVERIFIED cross-language canonicalization","downstreamTest":["R-010","R-023","R-031"]}
+      }
+    },
+    "CouncilTransportBinding": {
+      "wireKind": "required Council view of TransportedAppEvidence fields owned by R-043",
+      "unknownFields": "R-043 owns transport",
+      "fields": {
+        "commentId": {"type":"positive integer","cardinality":"exactly 1 required","default":"none","authority":"qualified GitHub transport; AUTH-DATA L1160-L1168","consumer":["evidence projection","reconciliation"],"invariant":"external metadata; not part of envelope digest","digest":"excluded from envelope digest","evidence":"PLANNED_UNVERIFIED read-back-confirmed immutable comment","downstreamTest":["R-023","R-031"]},
+        "permalink": {"type":"validated HTTPS URL","cardinality":"exactly 1 required","default":"none","authority":"qualified GitHub transport; AUTH-DATA L1160-L1168 and L1252-L1258","consumer":["Council evidence row","operator trace"],"invariant":"external metadata created after publish; never fabricated","digest":"excluded from envelope digest","evidence":"PLANNED_UNVERIFIED bounded read-back receipt","downstreamTest":["R-023","R-031"]},
+        "authorLogin": {"type":"normalized nonempty string","cardinality":"exactly 1 required","default":"none","authority":"qualified GitHub transport; AUTH-DATA L1160-L1168","consumer":["trust filter","Council projection"],"invariant":"must match admitted loop actor before parsing","digest":"excluded from envelope digest","evidence":"PLANNED_UNVERIFIED trust-before-parse proof","downstreamTest":["R-023","R-031"]},
+        "createdAt": {"type":"RFC3339 UTC instant string","cardinality":"exactly 1 required","default":"none","authority":"qualified GitHub transport; AUTH-DATA L1160-L1168","consumer":["immutability verifier","Council projection"],"invariant":"must equal updatedAt for v1 immutable comment","digest":"excluded from envelope digest","evidence":"PLANNED_UNVERIFIED read-back receipt","downstreamTest":["R-023","R-031"]},
+        "updatedAt": {"type":"RFC3339 UTC instant string","cardinality":"exactly 1 required","default":"none","authority":"qualified GitHub transport; AUTH-DATA L1160-L1168 and L1252-L1258","consumer":["immutability verifier","Council projection"],"invariant":"must equal createdAt; edited evidence fails closed","digest":"excluded from envelope digest","evidence":"PLANNED_UNVERIFIED read-back receipt","downstreamTest":["R-023","R-031"]},
+        "trust": {"type":"literal trusted for admitted Council projection","cardinality":"exactly 1 required after filtering","default":"none","authority":"trust-before-parse result; AUTH-DATA L1167 and L1282-L1290","consumer":["Council projection","Workflow boundary"],"invariant":"only trusted evidence may produce Council state; malformed/untrusted/conflict cannot advance","digest":"excluded from envelope digest; derived from transport and policy","evidence":"PLANNED_UNVERIFIED trust/conflict fixtures","downstreamTest":["R-023","R-031"]}
+      }
+    }
+  },
+  "digestSemantics": {
+    "definition": "All six CouncilDefinition fields and every nested CouncilSeat/CouncilPolicy field participate. Seat and roster array order is significant. Policy-map key canonicalization, UTF-8/key ordering/number rules, and canonical fixture digests are exclusively frozen and executed by R-010; no digest PASS is claimed here.",
+    "roundFact": "Every CouncilRoundFact and SeatEvidence field participates in the shared R-043 envelope digest, including explicit nulls required by the wire corpus. Contribution and dissent order is significant.",
+    "provenance": "CouncilEnvelopeBinding fields are digest-bound by the shared envelope except digest itself. CouncilTransportBinding is external transport metadata and is intentionally outside the canonical envelope digest.",
+    "status": "PLANNED_UNVERIFIED"
+  },
+  "proofObligations": [
+    {"task":"R-010","status":"PLANNED_UNVERIFIED","mustProve":"Exact JSON schema, unknown-key rejection, bounds, canonical bytes/digests, valid/invalid corpus, every decision/dissent case, ordered matching-lens completeness, explicit missing/timeout normalization, and Dart/Lua parity."},
+    {"task":"R-011","status":"PLANNED_UNVERIFIED","mustProve":"Workflow carries only councilId/policyId; Council/policy resolution, cross-connection rejection, stage compatibility, digest effects, and Workflow routing/exhaustion handling. Council owns no route or assignment decision."},
+    {"task":"R-017","status":"PLANNED_UNVERIFIED","mustProve":"Exact substrate Codex and public-devloop boundary, immutable lens-template selection, read-only sandbox, timeouts, result/provenance correlation, and zero consensus dependency/import."},
+    {"task":"R-023","status":"PLANNED_UNVERIFIED","mustProve":"Integrated app package consumes every editable field, normalizes exactly one contribution per roster seat, computes decisions/dissent/round progression, emits required provenance/evidence, and replays accepted rounds without reinvocation."},
+    {"task":"R-031","status":"PLANNED_UNVERIFIED","mustProve":"Bounded executable Council/Codex round under the admitted sandbox, decision and cap behavior, immutable read-back-confirmed evidence, hostile ordered-contribution rejection, replay zero-invocation, and no reference package loaded."}
+  ],
+  "gaps": [
+    {"id":"GAP-R009-01","status":"OPEN","fact":"No integrated app package or executable Council consumer exists.","closure":["R-023","R-031"]},
+    {"id":"GAP-R009-02","status":"OPEN","fact":"The exact canonical JSON/digest corpus and Dart/Lua reducer parity do not exist.","closure":["R-010"]},
+    {"id":"GAP-R009-03","status":"OPEN","fact":"Workflow assignment resolution and routing are deliberately outside this contract.","closure":["R-011"]},
+    {"id":"GAP-R009-04","status":"OPEN","fact":"Public devloop source search found no Council/seat/lens/dissent API, and its visibility allowlist omits the app package identity. Source presence elsewhere is not manufactured capability.","closure":["R-017","R-023"]},
+    {"id":"GAP-R009-05","status":"OPEN","fact":"Substrate exposes Codex spawn/status primitives, but safe current-CLI invocation and direct per-contribution run-reference correlation remain unproved.","closure":["R-017","R-031"]},
+    {"id":"GAP-R009-06","status":"OPEN","fact":"Shared app evidence envelope, immutable comment carrier, and effect receipt are owned by downstream contracts and are not executable here.","closure":["R-023","R-031"]},
+    {"id":"GAP-R009-07","status":"OPEN","fact":"Standing Fable advisory, independent Opus review, and main-PM acceptance have not occurred and are not claimed.","closure":["standing Fable advisory later","fresh Opus review later","main PM decision later"]}
+  ],
+  "sourceRegistry": [
+    {"id":"AUTH-INDEX","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/README.md","sha256":"947d1f7750b805b6d3d09077132cc1f72d93371b5c89051214da13a74bd03955","citations":["Authority order L11-L24","Exactly two primary dependencies L31-L50","Product mechanism L52-L70"]},
+    {"id":"AUTH-PRODUCT","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/00-PRODUCT.md","sha256":"fdf6feef94356b9f950dcf0133cca52e3b3417660f67b49cb7a833cbb904b799","citations":["Product statement L6-L24","Authority invariant L26-L44","Council outcomes/activation L54-L76","Non-goals L119-L132"]},
+    {"id":"AUTH-DEPS","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/01-DEPENDENCIES.md","sha256":"6b747050c10de235cd2bb8758060d05fa4e68c9d8022d36aaa3cad8c33d8d5dd","citations":["Boundary rule L6-L33","Integration model L68-L85","Workflow/Council ownership L128-L156","Admission gates L213-L229"]},
+    {"id":"AUTH-ARCH","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/02-ARCHITECTURE.md","sha256":"6fb9a2d98c1c7c85e83eba55bf857150782ecb419b9a24ac84b3af347353250d","citations":["Responsibility rules L93-L143","Evidence carriers L237-L272","Observation/projection L306-L319"]},
+    {"id":"AUTH-REQ","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/03-REQUIREMENTS.md","sha256":"b74396ed5c88d6ca79b1037bfc2bfdd5533becb26c12f51498525f7be418aef6","citations":["RDY-2 L48-L54","COU-1..5 L184-L216","REL-1..2 L412-L422"]},
+    {"id":"AUTH-DATA","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/04-DATA-CONTRACTS.md","sha256":"7681fb7cc402c05dbe7cc3549742c236b3de24af91863068311de7edb946c0ce","citations":["Universal rules L10-L20","App-owned Council contract L642-L710","Approval/changesRequested/dissent precedence L688-L692","Council evidence types L1088-L1230","Evidence/digest/order invariants L1233-L1295"]},
+    {"id":"AUTH-SEC","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/06-SECURITY-OPERATIONS.md","sha256":"583134c34999aaf4dd7dbbe16f5ffa48926bb764902f3237530e264d03c2a665","citations":["Codex boundary L62-L103","Dependency containment L105-L118","Evidence trust/content safety L219-L253"]},
+    {"id":"AUTH-TRACE","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/07-TRACEABILITY.md","sha256":"5e230d960fa7244a4f4bf666ab3982f47aa2b5c12db069a5ee5c9de6df5e6425","citations":["Council task coverage L38-L47","Two-dependency inventory L73-L88","Reference-only inventory L90-L101","Dependency-gated roadmap L123-L135"]},
+    {"id":"AUTH-READY","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/08-READINESS.md","sha256":"c7ec4d91945ea7378c49656e17e613bb4fcfb2b55fc1118e04261c946e0aa6ba","citations":["RDY-07 and related rows L28-L46","Capability matrix L85-L116","Required Step-0 bundle L158-L192","Forbidden shortcuts L194-L215"]},
+    {"id":"AUTH-WORKABILITY","kind":"authoritative_spec","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/09-WORKABILITY.md","sha256":"f9eb5f6f698c87c104808eaff1ac5ab10f301313175bf04054aa7e8f46e7f9ea","citations":["Council feature paths L27-L43","Mechanical decision resolution L52-L65","Remaining blockers L88-L109"]},
+    {"id":"AUTH-ADR","kind":"accepted_unsuperseded_adr","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/08-DECISIONS.md","sha256":"cd3cd5243ce867c025c0a659a7e3411b17d597c55cb868e362c1c53a00249848","citations":["ADR-031 L254-L270","ADR-032 L272-L293","ADR-033 L295-L316","Q7 L328"]},
+    {"id":"AUTH-TASKMAP","kind":"authoritative_plan","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/plans/parallel-engineering-task-map.md","sha256":"12aac1d8250e36ee3ca940a4d7283b08404ca8d7004aa2a13436870fdde2c760","citations":["R-009..R-011 L173-L177","R-017 L184-L185","R-023/R-031 L214-L222","Council ownership lane L465-L480"]},
+    {"id":"AUTH-DISPATCH","kind":"governance_dispatch","path":"[redacted-home]/Desktop/aelf-frontend-work/FKST/fkst-devbored/docs/spec/evidence/governance/R1-dispatch.json","sha256":"13cec9df4873aa3425a94084d8f2201b7c5e91ccc45e5fa15f7c7d927b2e97e6","citations":["Implementer route L10-L16","R-009 ownership L66-L74","Forbidden paths L99-L109","Declarative fixture and boundary dispositions L147-L181","Limitations L193-L197"]},
+    {"id":"SOURCE-SUBSTRATE-CODEX","kind":"primary_dependency_source","root":"[redacted-home]/Desktop/aelf-frontend-work/FKST/substrate","head":"1e03c4f91d7cc9e42dff1dc180623912ea889f65","path":"crates/fkst-framework/src/sdk_codex.rs","sha256":"716c55ba70899edcaeb1478b3fb937f613e7c36486c851f1846334f31360ee73","citations":["Codex request/sandbox/timeout L61-L106","Result surface L198-L216 and L339-L366","Lua spawn primitives L405-L447","Option parsing L471-L527","Run status/provenance fields L1713-L1818","Current argv safety gap L2602-L2618"]},
+    {"id":"SOURCE-SUBSTRATE-BOUNDARY","kind":"primary_dependency_source","root":"[redacted-home]/Desktop/aelf-frontend-work/FKST/substrate","head":"1e03c4f91d7cc9e42dff1dc180623912ea889f65","path":"crates/fkst-framework/src/boundary_resource.rs","sha256":"f0df4d7e6cb5c4e9f2756024b61e4c6e57220d4fe7edf5f09faa5448c901a9b6","citations":["Codex process registry/budgets/errors L37-L46","Wall-clock timeout boundary L83-L90"]},
+    {"id":"SOURCE-DEVLOOP-MANIFEST","kind":"primary_dependency_source","root":"[redacted-home]/Desktop/aelf-frontend-work/FKST/packages/libraries/devloop","head":"f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b","path":"fkst.toml","sha256":"0c1ff6f5654795c018cb59bcc736893875aaa7c701c5e4615e054b594ba4648a","citations":["Declared closure L7-L16","Exact public exports L18-L139","Visibility omits app identity L141-L155"]},
+    {"id":"SOURCE-DEVLOOP-ROUNDS","kind":"primary_dependency_source","root":"[redacted-home]/Desktop/aelf-frontend-work/FKST/packages/libraries/devloop","head":"f6ad297c672c1d9d38c82e0a0ea50c96e2843e0b","path":"rounds.lua","sha256":"2d821dd383b689d923a0226ecaa72cbaaa97e9740748b11fd953fe3aa78c9d75","citations":["Generic round integer validator L1-L13; its max is not Council authority"]}
+  ]
+}

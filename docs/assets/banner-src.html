@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:'Space Grotesk';src:url('../../demo/fonts/space-grotesk-latin-700.woff2') format('woff2');font-weight:700}
+@font-face{font-family:'Inter';src:url('../../demo/fonts/inter-latin.woff2') format('woff2')}
+:root{--bg:oklch(16% .011 250);--ink:oklch(95% .006 250);--dim:oklch(76% .01 250);--amber:oklch(78% .12 75)}
+*{margin:0;box-sizing:border-box}
+body{width:1280px;height:400px;position:relative;overflow:hidden;background:#050505;font-family:Inter,system-ui}
+.bg{position:absolute;inset:0;background:url('banner-bg.png') center/cover no-repeat}
+.scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,5,6,.92) 0%,rgba(5,5,6,.82) 26%,rgba(5,5,6,.45) 42%,rgba(5,5,6,0) 56%)}
+.txt{position:absolute;left:84px;top:50%;transform:translateY(-50%);max-width:500px;color:var(--ink)}
+.txt h1{font-family:'Space Grotesk';font-size:56px;letter-spacing:-.02em;line-height:1.02;text-shadow:0 1px 12px rgba(0,0,0,.85)}
+.txt h1 span{color:var(--amber)}
+.txt p{margin-top:14px;font-size:16.5px;color:var(--dim);line-height:1.5;text-shadow:0 1px 8px rgba(0,0,0,.9)}
+</style></head><body>
+<div class="bg"></div><div class="scrim"></div>
+<div class="txt">
+  <h1>FKST <span>Devbored</span></h1>
+  <p>The loop does the work. The council decides. A lean harness for Codex dev loops — GitHub-durable, human-auditable.</p>
+</div>
+</body></html>

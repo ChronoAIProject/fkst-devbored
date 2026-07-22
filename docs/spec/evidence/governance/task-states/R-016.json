@@ -1,0 +1,165 @@
+{
+  "schema": "fkst.task-state/v1",
+  "task_id": "R-016",
+  "state": "INTEGRATED",
+  "repository": "app",
+  "integration_base_commit": "db1c492e9b091c4d5c254a62dca8036c41acdbd8",
+  "dependencies": ["R-004"],
+  "exclusive_paths": ["contracts/step0/devloop/review-head-terminal-restart/**", "evidence/step0/R-016/**"],
+  "owner_agent_id": "019f8265-8950-7892-a4a6-584d3a9c583f",
+  "owner_provider": "codex",
+  "owner_model": "gpt-5.6-sol",
+  "owner_provider_session": "019f8265-89f1-7873-b5a7-0e8aec88c378",
+  "owner_worktree_id": "019f8264-581a-78a0-b125-b5560cd4ca29",
+  "owner_worktree_path": "[redacted-home]/Library/Application Support/heca/worktrees/80693732/r016-devloop-review-map",
+  "owner_branch": "codex/v2-r016-devloop-review-map",
+  "review_cycle": 1,
+  "transition_history": [
+    "PROPOSED",
+    "READY",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "FABLE_ADVISORY",
+    "RETURNED",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "FABLE_ADVISORY",
+    "DEV_VERIFIED",
+    "OPUS_REVIEW",
+    "OPUS_APPROVED",
+    "PM_REVIEW",
+    "ACCEPTED",
+    "INTEGRATED"
+  ],
+  "submissions": [
+    {
+      "review_cycle": 0,
+      "commit": "d8e8e42edba64eb23407f65661f761e6900b5caa",
+      "result": "DEV_VERIFIED",
+      "submitted_at_utc": "2026-07-21T02:27:39Z",
+      "parent": "db1c492e9b091c4d5c254a62dca8036c41acdbd8",
+      "artifacts": [
+        "contracts/step0/devloop/review-head-terminal-restart/review-head-terminal-restart-map.v1.json",
+        "evidence/step0/R-016/verification.v1.json"
+      ],
+      "checks": [
+        "R-016 exact packet JSON and contract-shape checks: PASS",
+        "28 public-export identities and 16 reference/source-test immutable-object identities: PASS",
+        "42 positive and 2 negative exact-line symbol probes: PASS",
+        "bounded forbidden-reference/import, diff, exclusive-path, and dependency immutability checks: PASS"
+      ],
+      "runtime_claim_status": "DECLARATIVE_SOURCE_MAP_ONLY",
+      "limitations": [
+        "No source test was executed as FKST app-runtime proof.",
+        "R-041, R-042, R-045, and R-055 remain RED."
+      ]
+    },
+    {
+      "review_cycle": 0,
+      "commit": "23e60f945dca91a153c63f655d43ace9830859d3",
+      "result": "DEV_VERIFIED",
+      "submitted_at_utc": "2026-07-21T02:53:26Z",
+      "parent": "eb8264ea4e330c09c07ab5eed66c5a196f8f1a54",
+      "artifacts": [
+        "contracts/step0/devloop/review-head-terminal-restart/review-head-terminal-restart-map.v1.json",
+        "evidence/step0/R-016/verification.v1.json"
+      ],
+      "checks": [
+        "corrected authority shape and all R-016 JSON: PASS",
+        "28 public-export, 16 reference/test-object, 42 positive-symbol, and 2 negative-symbol checks: PASS",
+        "exactly two primary dependency rows, zero substrate stable_id fields, and one exact public-devloop stable ID: PASS",
+        "main-PM verified the contract map is byte-equivalent to the reviewed map except removal of the unsupported field",
+        "diff, exclusive-path, trailer, and dependency immutability checks: PASS"
+      ],
+      "runtime_claim_status": "DECLARATIVE_SOURCE_MAP_ONLY",
+      "limitations": [
+        "R-033, R-042, R-045, and R-055 retain executable/no-write/merge/comment/restart closure."
+      ]
+    }
+  ],
+  "advisories": [
+    {
+      "review_cycle": 0,
+      "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+      "provider": "claude",
+      "model": "claude-fable-5",
+      "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+      "verdict": "CHANGES_REQUIRED",
+      "reviewed_head": "eb8264ea4e330c09c07ab5eed66c5a196f8f1a54",
+      "authority": "advisory_only",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "severity": "MEDIUM",
+      "finding": "authority_boundary.primary_dependencies[0].stable_id is fkst.library.substrate, but no authoritative substrate contract defines that stable ID; propagating the invented identity would corrupt later R-043/R-020 pins.",
+      "smallest_same_owner_correction": "Remove the unsupported substrate stable_id field or replace it only if an exact R-001-recorded authoritative identity exists; preserve every other verified mapping and regenerate bound evidence/task state.",
+      "verified_nonblocking_basis": "All 44 source objects, 42 positive and 2 negative symbol probes, five mapped capabilities, red gap register, reference-only/no-write classifications, path scope, trailers, dependency boundary, and clean pre/post states otherwise passed."
+    },
+    {
+      "review_cycle": 0,
+      "agent_id": "019f80f4-39f6-78c3-94a4-cdd012616f7b",
+      "provider": "claude",
+      "model": "claude-fable-5",
+      "provider_session_id": "5257d92e-f042-402f-86c3-f95b0a66e343",
+      "verdict": "PASS",
+      "reviewed_head": "e4025bedcebd96a95114a82e164c63df17eb6f25",
+      "reviewed_at_utc": "2026-07-21T03:04:42Z",
+      "authority": "advisory_only",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "The correction is exactly the one-line removal of the unsupported substrate stable_id with no substitute identity; the authentic public-devloop ID, two dependency rows, Workflow/Council authority, 44 source objects, 42 positive and 2 negative probes, five insufficient capability classifications, four RED gaps, reference-only boundary, exact path/trailer scope, and clean pre/post states all remain intact.",
+      "residual_gates": [
+        "Fresh independent Opus review and main-PM acceptance remain required.",
+        "R-041/R-005, R-042, R-045, and R-055 remain RED closures.",
+        "R-018 consumes the map and R-033 owns executable no-write probes."
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "review_cycle": 1,
+      "agent_id": "019f82e5-1b55-7002-bc71-4e2fbb026550",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "acefe170-c087-44fb-9c66-26bfe71fda0c",
+      "verdict": "APPROVE",
+      "reviewed_at_utc": "2026-07-21T04:27:40Z",
+      "reviewed_head": "e4025bedcebd96a95114a82e164c63df17eb6f25",
+      "authority": "independent_review",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "Fresh Opus confirmed the final map differs from the initially reviewed map only by removal of the unsupported substrate stable_id, then reproduced the R-004 118-export digest, all 28 public-export and 16 reference/test object identities, 42 positive and 2 negative probes, exact classifications and four RED gaps, four-commit scope and provenance, two dependency rows, Workflow/Council authority, and clean pre/post repositories.",
+      "limitations": [
+        "Declarative source map only; no reference implementation was executed or admitted.",
+        "R-042, R-045, R-055, and executable R-033 proof remain downstream."
+      ]
+    }
+  ],
+  "pm_decisions": [
+    {
+      "review_cycle": 1,
+      "decision": "ACCEPTED",
+      "decided_at_utc": "2026-07-21T05:02:47Z",
+      "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+      "pm_provider": "codex",
+      "pm_model": "gpt-5.6-sol",
+      "pm_provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+      "accepted_artifact_commit": "23e60f945dca91a153c63f655d43ace9830859d3",
+      "accepted_source_head": "e4025bedcebd96a95114a82e164c63df17eb6f25",
+      "basis": "Standing Fable passed the surgical identity correction, fresh Opus approved and reproduced every map gate, and the PM's prior byte-equivalence, identity, probe, scope, trailer, dependency-boundary, and clean-state checks remain bound to the unchanged head.",
+      "residual_gates": [
+        "R-042 must admit a safe public merge seam or select hold-only behavior.",
+        "R-045 and R-055 retain immutable evidence and proxy-free restart/replay closure.",
+        "R-018 consumes the map and R-033 owns executable no-write probes."
+      ]
+    }
+  ],
+  "integration": {
+    "integrated_at_utc": "2026-07-21T05:06:32Z",
+    "integration_branch": "codex/full-app-v2-00-readiness",
+    "integration_merge_commit": "a6d0804",
+    "aggregate_head_after_integration": "a6d0804779c6fef2436d11b2e3ee5f6e6c2eb80f",
+    "actual_changed_path_count": 3,
+    "collision_gate": "PASS",
+    "wave_gate": "R2-WAVE-A-PASS"
+  }
+}

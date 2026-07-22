@@ -1,0 +1,152 @@
+{
+  "schema": "fkst.task-state/v1",
+  "task_id": "R-003",
+  "state": "INTEGRATED",
+  "repository": "app",
+  "integration_base_commit": "db1c492e9b091c4d5c254a62dca8036c41acdbd8",
+  "dependencies": ["R-001"],
+  "exclusive_paths": ["contracts/step0/substrate/direct-host/**", "evidence/step0/R-003/**"],
+  "owner_agent_id": "019f8265-808e-73a3-abce-946fe3a1810c",
+  "owner_provider": "codex",
+  "owner_model": "gpt-5.6-sol",
+  "owner_provider_session": "019f8265-835b-70e0-a1a7-503bcb0b3786",
+  "owner_worktree_id": "019f8264-562e-79f3-b823-3ee60e3d2ba1",
+  "owner_worktree_path": "[redacted-home]/Library/Application Support/heca/worktrees/80693732/r003-substrate-host-inventory",
+  "owner_branch": "codex/v2-r003-substrate-host-inventory",
+  "review_cycle": 2,
+  "transition_history": [
+    "PROPOSED",
+    "READY",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "OPUS_REVIEW",
+    "CHANGES_REQUESTED",
+    "IN_DEVELOPMENT",
+    "DEV_VERIFIED",
+    "OPUS_REVIEW",
+    "OPUS_APPROVED",
+    "PM_REVIEW",
+    "ACCEPTED",
+    "INTEGRATED"
+  ],
+  "submissions": [
+    {
+      "review_cycle": 0,
+      "commit": "8893bc4bc5ba7321322948fa5b44dece0781068a",
+      "result": "DEV_VERIFIED",
+      "submitted_at_utc": "2026-07-21T02:24:06Z",
+      "parent": "db1c492e9b091c4d5c254a62dca8036c41acdbd8",
+      "artifacts": [
+        "contracts/step0/substrate/direct-host/direct-host-process-source-inventory.v1.json",
+        "evidence/step0/R-003/verify-source-citations.sh",
+        "evidence/step0/R-003/verification.v1.json"
+      ],
+      "checks": [
+        "R-003 JSON: PASS",
+        "source citation verifier: PASS for 20 files, 54 ranges, and 49 entries",
+        "git diff and exclusive-path checks: PASS",
+        "dependency pre/post state: unchanged"
+      ],
+      "runtime_claim_status": "PLANNED_UNVERIFIED",
+      "limitations": [
+        "Static source inventory only; no substrate or application build or execution occurred.",
+        "Runtime, containment, zero-survivor, final-binary, and product-readiness proof remain downstream."
+      ]
+    },
+    {
+      "review_cycle": 1,
+      "commit": "24ad9c1e74367db583560cb16f7efde3a76beb5d",
+      "result": "DEV_VERIFIED",
+      "submitted_at_utc": "2026-07-21T03:04:19Z",
+      "parent": "79097a48638e13fd058704c5c5a498a349a89571",
+      "artifacts": [
+        "contracts/step0/substrate/direct-host/direct-host-process-source-inventory.v1.json",
+        "evidence/step0/R-003/verify-source-citations.sh",
+        "evidence/step0/R-003/verification.v1.json"
+      ],
+      "checks": [
+        "strengthened verifier: PASS for 20 files, 54 ranges, 49 entries, 41 Rust items, 2 TOML coordinates, and 11 derived source scopes",
+        "nonexistent identifier, range-misaligned identifier, and fictional source-scope mutants: all rejected",
+        "cycle-0 versus cycle-1 id/support/red/downstream-closure projection: byte-identical",
+        "all-category, exact-two-dependency, Workflow/Council authority, diff, path, trailer, and dependency immutability checks: PASS",
+        "main-PM independent verifier, mutant, projection, commit, and clean pre/post reproduction: PASS"
+      ],
+      "runtime_claim_status": "PLANNED_UNVERIFIED",
+      "limitations": [
+        "Static source inventory only; no substrate or application build or execution occurred.",
+        "Runtime, containment, zero-survivor, final-binary, and product-readiness proof remain downstream."
+      ]
+    }
+  ],
+  "advisories": [],
+  "reviews": [
+    {
+      "review_cycle": 1,
+      "agent_id": "019f8283-ade9-7013-bcf9-61b61d88de95",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "6668aef8-9a18-49d3-84dc-9c2f1b255bae",
+      "verdict": "CHANGES_REQUESTED",
+      "reviewed_head": "79097a48638e13fd058704c5c5a498a349a89571",
+      "authority": "independent_review",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "severity": "MEDIUM",
+      "finding": "About 15 of 54 sourceRanges symbol coordinates name identifiers that do not exist at the pinned substrate commit or do not align with the cited range, despite correct path, range, digest, support-state, and closure evidence.",
+      "examples": [
+        "PATH-RESOLVE claims ResolvedPaths::resolve_explicit where the source defines resolve.",
+        "GRAPH-LOAD claims load_graph where the source defines load_roots.",
+        "SUPERVISOR-TERM claims terminate_process_tree where the source defines terminate_process_group.",
+        "EXEC-ARGV-CONTRACT and EXEC-ARGV-BUILD claim ExecArgv names where the source defines ArgvOptions and register.",
+        "SPAWNER-CONTRACT prose claims DepartmentSpec/spawn_department where the source defines spawn_framework."
+      ],
+      "smallest_same_owner_correction": "Replace every inaccurate symbol/prose identity with the exact identifier at its cited range, verify symbol-to-range alignment for all 54 ranges, strengthen the verifier so nonexistent or misaligned symbols fail closed, recompute artifact identity, and resubmit for a fresh Opus cycle."
+    },
+    {
+      "review_cycle": 2,
+      "agent_id": "019f82e2-cc67-7e93-b88b-8bd9af705603",
+      "provider": "claude",
+      "model": "claude-opus-4-8",
+      "provider_session_id": "527d9a16-693a-4deb-8428-d89a33bb7c15",
+      "verdict": "APPROVE",
+      "reviewed_at_utc": "2026-07-21T04:42:09Z",
+      "reviewed_head": "efdc43de8cba112522bc25eec73ecf097fe4d68b",
+      "authority": "independent_review",
+      "repository_authorship": false,
+      "pre_post_porcelain_identical": true,
+      "basis": "Fresh Opus reproduced the strengthened 20-file/54-range/49-entry verifier with 41 Rust items, 2 TOML coordinates, and 11 source scopes; confirmed the three hostile coordinate classes fail closed; verified all corrected source conclusions, unchanged support/red/closure projection, exact scope and trailers, two dependencies, Workflow/Council authority, and clean pre/post state.",
+      "limitations": [
+        "Static source identity only; runtime, containment, lifetime, and product proof remain downstream.",
+        "The reviewer used read-only temporary/in-memory reproduction and authored no repository content."
+      ]
+    }
+  ],
+  "pm_decisions": [
+    {
+      "review_cycle": 2,
+      "decision": "ACCEPTED",
+      "decided_at_utc": "2026-07-21T05:02:47Z",
+      "pm_agent_id": "019f8017-5aca-7673-921f-23243f1c2bb4",
+      "pm_provider": "codex",
+      "pm_model": "gpt-5.6-sol",
+      "pm_provider_session_id": "019f8017-5bad-7302-b7fb-e081e3d35205",
+      "accepted_artifact_commit": "24ad9c1e74367db583560cb16f7efde3a76beb5d",
+      "accepted_source_head": "efdc43de8cba112522bc25eec73ecf097fe4d68b",
+      "basis": "The same-owner correction closes the sole cycle-1 blocker, fresh Opus approved the corrected head, and previously reproduced PM verifier, mutant, projection, scope, trailer, and clean-state checks remain bound to the unchanged head.",
+      "residual_gates": [
+        "R-020/R-021/R-025 must turn admitted host contracts into executable package and host proof.",
+        "R-043/R-046/R-048 and R-057/R-058 retain root, containment, and lifetime closure.",
+        "No runtime or product readiness is claimed by this acceptance."
+      ]
+    }
+  ],
+  "integration": {
+    "integrated_at_utc": "2026-07-21T05:06:32Z",
+    "integration_branch": "codex/full-app-v2-00-readiness",
+    "integration_merge_commit": "29cca55",
+    "aggregate_head_after_integration": "a6d0804779c6fef2436d11b2e3ee5f6e6c2eb80f",
+    "actual_changed_path_count": 4,
+    "collision_gate": "PASS",
+    "wave_gate": "R2-WAVE-A-PASS"
+  }
+}
