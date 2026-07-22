@@ -1,0 +1,52 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "pageInfo": { "hasNextPage": false },
+        "nodes": [
+          {
+            "number": 101,
+            "title": "Prove the browser-rendered live console",
+            "url": "https://github.com/demo-owner/demo-sandbox/issues/101",
+            "updatedAt": "2026-07-22T00:00:00Z",
+            "labels": {
+              "pageInfo": { "hasNextPage": false },
+              "nodes": [
+                { "name": "fkst-dev:enabled" },
+                { "name": "fkst-dev:implementing" }
+              ]
+            },
+            "comments": {
+              "pageInfo": { "hasNextPage": false },
+              "nodes": [
+                {
+                  "author": { "login": "loop-agent" },
+                  "createdAt": "2026-07-22T00:00:00Z",
+                  "body": "<!-- fkst:github-devloop:state:v1 proposal=\"github-devloop/issue/demo-owner/demo-sandbox/101\" state=\"implementing\" version=\"2026-07-21T00-00-00Z\" -->"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "pullRequests": {
+        "pageInfo": { "hasNextPage": false },
+        "nodes": [
+          {
+            "number": 202,
+            "title": "Implement the live DOM proof",
+            "url": "https://github.com/demo-owner/demo-sandbox/pull/202",
+            "updatedAt": "2026-07-22T00:00:00Z",
+            "state": "OPEN",
+            "headRefName": "feature/live-dom-proof",
+            "headRefOid": "0123456789abcdef0123456789abcdef01234567",
+            "author": { "login": "loop-agent" },
+            "labels": { "pageInfo": { "hasNextPage": false }, "nodes": [] },
+            "comments": { "pageInfo": { "hasNextPage": false }, "nodes": [] }
+          }
+        ]
+      }
+    },
+    "rateLimit": { "cost": 1, "remaining": 5000, "resetAt": "2026-07-22T05:30:00Z" }
+  }
+}

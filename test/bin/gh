@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { appendFileSync } from 'node:fs'
+import { appendFileSync, readFileSync } from 'node:fs'
 
 const argv = process.argv.slice(2)
 const actor = process.env.GH_TRIPWIRE_ACTOR ?? 'human-tester'
@@ -79,6 +79,14 @@ if (argv[0] === 'api' && (argv.includes('user') || argv.includes('/user'))) {
 }
 
 if (isBoundedRepositoryRead(argv)) {
+  const projectionFixture = process.env.GH_TRIPWIRE_PROJECTION_FIXTURE
+  if (projectionFixture) {
+    // Read-only: swaps the canned projection body for a caller-controlled
+    // fixture while every guard above (mutation refusal, exact bounded read
+    // shape) still applies unchanged.
+    process.stdout.write(readFileSync(projectionFixture, 'utf8'))
+    process.exit(0)
+  }
   process.stdout.write(`${JSON.stringify({
     data: {
       repository: {

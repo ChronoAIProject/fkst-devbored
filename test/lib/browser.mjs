@@ -22,7 +22,7 @@ const CHROME_CANDIDATES = [
   '/usr/bin/chromium-browser',
 ].filter(Boolean)
 
-async function executableChrome() {
+export async function executableChrome() {
   for (const candidate of CHROME_CANDIDATES) {
     try {
       await execFileAsync(candidate, ['--version'], { timeout: 5_000 })
